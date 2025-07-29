@@ -2,4 +2,3 @@
 .dockerignore
 Dockerfile
 compose.yaml
-.gitattributes

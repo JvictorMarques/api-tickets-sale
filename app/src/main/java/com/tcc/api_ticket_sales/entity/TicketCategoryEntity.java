@@ -31,9 +31,6 @@ public class TicketCategoryEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(precision = 10, scale = 2, nullable = false)
-    private BigDecimal valueAdditional;
-
     @OneToMany(mappedBy = "ticketCategoryEntity")
     private List<TicketEntity> ticketEntities;
 }

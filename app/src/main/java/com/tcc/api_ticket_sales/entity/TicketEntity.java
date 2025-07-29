@@ -8,6 +8,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -16,6 +18,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -33,19 +37,20 @@ public class TicketEntity {
     @Column(precision = 10, scale = 2, nullable = false)
     private BigDecimal price;
 
-    @Builder.Default
-    @Column(nullable = false)
-    private boolean isEnable= true;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ticket_category_id")
     private TicketCategoryEntity ticketCategoryEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ticket_holder_id")
-    private TicketHolderEntity ticketHolderEntity;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     private EventEntity eventEntity;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "ticket_holder",
+            joinColumns = @JoinColumn(name = "ticket_id"),
+            inverseJoinColumns = @JoinColumn(name = "holder_id")
+    )
+    private List<HolderEntity> holderEntities = new ArrayList<>();
 }
