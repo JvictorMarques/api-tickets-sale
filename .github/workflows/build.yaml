@@ -36,6 +36,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: app
-          file: Dockerfile
+          file: app/Dockerfile
           push: true
           tags: ghcr.io/jvictormarques/api-ticket-sales:v${{ github.run_number }}
