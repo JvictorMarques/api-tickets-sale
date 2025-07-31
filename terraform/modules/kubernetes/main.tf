@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    digitalocean = {
+      source  = "digitalocean/digitalocean"
+      version = "~> 2.0"
+    }
+  }
+}
+
 resource "digitalocean_kubernetes_cluster" "k8s-ticket-sales" {
   name    = var.k8s_cluster_name
   region  = var.region

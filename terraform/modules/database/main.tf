@@ -1,3 +1,11 @@
+terraform {
+  required_providers {
+    digitalocean = {
+      source  = "digitalocean/digitalocean"
+      version = "~> 2.0"
+    }
+  }
+}
 resource "digitalocean_database_cluster" "ticket-sales-db" {
   name       = var.database_name
   engine     = "pg"
