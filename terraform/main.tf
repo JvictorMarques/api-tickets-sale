@@ -24,29 +24,3 @@ terraform {
 provider "digitalocean" {
   token = var.do_token
 }
-
-resource "digitalocean_kubernetes_cluster" "k8s-ticket-sales" {
-  name    = var.k8s_cluster_name
-  region  = var.region
-  version = var.k8s_version
-
-  node_pool {
-    name       = "pool-ticket-sales"
-    size       = "s-2vcpu-2gb"
-    node_count = 3
-  }
-}
-
-resource "digitalocean_database_cluster" "ticket-sales-db" {
-  name       = var.database_name
-  engine     = "pg"
-  version    = var.database_version
-  size       = "db-s-1vcpu-1gb"
-  region     = var.region
-  node_count = 1
-}
-
-resource "digitalocean_database_user" "ticket-sales-db-user" {
-  cluster_id = digitalocean_database_cluster.ticket-sales-db.id
-  name       = var.database_user
-}
