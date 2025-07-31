@@ -1,5 +1,7 @@
 variable "do_token" {
-  sensitive = true
+  type        = string
+  description = "Token de autenticação da DigitalOcean"
+  sensitive   = true
 }
 
 variable "region" {
@@ -13,12 +15,6 @@ variable "database_name" {
   type        = string
   description = "Nome do banco de dados"
   default     = "ticket-sales-db"
-}
-
-variable "database_version" {
-  type        = string
-  description = "Versão do banco de dados"
-  default     = "14"
 }
 
 variable "database_user" {
