@@ -11,7 +11,7 @@ variable "region" {
 variable "database_name" {
   type        = string
   description = "Nome do banco de dados"
-  default     = "ticket_sales_db"
+  default     = "ticket-sales-db"
 }
 
 variable "database_version" {
