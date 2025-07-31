@@ -1,0 +1,27 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+        name: Verificando arquivos grandes
+      - id: end-of-file-fixer
+        name: Corrigindo o final do arquivo
+      - id: trailing-whitespace
+        name: Removendo espaços em branco no final das linhas
+      - id: check-merge-conflict
+        name: Verificando conflitos de merge
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.99.5
+    hooks:
+      - id: terraform_fmt
+        name: Formatando arquivos Terraform
+        files: ^terraform/
+      - id: terraform_validate
+        name: Validando arquivos Terraform
+        files: ^terraform/
+      - id: terraform_tflint
+        name: Verificando erros de linting no Terraform
+        files: ^terraform/
+      - id: terraform_trivy
+        name: Verificando vulnerabilidades no Terraform
+        files: ^terraform/
