@@ -23,6 +23,7 @@ crash.log
 # Arquivos de variáveis sensíveis (se forem usados)
 *.tfvars
 *.tfvars.json
+*.hcl
 
 # Backup do editor (ex: VSCode, etc.)
 *.swp
