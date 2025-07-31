@@ -3,9 +3,11 @@ output "database_username" {
 }
 
 output "database_password" {
-  value = module.database.database_password
+  value     = module.database.database_password
+  sensitive = true
 }
 
 output "kube_config" {
-  value = module.kubernetes.k8s_cluster_id
+  value     = module.kubernetes.k8s_cluster_kube_config
+  sensitive = true
 }
