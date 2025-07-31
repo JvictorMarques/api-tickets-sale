@@ -1,4 +1,5 @@
 variable "do_token" {
+  sensitive = true
 }
 
 variable "region" {
