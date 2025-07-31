@@ -13,7 +13,7 @@ resource "digitalocean_kubernetes_cluster" "k8s-ticket-sales" {
   version = var.k8s_version
 
   node_pool {
-    name       = "pool-ticket-sales"
+    name       = "pool-${var.k8s_cluster_name}"
     size       = "s-2vcpu-2gb"
     node_count = 3
   }

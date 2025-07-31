@@ -31,9 +31,8 @@ module "kubernetes" {
 }
 
 module "database" {
-  source           = "./modules/database"
-  region           = var.region
-  database_name    = var.database_name
-  database_version = var.database_version
-  database_user    = var.database_user
+  source        = "./modules/database"
+  region        = var.region
+  database_name = var.database_name
+  database_user = var.database_user
 }

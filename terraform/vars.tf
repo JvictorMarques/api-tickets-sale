@@ -5,7 +5,7 @@ variable "region" {
   type        = string
   description = "Região da infraestrutura"
   default     = "nyc3"
-  
+
 }
 
 variable "database_name" {
