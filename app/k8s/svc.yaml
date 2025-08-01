@@ -4,7 +4,9 @@ metadata:
   name: api-ticket-sales-svc
 spec:
   selector:
-    app: myapp
+    app: ticket-sales
   ports:
   - port: 8080
     targetPort: 8080
+    nodePort: 30000
+  type: NodePort

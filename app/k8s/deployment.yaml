@@ -3,21 +3,33 @@ kind: Deployment
 metadata:
   name: api-ticket-sales
 spec:
-  replicas: 1
+  replicas: 5
   selector:
     matchLabels:
-      app: myapp
+      app: ticket-sales
   template:
     metadata:
       labels:
-        app: myapp
+        app: ticket-sales
     spec:
       containers:
       - name: api-ticket-sales
-        image: teste
-        resources:
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
+        image: ghcr.io/jvictormarques/api-ticket-sales:v3
         ports:
         - containerPort: 8080
+        env:
+        - name: SPRING_DATASOURCE_URL
+          valueFrom:
+            secretKeyRef:
+              name: db-connection
+              key: SPRING_DATASOURCE_URL
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: db-connection
+              key: SPRING_DATASOURCE_USERNAME
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-connection
+              key: SPRING_DATASOURCE_PASSWORD
