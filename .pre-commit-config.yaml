@@ -27,4 +27,4 @@ repos:
         files: ^terraform/
       - name: Verificando vulnerabilidades no Terraform
         id: terraform_trivy
-        # files: ^terraform/
+        files: ^terraform/
