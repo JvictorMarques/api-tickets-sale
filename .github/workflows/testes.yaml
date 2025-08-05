@@ -18,11 +18,10 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
+      - run: ls -la
       - name: Baixar as dependências do Maven
         working-directory: ./app
-        run: |
-          ls -la
-          mvn dependencies:go-offline
+        run: mvn dependencies:go-offline
       - name: Executar testes unitários
         working-directory: ./app
         run: mvn test
