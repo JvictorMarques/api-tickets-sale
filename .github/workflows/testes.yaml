@@ -13,15 +13,17 @@ jobs:
     steps:
       - name: Verificando o código
         uses: actions/checkout@v4
+
       - name: Configurando o JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
-      - run: ls -la
+
       - name: Baixar as dependências do Maven
         working-directory: ./app
-        run: mvn dependencies:go-offline
+        run: mvn dependency:go-offline
+
       - name: Executar testes unitários
         working-directory: ./app
         run: mvn test
