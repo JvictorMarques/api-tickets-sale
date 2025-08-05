@@ -20,7 +20,9 @@ jobs:
           java-version: '17'
       - name: Baixar as dependências do Maven
         working-directory: ./app
-        run: mvn dependencies:go-offline
+        run: |
+          ls -la
+          mvn dependencies:go-offline
       - name: Executar testes unitários
         working-directory: ./app
         run: mvn test
