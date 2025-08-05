@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: api-ticket-sales
 spec:
-  replicas: 5
+  replicas: 10
   selector:
     matchLabels:
       app: ticket-sales

@@ -25,6 +25,18 @@ repos:
       - name: Verificando erros de linting no Terraform
         id: terraform_tflint
         files: ^terraform/
-      - name: Verificando vulnerabilidades no Terraform
+      - name: Verificando vulnerabilidades
         id: terraform_trivy
-        files: ^terraform/
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.28.0
+    hooks:
+      - name: Verificando variaveis sensíveis no commit
+        id: gitleaks
+
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.7
+    hooks:
+      - name: Verificando erros de sintaxe no GitHub Actions
+        id: actionlint
+        files: ^\.github/workflows/
