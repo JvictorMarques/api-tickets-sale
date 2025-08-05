@@ -1,0 +1,30 @@
+name: Pipeline de Testes Unitários, Integração e Cobertura de Código
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/testes.yaml
+      - app/src/**
+
+jobs:
+  unit-test:
+    name: Executando testes unitários com JUnit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verificando o código
+        uses: actions/checkout@v4
+
+      - name: Configurando o JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Baixar as dependências do Maven
+        working-directory: /app
+        run: mvn dependencies:go-offline
+
+      - name: Executar testes unitários
+        working-directory: /app
+        run: mvn test
