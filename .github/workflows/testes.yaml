@@ -6,6 +6,8 @@ on:
     paths:
       - .github/workflows/testes.yaml
       - app/src/**
+env:
+  COVERAGE: coverage
 jobs:
   unit-test:
     name: Executando testes unitários com JUnit
@@ -26,4 +28,34 @@ jobs:
 
       - name: Executar testes unitários
         working-directory: ./app
-        run: mvn test
+        run: mvn test -Dgroups=unit
+
+      - name: Gerar relatório de cobertura de código
+        working-directory: ./app
+        run: mvn jacoco:report
+
+      - name: Adicionar relatório de cobertura como artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.COVERAGE }}
+          path: ./app/target/site/jacoco/jacoco.xml
+  integration-test:
+    name: Executando testes de integração com JUnit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verificando o código
+        uses: actions/checkout@v4
+
+      - name: Configurando o JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Baixar as dependências do Maven
+        working-directory: ./app
+        run: mvn dependency:go-offline
+
+      - name: Executar testes unitários
+        working-directory: ./app
+        run: mvn test -Dgroups=integration
