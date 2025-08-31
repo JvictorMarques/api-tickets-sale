@@ -28,7 +28,7 @@ jobs:
 
       - name: Gerar relatório de cobertura de código
         working-directory: ./app
-        run: mvn test jacoco:report -DincludeTags=unit
+        run: mvn test jacoco:report -Dgroups=unit
 
       - name: Adicionar relatório de cobertura como artefato
         uses: actions/upload-artifact@v4
@@ -52,9 +52,9 @@ jobs:
         working-directory: ./app
         run: mvn dependency:go-offline
 
-      - name: Executar testes unitários
+      - name: Executar testes de integração
         working-directory: ./app
-        run: mvn test -DincludeTags=integration
+        run: mvn test -Dgroups=integration
   sonarqube:
     name: Executando análise de código com SonarQube
     needs: [unit-test, integration-test]
