@@ -28,7 +28,7 @@ jobs:
 
       - name: Gerar relatório de cobertura de código
         working-directory: ./app
-        run: mvn test jacoco:report -Dgroups=unit
+        run: mvn test jacoco:report -DincludeTags=unit
 
       - name: Adicionar relatório de cobertura como artefato
         uses: actions/upload-artifact@v4
@@ -54,9 +54,10 @@ jobs:
 
       - name: Executar testes unitários
         working-directory: ./app
-        run: mvn test -Dgroups=integration
+        run: mvn test -DincludeTags=integration
   sonarqube:
     name: Executando análise de código com SonarQube
+    needs: [unit-test, integration-test]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
