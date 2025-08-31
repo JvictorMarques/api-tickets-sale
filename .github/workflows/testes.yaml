@@ -66,7 +66,7 @@ jobs:
     - name: Baixar artefato de cobertura
       uses: actions/download-artifact@v4
       with:
-        name: coverage
+        name: ${{ env.COVERAGE }}
         path: app/target/site/jacoco
     - name: SonarQube Scan
       uses: sonarsource/sonarcloud-github-action@v5.0.0
