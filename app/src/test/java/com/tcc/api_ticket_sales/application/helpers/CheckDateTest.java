@@ -4,6 +4,7 @@ import com.tcc.api_ticket_sales.application.exception.DateFinalIsBeforeTodayExce
 import com.tcc.api_ticket_sales.application.exception.DateInitialGreaterThanDateFinalException;
 import com.tcc.api_ticket_sales.application.exception.DateInvalidException;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -16,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CheckDateTest {
 
     @Test
+    @Tag("unit")
     @DisplayName("Should return DateInvalidException because date's invalid format")
     void shouldReturnExceptionFormatDateInvalid(){
         assertThrows(DateInvalidException.class, () -> {
@@ -24,6 +26,7 @@ public class CheckDateTest {
     }
 
     @Test
+    @Tag("unit")
     @DisplayName("Should execute without exception because date's valid format")
     void shouldExecuteWithoutExceptionDateValid(){
         assertDoesNotThrow(() -> {
@@ -32,6 +35,7 @@ public class CheckDateTest {
     }
 
     @Test
+    @Tag("unit")
     @DisplayName("Should return DateInvalidException because final date is null")
     void shouldReturnExceptionDateFinalIsNull(){
         assertThrows(DateInvalidException.class, () -> {
@@ -40,6 +44,7 @@ public class CheckDateTest {
     }
 
     @Test
+    @Tag("unit")
     @DisplayName("Should return DateInvalidException because initial date is null")
     void shouldReturnExceptionDateInitialIsNull(){
         assertThrows(DateInvalidException.class, () -> {
@@ -48,6 +53,7 @@ public class CheckDateTest {
     }
 
     @Test
+    @Tag("unit")
     @DisplayName("Should execute without exception because dates are not null")
     void shouldExecuteWithoutExceptionDateAreNotNull(){
         assertDoesNotThrow(() -> {
@@ -56,6 +62,7 @@ public class CheckDateTest {
     }
 
     @Test
+    @Tag("unit")
     @DisplayName("Should return DateInvalidException because dates are null")
     void shouldReturnExceptionDatesAreNull(){
         assertThrows(DateInvalidException.class, () -> {
@@ -64,6 +71,7 @@ public class CheckDateTest {
     }
 
     @Test
+    @Tag("unit")
     @DisplayName("Should execute without exception because dates is null but checked is false")
     void shouldExecuteWithoutExceptionDateAreNullNoChecked(){
         assertDoesNotThrow(() -> {
@@ -72,6 +80,7 @@ public class CheckDateTest {
     }
 
     @Test
+    @Tag("unit")
     @DisplayName("Should return DateInitialGreaterThanDateFinalException")
     void shouldReturnDateInitialGreaterThanDateFinalException(){
         assertThrows(DateInitialGreaterThanDateFinalException.class, () -> {
@@ -80,6 +89,7 @@ public class CheckDateTest {
     }
 
     @Test
+    @Tag("unit")
     @DisplayName("Should execute without exception because date initial before date final")
     void shouldExecuteWithoutExceptionDateInitialBeforeFinal(){
         assertDoesNotThrow(() -> {
@@ -88,6 +98,7 @@ public class CheckDateTest {
     }
 
     @Test
+    @Tag("unit")
     @DisplayName("Should return DateFinalIsBeforeTodayException")
     void shouldReturnDateFinalIsBeforeTodayException(){
         assertThrows(DateFinalIsBeforeTodayException.class, () -> {
@@ -96,6 +107,7 @@ public class CheckDateTest {
     }
 
     @Test
+    @Tag("unit")
     @DisplayName("Should execute without exception because date final greater than today")
     void shouldExecuteWithoutExceptionDateFinalGreaterThanToday(){
         assertDoesNotThrow(() -> {
@@ -104,6 +116,7 @@ public class CheckDateTest {
     }
 
     @Test
+    @Tag("unit")
     @DisplayName("Should execute without exception because date final equals today date")
     void shouldExecuteWithoutExceptionDateFinalEqualsToday(){
         assertDoesNotThrow(() -> {

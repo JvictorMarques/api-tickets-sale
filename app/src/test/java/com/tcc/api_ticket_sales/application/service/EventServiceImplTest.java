@@ -9,6 +9,7 @@ import com.tcc.api_ticket_sales.application.model.EventModel;
 import com.tcc.api_ticket_sales.web.dto.EventResponseDTO;
 import com.tcc.api_ticket_sales.web.dto.FilterEventRequestDTO;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,6 +33,7 @@ public class EventServiceImplTest {
     private EventServiceImpl eventService;
 
     @Test
+    @Tag("unit")
     @DisplayName("Should return only events with available tickets")
     void getEventsAvailable(){
         FilterEventRequestDTO filter = new FilterEventRequestDTO(LocalDate.now(), LocalDate.now(), null, null);
@@ -58,6 +60,7 @@ public class EventServiceImplTest {
     }
 
     @Test
+    @Tag("unit")
     @DisplayName("Should return empty because there are no events available")
     void getEventsAvailableEmpty(){
         FilterEventRequestDTO filter = new FilterEventRequestDTO(LocalDate.now(), LocalDate.now(), null, null);
@@ -78,6 +81,7 @@ public class EventServiceImplTest {
     }
 
     @Test
+    @Tag("unit")
     @DisplayName("Should return exeception DateInvalid because dates null")
     void getEventsAvailableDateNull(){
         FilterEventRequestDTO filter = new FilterEventRequestDTO(null, null, null, null);
@@ -86,6 +90,7 @@ public class EventServiceImplTest {
     }
 
     @Test
+    @Tag("unit")
     @DisplayName("Should return exeception DateInvalid because date final null")
     void getEventsAvailableDateFinalNull(){
         FilterEventRequestDTO filter = new FilterEventRequestDTO(LocalDate.now(), null, null, null);
@@ -94,6 +99,7 @@ public class EventServiceImplTest {
     }
 
     @Test
+    @Tag("unit")
     @DisplayName("Should return exeception DateInitialGreaterThanDateFinalException")
     void getEventsAvailableDateInitialGreaterThanDateFinal(){
         FilterEventRequestDTO filter = new FilterEventRequestDTO(
@@ -107,6 +113,7 @@ public class EventServiceImplTest {
     }
 
     @Test
+    @Tag("unit")
     @DisplayName("Should return exeception DateFinalIsBeforeTodayException")
     void getEventsAvailableDateFinalIsBeforeToday(){
         FilterEventRequestDTO filter = new FilterEventRequestDTO(
