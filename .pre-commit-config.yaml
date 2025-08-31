@@ -1,9 +1,15 @@
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.37.1
     hooks:
-      - name: Verificando os arquivos YAML
-        id: check-yaml
+      - name: Verificando erros de sintaxe no YAML do Kubernetes
+        id: yamllint
+        files: ^(k8s/|app/k8s/)
+
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
       - name: Verificando arquivos grandes
         id: check-added-large-files
       - name: Corrigindo o final do arquivo
@@ -14,7 +20,7 @@ repos:
         id: check-merge-conflict
 
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.99.5
+    rev: v1.100.0
     hooks:
       - name: Formatando arquivos Terraform
         id: terraform_fmt
