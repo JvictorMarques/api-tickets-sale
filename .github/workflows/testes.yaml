@@ -28,7 +28,7 @@ jobs:
 
       - name: Gerar relatório de cobertura de código
         working-directory: ./app
-        run: mvn test jacoco:report -Dgroups=unit
+        run: mvn test jacoco:report -DincludeTags=unit
 
       - name: Adicionar relatório de cobertura como artefato
         uses: actions/upload-artifact@v4
@@ -54,17 +54,25 @@ jobs:
 
       - name: Executar testes unitários
         working-directory: ./app
-        run: mvn test -Dgroups=integration
+        run: mvn test -DincludeTags=integration
   sonarqube:
     name: Executando análise de código com SonarQube
+    needs: [unit-test, integration-test]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
+    - name: Baixar artefato de cobertura
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ env.COVERAGE }}
+        path: app/target/site/jacoco
     - name: SonarQube Scan
       uses: sonarsource/sonarcloud-github-action@v5.0.0
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       with:
-        projectBaseDir: app/src
+        projectBaseDir: ./app
+        args: >
+          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
