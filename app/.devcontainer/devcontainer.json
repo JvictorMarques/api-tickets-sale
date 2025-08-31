@@ -1,0 +1,22 @@
+{
+  "name": "Java 17 + Maven",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "settings": {
+    "java.home": "/usr/lib/jvm/java-17-openjdk-amd64",
+    "java.configuration.checkProjectSettingsExclusions": false
+  },
+  "extensions": [
+    "vscjava.vscode-java-pack",
+    "redhat.java",
+    "vscjava.vscode-maven",
+    "eamodio.gitlens",
+    "aaron-bond.better-comments",
+    "vivaxy.vscode-conventional-commits",
+    "github.vscode-pull-request-github",
+    "tal7aouy.icons"
+  ],
+  "remoteUser": "vscode",
+  "postCreateCommand": "mvn -v && mvn dependency:resolve"
+}
