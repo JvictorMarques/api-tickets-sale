@@ -63,9 +63,16 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
+    - name: Baixar artefato de cobertura
+      uses: actions/download-artifact@v4
+      with:
+        name: coverage
+        path: app/target/site/jacoco
     - name: SonarQube Scan
       uses: sonarsource/sonarcloud-github-action@v5.0.0
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       with:
-        projectBaseDir: app/src
+        projectBaseDir: ./app
+        args: >
+          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
