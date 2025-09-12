@@ -35,26 +35,44 @@ jobs:
         with:
           name: ${{ env.COVERAGE }}
           path: ./app/target/site/jacoco/jacoco.xml
-  # integration-test:
-  #   name: Executando testes de integração com JUnit
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Verificando o código
-  #       uses: actions/checkout@v4
+  integration-test:
+    name: Executando testes de integração com JUnit
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: ticket_sales
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U user -d ticket_sales"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      - name: Verificando o código
+        uses: actions/checkout@v4
 
-  #     - name: Configurando o JDK
-  #       uses: actions/setup-java@v4
-  #       with:
-  #         distribution: 'zulu'
-  #         java-version: '17'
+      - name: Configurando o JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
 
-  #     - name: Baixar as dependências do Maven
-  #       working-directory: ./app
-  #       run: mvn dependency:go-offline
+      - name: Baixar as dependências do Maven
+        working-directory: ./app
+        run: mvn dependency:go-offline
 
-  #     - name: Executar testes de integração
-  #       working-directory: ./app
-  #       run: mvn test -Dgroups=integration
+      - name: Executar testes de integração
+        working-directory: ./app
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/ticket_sales
+          SPRING_DATASOURCE_USERNAME: postgres
+          SPRING_DATASOURCE_PASSWORD: password
+        run: mvn test -Dgroups=integration
   sonarqube:
     name: Executando análise de código com SonarQube
     needs: [unit-test]
