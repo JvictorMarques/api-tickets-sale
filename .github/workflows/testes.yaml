@@ -21,10 +21,8 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-
-      - name: Baixar as dependências do Maven
-        working-directory: ./app
-        run: mvn dependency:go-offline
+          cache: maven
+          cache-dependency-path: ./app/pom.xml
 
       - name: Gerar relatório de cobertura de código
         working-directory: ./app
@@ -61,10 +59,8 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-
-      - name: Baixar as dependências do Maven
-        working-directory: ./app
-        run: mvn dependency:go-offline
+          cache: maven
+          cache-dependency-path: ./app/pom.xml
 
       - name: Executar testes de integração
         working-directory: ./app
