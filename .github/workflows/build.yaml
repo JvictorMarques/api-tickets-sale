@@ -7,7 +7,6 @@ on:
       - .github/workflows/build.yaml
       - app/Dockerfile
       - app/src/**
-  workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
