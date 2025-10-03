@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
+@Profile("!test")
 public class DataBaseSeeder implements CommandLineRunner {
     private final EventCategorySeeder eventCategorySeeder;
     private final EventLocationSeeder eventLocationSeeder;
