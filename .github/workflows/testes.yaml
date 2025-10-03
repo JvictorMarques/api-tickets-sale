@@ -38,20 +38,6 @@ jobs:
   integration-test:
     name: Executando testes de integração com JUnit
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: ticket_sales
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U user -d ticket_sales"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
     steps:
       - name: Verificando o código
         uses: actions/checkout@v5
@@ -73,7 +59,7 @@ jobs:
         run: mvn test -Dgroups=integration
   sonarqube:
     name: Executando análise de código com SonarQube
-    needs: [unit-test]
+    needs: [unit-test, integration-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
