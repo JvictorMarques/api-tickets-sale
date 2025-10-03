@@ -9,6 +9,7 @@ on:
 env:
   JAVA_VERSION: 21
   JAVA_DISTRIBUTION: 'zulu'
+  JACOCO: jacoco-report
 jobs:
   unit-test:
     name: Executando testes unitários com JUnit
@@ -28,6 +29,11 @@ jobs:
       - name: Gerar relatório de cobertura de código
         working-directory: ./app
         run: mvn test jacoco:report -Dgroups=unit
+      - name: Salvar relatório Jacoco
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.JACOCO }}
+          path: ./app/target/site/jacoco/jacoco.xml
 
   integration-test:
     name: Executando testes de integração com JUnit
@@ -90,8 +96,18 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+      - name: Baixar relatório Jacoco
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.JACOCO }}
+          path: ./app/target/site/jacoco/
       - name: Construindo e analisando o projeto
         working-directory: ./app
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dgroups=unit -Dsonar.projectKey=JvictorMarques_api-tickets-sale
+
+        run: |
+          mvn -B sonar:sonar -Dsonar.projectKey=JvictorMarques_api-tickets-sale \
+          -Dsonar.organization=jvictormarques -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+          -Dsonar.java.binaries=target/classes
