@@ -7,86 +7,100 @@ on:
       - .github/workflows/testes.yaml
       - app/src/**
 env:
-  COVERAGE: coverage
+  JAVA_VERSION: 21
+  JAVA_DISTRIBUTION: 'zulu'
+  TARGET: target-artifact
+
 jobs:
   unit-test:
     name: Executando testes unitários com JUnit
     runs-on: ubuntu-latest
     steps:
-      - name: Verificando o código
+      - name: Checkout do código
         uses: actions/checkout@v5
 
-      - name: Configurando o JDK
+      - name: Configuração do JDK
         uses: actions/setup-java@v5
         with:
-          distribution: 'zulu'
-          java-version: '17'
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+          cache-dependency-path: ./app/pom.xml
 
-      - name: Baixar as dependências do Maven
-        working-directory: ./app
-        run: mvn dependency:go-offline
-
-      - name: Gerar relatório de cobertura de código
+      - name: Executar testes unitários e gerar cobertura
         working-directory: ./app
         run: mvn test jacoco:report -Dgroups=unit
-
-      - name: Adicionar relatório de cobertura como artefato
+      - name: Upload da pasta target (artifact)
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.COVERAGE }}
-          path: ./app/target/site/jacoco/jacoco.xml
-  # integration-test:
-  #   name: Executando testes de integração com JUnit
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Verificando o código
-  #       uses: actions/checkout@v4
+          name: ${{ env.TARGET }}
+          path: ./app/target
 
-  #     - name: Configurando o JDK
-  #       uses: actions/setup-java@v4
-  #       with:
-  #         distribution: 'zulu'
-  #         java-version: '17'
-
-  #     - name: Baixar as dependências do Maven
-  #       working-directory: ./app
-  #       run: mvn dependency:go-offline
-
-  #     - name: Executar testes de integração
-  #       working-directory: ./app
-  #       run: mvn test -Dgroups=integration
-  sonarqube:
-    name: Executando análise de código com SonarQube
-    needs: [unit-test]
+  integration-test:
+    name: Executando testes de integração com JUnit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout do código
+        uses: actions/checkout@v5
+
+      - name: Configuração do JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+          cache-dependency-path: ./app/pom.xml
+
+      - name: Executar testes de integração
+        working-directory: ./app
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/ticket_sales
+          SPRING_DATASOURCE_USERNAME: postgres
+          SPRING_DATASOURCE_PASSWORD: password
+        run: mvn test -Dgroups=integration
+  sonarqube:
+    name: Executando análise de código com SonarQube
+    needs: [unit-test, integration-test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - name: Baixar artefato de cobertura
-        uses: actions/download-artifact@v4
+
+      - name: Configuração do JDK
+        uses: actions/setup-java@v5
         with:
-          name: ${{ env.COVERAGE }}
-          path: app/target/site/jacoco
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: 17
-          distribution: 'zulu'
-      - name: Cache SonarQube packages
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+
+      - name: Cache de pacotes SonarQube
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      - name: Cache Maven packages
+
+      - name: Cache de pacotes Maven
         uses: actions/cache@v4
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Construindo e analisando o projeto
+
+      - name: Download da pasta target (artifact)
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.TARGET }}
+          path: ./app/target
+
+      - name: Análise de qualidade e cobertura no SonarCloud
         working-directory: ./app
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dgroups=unit -Dsonar.projectKey=JvictorMarques_api-tickets-sale
+
+        run: |
+          mvn -B sonar:sonar -Dsonar.projectKey=JvictorMarques_api-tickets-sale \
+          -Dsonar.organization=jvictormarques -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+          -Dsonar.java.binaries=target/classes
