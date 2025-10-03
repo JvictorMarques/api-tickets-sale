@@ -15,10 +15,10 @@ jobs:
     name: Executando testes unitários com JUnit
     runs-on: ubuntu-latest
     steps:
-      - name: Verificando o código
+      - name: Checkout do código
         uses: actions/checkout@v5
 
-      - name: Configurando o JDK
+      - name: Configuração do JDK
         uses: actions/setup-java@v5
         with:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
@@ -26,23 +26,23 @@ jobs:
           cache: maven
           cache-dependency-path: ./app/pom.xml
 
-      - name: Gerar relatório de cobertura de código
+      - name: Executar testes unitários e gerar cobertura
         working-directory: ./app
         run: mvn test jacoco:report -Dgroups=unit
-      - name: Salvar pasta target
+      - name: Upload da pasta target (artifact)
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.TARGET}}
+          name: ${{ env.TARGET }}
           path: ./app/target
 
   integration-test:
     name: Executando testes de integração com JUnit
     runs-on: ubuntu-latest
     steps:
-      - name: Verificando o código
+      - name: Checkout do código
         uses: actions/checkout@v5
 
-      - name: Configurando o JDK
+      - name: Configuração do JDK
         uses: actions/setup-java@v5
         with:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
@@ -62,32 +62,38 @@ jobs:
     needs: [unit-test, integration-test]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout do código
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - name: Configurando o JDK
+
+      - name: Configuração do JDK
         uses: actions/setup-java@v5
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}
-      - name: Cache SonarQube packages
+
+      - name: Cache de pacotes SonarQube
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      - name: Cache Maven packages
+
+      - name: Cache de pacotes Maven
         uses: actions/cache@v4
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Baixar pasta target
+
+      - name: Download da pasta target (artifact)
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.TARGET }}
           path: ./app/target
-      - name: Construindo e analisando o projeto
+
+      - name: Análise de qualidade e cobertura no SonarCloud
         working-directory: ./app
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
