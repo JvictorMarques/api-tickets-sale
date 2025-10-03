@@ -107,6 +107,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
         run: |
+          mvn clean verify
           mvn -B sonar:sonar -Dsonar.projectKey=JvictorMarques_api-tickets-sale \
           -Dsonar.organization=jvictormarques -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+          -Dsonar.java.binaries=target/classes
