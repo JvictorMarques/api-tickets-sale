@@ -8,7 +8,7 @@ RUN mvn dependency:go-offline -B
 COPY . .
 RUN mvn clean package -DskipTests
 
-FROM eclipse-temurin:17-jdk-jammy AS final
+FROM eclipse-temurin:25-jdk-jammy AS final
 
 RUN adduser --disabled-password --gecos "" spring
 
