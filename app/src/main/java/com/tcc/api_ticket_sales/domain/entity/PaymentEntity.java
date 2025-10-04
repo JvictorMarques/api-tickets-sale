@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Entity
 @Table(name = "payments")
@@ -13,9 +14,10 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Builder
 public class PaymentEntity extends Auditable{
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     private String transactionCode;
 
