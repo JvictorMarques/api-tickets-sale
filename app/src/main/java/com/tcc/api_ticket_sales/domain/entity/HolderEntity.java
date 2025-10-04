@@ -1,28 +1,26 @@
-package com.tcc.api_ticket_sales.entity;
+package com.tcc.api_ticket_sales.domain.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-@Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Entity
-@Table(name="ticket_category")
-public class TicketCategoryEntity {
+@Table(name = "holders")
+public class HolderEntity extends Auditable {
 
     @Id
     @GeneratedValue(strategy= GenerationType.UUID)
@@ -31,6 +29,18 @@ public class TicketCategoryEntity {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "ticketCategoryEntity")
+    @Column(nullable = false, unique = true)
+    private String cpf;
+
+    @Column(nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private String phone;
+
+    @Column(nullable = false)
+    private LocalDate bithDate;
+
+    @ManyToMany(mappedBy = "holderEntities")
     private List<TicketEntity> ticketEntities;
 }

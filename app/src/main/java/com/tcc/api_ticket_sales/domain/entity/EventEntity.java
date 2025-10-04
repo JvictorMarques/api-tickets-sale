@@ -1,4 +1,4 @@
-package com.tcc.api_ticket_sales.entity;
+package com.tcc.api_ticket_sales.domain.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,13 +19,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "event")
-public class EventEntity {
+@Table(name = "events")
+public class EventEntity extends Auditable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -33,6 +32,8 @@ public class EventEntity {
 
     @Column(nullable = false)
     private String name;
+
+    private String description;
 
     @Builder.Default
     @Column(nullable = false)
@@ -42,19 +43,13 @@ public class EventEntity {
     @Column(nullable = false)
     private LocalDateTime dateFinal = LocalDateTime.now();
 
-    private Integer maxPeople;
-
-    @Builder.Default
     @Column(nullable = false)
-    private boolean isAdultOnly = false;
+    private int capacity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_category_id")
-    private EventCategoryEntity eventCategoryEntity;
+    @Column(nullable = false)
+    private int ageRestriction;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_location_id")
-    private EventLocationEntity eventLocationEntity;
+    private String location;
 
     @OneToMany(mappedBy = "eventEntity")
     private List<TicketEntity> ticketEntities;
