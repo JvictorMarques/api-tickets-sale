@@ -1,4 +1,4 @@
-package com.tcc.api_ticket_sales.infrastructure.exception;
+package com.tcc.api_ticket_sales.interfaces.controller.exception;
 
 import com.tcc.api_ticket_sales.application.exception.DateFinalIsBeforeTodayException;
 import com.tcc.api_ticket_sales.application.exception.DateInitialGreaterThanDateFinalException;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestControllerAdvice

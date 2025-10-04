@@ -1,4 +1,4 @@
-package com.tcc.api_ticket_sales.infrastructure.exception;
+package com.tcc.api_ticket_sales.interfaces.controller.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.tcc.api_ticket_sales.entity;
+package com.tcc.api_ticket_sales.domain.entity;
 
 
 import jakarta.persistence.Column;
@@ -18,33 +18,41 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name= "ticket")
-public class TicketEntity {
+@Table(name= "tickets")
+public class TicketEntity extends Auditable{
 
     @Id
     @GeneratedValue(strategy= GenerationType.UUID)
     private UUID id;
 
+    private String description;
+
     @Column(precision = 10, scale = 2, nullable = false)
     private BigDecimal price;
-
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ticket_category_id")
-    private TicketCategoryEntity ticketCategoryEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     private EventEntity eventEntity;
+
+    @Column(nullable = false)
+    private int capacity;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private LocalDateTime dateInitial = LocalDateTime.now();
+
+    @Builder.Default
+    @Column(nullable = false)
+    private LocalDateTime dateFinal = LocalDateTime.now();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
