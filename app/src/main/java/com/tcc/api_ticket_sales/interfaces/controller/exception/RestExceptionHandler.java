@@ -1,5 +1,6 @@
 package com.tcc.api_ticket_sales.interfaces.controller.exception;
 
+import com.tcc.api_ticket_sales.application.exception.EventAlreadyExistsException;
 import com.tcc.api_ticket_sales.domain.exception.BusinessException;
 import com.tcc.api_ticket_sales.domain.exception.DateInitialGreaterThanDateFinalException;
 import com.tcc.api_ticket_sales.domain.exception.DateInvalidException;
@@ -97,5 +98,15 @@ public class RestExceptionHandler {
                     List.of(e.getMessage())
             );
         }
+    }
+
+    @ExceptionHandler(EventAlreadyExistsException.class)
+    public RestExceptionMessage handleEventAlreadyExistsException(EventAlreadyExistsException e){
+        return new RestExceptionMessage(
+                e.getMessage(),
+                HttpStatus.CONFLICT.value(),
+                LocalDateTime.now(),
+                List.of(e.getMessage())
+        );
     }
 }
