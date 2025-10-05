@@ -1,8 +1,8 @@
 package com.tcc.api_ticket_sales.interfaces.controller.exception;
 
-import com.tcc.api_ticket_sales.application.exception.DateFinalIsBeforeTodayException;
-import com.tcc.api_ticket_sales.application.exception.DateInitialGreaterThanDateFinalException;
-import com.tcc.api_ticket_sales.application.exception.DateInvalidException;
+import com.tcc.api_ticket_sales.domain.exception.BusinessException;
+import com.tcc.api_ticket_sales.domain.exception.DateInitialGreaterThanDateFinalException;
+import com.tcc.api_ticket_sales.domain.exception.DateInvalidException;
 import com.tcc.api_ticket_sales.application.exception.EventUnavailableException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -21,13 +21,10 @@ public class RestExceptionHandler {
     public RestExceptionMessage handleMethodArgumentNotValidException(MethodArgumentNotValidException e){
         List<FieldError> fieldErrors = e.getFieldErrors();
 
-        List<String> errors = fieldErrors.stream().map((fieldError) -> {
-            return fieldError.getField() + ":" + fieldError.getDefaultMessage();
-        }).toList();
+        List<String> errors = fieldErrors.stream().map((fieldError) -> fieldError.getField() + ":" + fieldError.getDefaultMessage()).toList();
 
         return new RestExceptionMessage("Erro de validação",
-                HttpStatus.BAD_REQUEST.value(),
-                e.getLocalizedMessage(),
+                HttpStatus.UNPROCESSABLE_ENTITY.value(),
                 LocalDateTime.now(),
                 errors);
     }
@@ -36,7 +33,6 @@ public class RestExceptionHandler {
     public RestExceptionMessage handleEntityNotFoundException(EntityNotFoundException e){
         return new RestExceptionMessage(e.getMessage(),
                 HttpStatus.UNPROCESSABLE_ENTITY.value(),
-                e.getLocalizedMessage(),
                 LocalDateTime.now(),
                 List.of());
     }
@@ -45,7 +41,6 @@ public class RestExceptionHandler {
     public RestExceptionMessage handleEventUnavailableException(EventUnavailableException e){
         return new RestExceptionMessage(e.getMessage(),
                 HttpStatus.BAD_REQUEST.value(),
-                e.getLocalizedMessage(),
                 LocalDateTime.now(),
                 List.of());
     }
@@ -54,7 +49,6 @@ public class RestExceptionHandler {
     public RestExceptionMessage handleException(Exception e){
         return new RestExceptionMessage(e.getMessage(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                e.getLocalizedMessage(),
                 LocalDateTime.now(),
                 List.of()
         );
@@ -64,7 +58,6 @@ public class RestExceptionHandler {
     public RestExceptionMessage handleDateInvalidException(Exception e){
         return new RestExceptionMessage(e.getMessage(),
                 HttpStatus.UNPROCESSABLE_ENTITY.value(),
-                e.getLocalizedMessage(),
                 LocalDateTime.now(),
                 List.of(e.getMessage())
         );
@@ -74,17 +67,15 @@ public class RestExceptionHandler {
     public RestExceptionMessage handleDateInitialGreaterThanDateFinalException(Exception e){
         return new RestExceptionMessage(e.getMessage(),
                 HttpStatus.UNPROCESSABLE_ENTITY.value(),
-                e.getLocalizedMessage(),
                 LocalDateTime.now(),
                 List.of(e.getMessage())
         );
     }
 
-    @ExceptionHandler(DateFinalIsBeforeTodayException.class)
-    public RestExceptionMessage handleDateFinalIsBeforeTodayException(Exception e){
+    @ExceptionHandler(BusinessException.class)
+    public RestExceptionMessage handleBusinessException(Exception e){
         return new RestExceptionMessage(e.getMessage(),
                 HttpStatus.UNPROCESSABLE_ENTITY.value(),
-                e.getLocalizedMessage(),
                 LocalDateTime.now(),
                 List.of(e.getMessage())
         );

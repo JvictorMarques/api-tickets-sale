@@ -1,0 +1,41 @@
+package com.tcc.api_ticket_sales.interfaces.dto.event;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+@Data
+@AllArgsConstructor
+@Builder
+public class EventCreateDTO {
+
+    @NotBlank(message = "Nome do evento não informao")
+    private String name;
+
+    private String description;
+
+    @NotBlank(message = "Local do evento não informado")
+    private String location;
+
+    @Positive(message = "Capacidade do evento precisa ser maior que 0")
+    private int capacity;
+
+    private int ageRestriction;
+
+    @NotNull(message = "Data/hora inicial é obrigatória")
+    @FutureOrPresent(message = "A data/hora do evento deve ser futura ou presente")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime dateInitial;
+
+    @NotNull(message = "Data/hora final é obrigatória")
+    @FutureOrPresent(message = "A data/hora do evento deve ser futura ou presente")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime dateFinal;
+}
