@@ -31,11 +31,9 @@ public class EventCreateDTO {
 
     @NotNull(message = "Data/hora inicial é obrigatória")
     @FutureOrPresent(message = "A data/hora do evento deve ser futura ou presente")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime dateInitial;
 
     @NotNull(message = "Data/hora final é obrigatória")
     @FutureOrPresent(message = "A data/hora do evento deve ser futura ou presente")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime dateFinal;
 }

@@ -6,6 +6,7 @@ import com.tcc.api_ticket_sales.domain.exception.DateInvalidException;
 import com.tcc.api_ticket_sales.application.exception.EventUnavailableException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -79,5 +80,22 @@ public class RestExceptionHandler {
                 LocalDateTime.now(),
                 List.of(e.getMessage())
         );
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public RestExceptionMessage handleHttpMessageNotReadableException(HttpMessageNotReadableException e){
+        if(e.getMessage().contains("LocalDateTime")){
+            return new RestExceptionMessage("Formato de data inválido. Use o padrão yyyy-MM-dd'T'HH:mm:ss",
+                    HttpStatus.BAD_REQUEST.value(),
+                    LocalDateTime.now(),
+                    List.of(e.getMessage())
+            );
+        }else{
+            return new RestExceptionMessage("Formato de JSON inválido ou campo malformado",
+                    HttpStatus.BAD_REQUEST.value(),
+                    LocalDateTime.now(),
+                    List.of(e.getMessage())
+            );
+        }
     }
 }
