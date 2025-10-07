@@ -45,7 +45,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    public void createEvent_shouldReturnEventResponseDTO_whenEventExists() {
+    public void createEvent_shouldReturnEventResponseDTO_whenEventNotExists() {
         // arrange
         EventResponseDTO eventMock = createEventResponseDTO();
         EventEntity eventEntity = createEventEntityWithoutId();
