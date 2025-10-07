@@ -36,7 +36,7 @@ public class RestExceptionHandler {
         return new RestExceptionMessage(e.getMessage(),
                 HttpStatus.UNPROCESSABLE_ENTITY.value(),
                 LocalDateTime.now(),
-                List.of());
+                List.of(e.getMessage()));
     }
 
     @ExceptionHandler(EventUnavailableException.class)
@@ -44,7 +44,7 @@ public class RestExceptionHandler {
         return new RestExceptionMessage(e.getMessage(),
                 HttpStatus.BAD_REQUEST.value(),
                 LocalDateTime.now(),
-                List.of());
+                List.of(e.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
@@ -52,7 +52,7 @@ public class RestExceptionHandler {
         return new RestExceptionMessage(e.getMessage(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 LocalDateTime.now(),
-                List.of()
+                List.of(e.getMessage())
         );
     }
 
