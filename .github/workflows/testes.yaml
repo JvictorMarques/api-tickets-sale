@@ -7,7 +7,7 @@ on:
       - .github/workflows/testes.yaml
       - app/src/**
 env:
-  JAVA_VERSION: 21
+  JAVA_VERSION: 25
   JAVA_DISTRIBUTION: 'zulu'
   TARGET: target-artifact
 
