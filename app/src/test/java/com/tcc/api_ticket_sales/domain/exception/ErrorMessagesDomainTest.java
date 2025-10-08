@@ -19,6 +19,7 @@ class ErrorMessagesDomainTest {
     }
 
     @Test
+    @Tag("unit")
     void constructorShouldBePrivateAndThrowException() throws Exception {
         Constructor<ErrorMessagesDomain> constructor = ErrorMessagesDomain.class.getDeclaredConstructor();
 

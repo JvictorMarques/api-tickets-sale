@@ -22,6 +22,7 @@ class ErrorMessagesApplicationTest {
     }
 
     @Test
+    @Tag("unit")
     void constructorShouldBePrivateAndThrowException() throws Exception {
         Constructor<ErrorMessagesApplication> constructor = ErrorMessagesApplication.class.getDeclaredConstructor();
 
