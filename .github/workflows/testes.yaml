@@ -30,6 +30,11 @@ jobs:
       - name: Executar testes unitários e gerar cobertura
         working-directory: ./app
         run: mvn test jacoco:report -Dgroups=unit
+      - name: Upload da pasta target (artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.TARGET }}
+          path: ./app/target
 
   integration-test:
     name: Executando testes de integração com JUnit
@@ -48,11 +53,8 @@ jobs:
 
       - name: Executar testes de integração
         working-directory: ./app
-        env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/ticket_sales
-          SPRING_DATASOURCE_USERNAME: postgres
-          SPRING_DATASOURCE_PASSWORD: password
         run: mvn test -Dgroups=integration
+
   sonarqube:
     name: Executando análise de código com SonarQube
     needs: [unit-test, integration-test]
@@ -69,21 +71,35 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}
 
-      - name: Cache SonarQube packages
+      - name: Cache de pacotes SonarQube
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Cache Maven packages
+      - name: Cache de pacotes Maven
         uses: actions/cache@v4
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Build and analyze
+
+      - name: Download da pasta target (artifact)
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.TARGET }}
+          path: ./app/target
+
+      - name: Análise de qualidade e cobertura no SonarCloud
         working-directory: ./app
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=JvictorMarques_api-tickets-sale
+
+        run: |
+          mvn -B sonar:sonar \
+            -Dsonar.projectKey=JvictorMarques_api-tickets-sale \
+            -Dsonar.organization=jvictormarques \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+            -Dsonar.java.binaries=target/classes
