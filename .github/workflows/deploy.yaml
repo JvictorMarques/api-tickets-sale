@@ -15,7 +15,7 @@ jobs:
       name: ${{ inputs.RAILWAY_ENVIRONMENT }}
       url: ${{ vars.RAILWAY_URL }}
     env:
-      RAILWAY_API_KEY: ${{ secrets.RAILWAY_TOKEN }}
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
     steps:
       - uses: actions/checkout@v5
 
