@@ -72,8 +72,8 @@ class EventRepositoryCustomImplTest extends BaseIntegrationTest {
         EventCreateDTO eventCreateDTO = createEventCreateDTODefault();
         eventCreateDTO.setName(eventEntity.getName());
         eventCreateDTO.setLocation(eventEntity.getLocation());
-        eventCreateDTO.setDateInitial(eventEntity.getDateInitial().plusDays(1));
-        eventCreateDTO.setDateFinal(eventEntity.getDateFinal().plusDays(2));
+        eventCreateDTO.setDateInitial(eventEntity.getDateInitial().plusDays(4));
+        eventCreateDTO.setDateFinal(eventEntity.getDateFinal().plusDays(5));
 
         assertFalse(repository.checkExists(eventCreateDTO));
     }
