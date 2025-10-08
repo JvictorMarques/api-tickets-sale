@@ -13,7 +13,6 @@ import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWit
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Tag("integration")
 class EventRepositoryCustomImplTest extends BaseIntegrationTest {
     @Autowired
     private EntityManager entityManager;
@@ -22,7 +21,8 @@ class EventRepositoryCustomImplTest extends BaseIntegrationTest {
     private EventRepositoryCustomImpl repository;
 
     @Test
-    public void checkExists_shouldReturnTrue_whenEventExists() {
+    @Tag("integration")
+    protected void checkExists_shouldReturnTrue_whenEventExists() {
         EventEntity eventEntity = createEventEntityWithoutId();
         entityManager.persist(eventEntity);
 
@@ -36,7 +36,8 @@ class EventRepositoryCustomImplTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void checkExists_shouldReturnFalse_whenLocationIsDifferent() {
+    @Tag("integration")
+    protected void checkExists_shouldReturnFalse_whenLocationIsDifferent() {
         EventEntity eventEntity = createEventEntityWithoutId();
         entityManager.persist(eventEntity);
 
@@ -49,7 +50,8 @@ class EventRepositoryCustomImplTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void checkExists_shouldReturnFalse_whenNameIsDifferent() {
+    @Tag("integration")
+    protected void checkExists_shouldReturnFalse_whenNameIsDifferent() {
         EventEntity eventEntity = createEventEntityWithoutId();
         entityManager.persist(eventEntity);
 
@@ -62,13 +64,16 @@ class EventRepositoryCustomImplTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void checkExists_shouldReturnFalse_whenDatesAreDifferent() {
+    @Tag("integration")
+    protected void checkExists_shouldReturnFalse_whenDatesAreDifferent() {
         EventEntity eventEntity = createEventEntityWithoutId();
         entityManager.persist(eventEntity);
 
         EventCreateDTO eventCreateDTO = createEventCreateDTODefault();
         eventCreateDTO.setName(eventEntity.getName());
         eventCreateDTO.setLocation(eventEntity.getLocation());
+        eventCreateDTO.setDateInitial(eventEntity.getDateInitial().plusDays(1));
+        eventCreateDTO.setDateFinal(eventEntity.getDateFinal().plusDays(2));
 
         assertFalse(repository.checkExists(eventCreateDTO));
     }

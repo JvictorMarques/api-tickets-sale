@@ -9,11 +9,11 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Tag("unit")
 class EventEntityTest {
 
     @Test
-    public void of_shouldThrowBusinessException_WhenNameIsNull(){
+    @Tag("unit")
+    protected void of_shouldThrowBusinessException_WhenNameIsNull(){
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         LocalDateTime end = LocalDateTime.now().plusDays(2);
 
@@ -24,7 +24,8 @@ class EventEntityTest {
     }
 
     @Test
-    public void of_shouldThrowBusinessException_WhenNameIsEmpty(){
+    @Tag("unit")
+    protected void of_shouldThrowBusinessException_WhenNameIsEmpty(){
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         LocalDateTime end = LocalDateTime.now().plusDays(2);
 
@@ -35,7 +36,8 @@ class EventEntityTest {
     }
 
     @Test
-    public void of_shouldThrowBusinessException_WhenLocationIsNull(){
+    @Tag("unit")
+    protected void of_shouldThrowBusinessException_WhenLocationIsNull(){
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         LocalDateTime end = LocalDateTime.now().plusDays(2);
 
@@ -54,7 +56,8 @@ class EventEntityTest {
     }
 
     @Test
-    public void of_shouldThrowBusinessException_WhenLocationIsEmpty(){
+    @Tag("unit")
+    protected void of_shouldThrowBusinessException_WhenLocationIsEmpty(){
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         LocalDateTime end = LocalDateTime.now().plusDays(2);
 
@@ -73,7 +76,8 @@ class EventEntityTest {
     }
 
     @Test
-    public void of_shouldThrowBusinessException_WhenCapacityEqual0(){
+    @Tag("unit")
+    protected void of_shouldThrowBusinessException_WhenCapacityEqual0(){
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         LocalDateTime end = LocalDateTime.now().plusDays(1);
 
@@ -92,7 +96,8 @@ class EventEntityTest {
     }
 
     @Test
-    public void of_shouldThrowBusinessException_WhenCapacityLessThan0(){
+    @Tag("unit")
+    protected void of_shouldThrowBusinessException_WhenCapacityLessThan0(){
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         LocalDateTime end = LocalDateTime.now().plusDays(1);
 
@@ -111,7 +116,8 @@ class EventEntityTest {
     }
 
     @Test
-    public void of_shouldThrowBusinessException_WhenDateInitialNull(){
+    @Tag("unit")
+    protected void of_shouldThrowBusinessException_WhenDateInitialNull(){
         LocalDateTime end = LocalDateTime.now().plusDays(1);
 
         Exception exception = assertThrows(BusinessException.class, () -> {
@@ -130,7 +136,8 @@ class EventEntityTest {
     }
 
     @Test
-    public void of_shouldThrowBusinessException_WhenDateInitialIsBeforeNow(){
+    @Tag("unit")
+    protected void of_shouldThrowBusinessException_WhenDateInitialIsBeforeNow(){
         LocalDateTime start = LocalDateTime.now();
         LocalDateTime end = LocalDateTime.now().plusDays(1);
 
@@ -150,7 +157,8 @@ class EventEntityTest {
     }
 
     @Test
-    public void of_shouldThrowBusinessException_WhenDateFinalNull(){
+    @Tag("unit")
+    protected void of_shouldThrowBusinessException_WhenDateFinalNull(){
         LocalDateTime start = LocalDateTime.now().plusDays(1);
 
         Exception exception = assertThrows(BusinessException.class, () -> {
@@ -169,7 +177,8 @@ class EventEntityTest {
     }
 
     @Test
-    public void of_shouldThrowBusinessException_WhenDateFinalIsBeforeNow(){
+    @Tag("unit")
+    protected void of_shouldThrowBusinessException_WhenDateFinalIsBeforeNow(){
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         LocalDateTime end = LocalDateTime.now();
 
@@ -189,7 +198,8 @@ class EventEntityTest {
     }
 
     @Test
-    public void of_shouldThrowDateInitialGreaterThanDateFinalException_WhenDateInitialGreaterThanDateFinal(){
+    @Tag("unit")
+    protected void of_shouldThrowDateInitialGreaterThanDateFinalException_WhenDateInitialGreaterThanDateFinal(){
         LocalDateTime start = LocalDateTime.now().plusDays(2);
         LocalDateTime end = LocalDateTime.now().plusDays(1);
 

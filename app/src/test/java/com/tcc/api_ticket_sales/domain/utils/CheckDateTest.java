@@ -9,11 +9,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Tag("unit")
 class CheckDateTest {
 
     @Test
-    public void checkDateInitialGreaterThanDateFinal_shouldNotThrowException_whenInitialBeforeFinal(){
+    @Tag("unit")
+    protected void checkDateInitialGreaterThanDateFinal_shouldNotThrowException_whenInitialBeforeFinal(){
         LocalDate start = LocalDate.now();
         LocalDate end = LocalDate.now().plusDays(1);
 
@@ -23,7 +23,8 @@ class CheckDateTest {
     }
 
     @Test
-    public void checkDateInitialGreaterThanDateFinal_shouldNotThrowException_whenInitialEqualFinal(){
+    @Tag("unit")
+    protected void checkDateInitialGreaterThanDateFinal_shouldNotThrowException_whenInitialEqualFinal(){
         LocalDate start = LocalDate.now();
         LocalDate end = LocalDate.now();
 
@@ -33,7 +34,8 @@ class CheckDateTest {
     }
 
     @Test
-    public void checkDateInitialGreaterThanDateFinal_shouldThrowException_whenInitialAfterFinal(){
+    @Tag("unit")
+    protected void checkDateInitialGreaterThanDateFinal_shouldThrowException_whenInitialAfterFinal(){
         LocalDate start = LocalDate.now().plusDays(1);
         LocalDate end = LocalDate.now();
 
@@ -43,7 +45,8 @@ class CheckDateTest {
     }
 
     @Test
-    public void checkDateInitialGreaterThanDateFinal_shouldThrowException_whenInitialNull(){
+    @Tag("unit")
+    protected void checkDateInitialGreaterThanDateFinal_shouldThrowException_whenInitialNull(){
         LocalDate start = null;
         LocalDate end = LocalDate.now();
 
@@ -53,7 +56,8 @@ class CheckDateTest {
     }
 
     @Test
-    public void checkDateInitialGreaterThanDateFinal_shouldThrowException_whenFinalNull(){
+    @Tag("unit")
+    protected void checkDateInitialGreaterThanDateFinal_shouldThrowException_whenFinalNull(){
         LocalDate start = LocalDate.now();
         LocalDate end = null;
 
@@ -63,7 +67,8 @@ class CheckDateTest {
     }
 
     @Test
-    public void checkDateInitialGreaterThanDateFinal_shouldThrowException_whenInitialFinalNull(){
+    @Tag("unit")
+    protected void checkDateInitialGreaterThanDateFinal_shouldThrowException_whenInitialFinalNull(){
         LocalDate start = null;
         LocalDate end = null;
 
@@ -73,7 +78,8 @@ class CheckDateTest {
     }
 
     @Test
-    public void checkDateInitialGreaterThanDateFinal_LocalDateTime_shouldNotThrowException_whenInitialBeforeFinal(){
+    @Tag("unit")
+    protected void checkDateInitialGreaterThanDateFinal_LocalDateTime_shouldNotThrowException_whenInitialBeforeFinal(){
         LocalDateTime start = LocalDateTime.now();
         LocalDateTime end = LocalDateTime.now().plusDays(1);
 
@@ -83,7 +89,8 @@ class CheckDateTest {
     }
 
     @Test
-    public void checkDateInitialGreaterThanDateFinal_LocalDateTime_shouldNotThrowException_whenInitialEqualFinal(){
+    @Tag("unit")
+    protected void checkDateInitialGreaterThanDateFinal_LocalDateTime_shouldNotThrowException_whenInitialEqualFinal(){
         LocalDateTime start = LocalDateTime.now();
         LocalDateTime end = LocalDateTime.now();
 
@@ -93,7 +100,8 @@ class CheckDateTest {
     }
 
     @Test
-    public void checkDateInitialGreaterThanDateFinal_LocalDateTime_shouldThrowException_whenInitialAfterFinal(){
+    @Tag("unit")
+    protected void checkDateInitialGreaterThanDateFinal_LocalDateTime_shouldThrowException_whenInitialAfterFinal(){
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         LocalDateTime end = LocalDateTime.now();
 
@@ -103,7 +111,8 @@ class CheckDateTest {
     }
 
     @Test
-    public void checkDateInitialGreaterThanDateFinal_LocalDateTime_shouldThrowException_whenInitialNull(){
+    @Tag("unit")
+    protected void checkDateInitialGreaterThanDateFinal_LocalDateTime_shouldThrowException_whenInitialNull(){
         LocalDateTime start = null;
         LocalDateTime end = LocalDateTime.now();
 
@@ -113,7 +122,8 @@ class CheckDateTest {
     }
 
     @Test
-    public void checkDateInitialGreaterThanDateFinal_LocalDateTime_shouldThrowException_whenFinalNull(){
+    @Tag("unit")
+    protected void checkDateInitialGreaterThanDateFinal_LocalDateTime_shouldThrowException_whenFinalNull(){
         LocalDateTime start = LocalDateTime.now();
         LocalDateTime end = null;
 
@@ -123,6 +133,7 @@ class CheckDateTest {
     }
 
     @Test
+    @Tag("unit")
     public void checkDateInitialGreaterThanDateFinal_LocalDateTime_shouldThrowException_whenInitialFinalNull(){
         LocalDateTime start = null;
         LocalDateTime end = null;

@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@Tag("unit")
 @ExtendWith(MockitoExtension.class)
 class EventServiceImplTest {
 
@@ -33,6 +32,7 @@ class EventServiceImplTest {
     private EventServiceImpl eventServiceImpl;
 
     @Test
+    @Tag("unit")
     public void createEvent_shouldThrowException_whenEventExists() {
         // arrange
         when(eventRepository.checkExists(any())).thenReturn(true);
@@ -46,6 +46,7 @@ class EventServiceImplTest {
     }
 
     @Test
+    @Tag("unit")
     public void createEvent_shouldReturnEventResponseDTO_whenEventNotExists() {
         // arrange
         EventResponseDTO eventMock = createEventResponseDTO();

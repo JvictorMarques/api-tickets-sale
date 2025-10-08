@@ -24,13 +24,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@Tag("unit")
 class RestExceptionHandlerTest {
 
     private final RestExceptionHandler restExceptionHandler = new RestExceptionHandler();
 
     @Test
-    public void handleMethodArgumentNotValidException_shouldReturnRestExceptionMessage_whenMethodArgumentNotValid()
+    @Tag("unit")
+    protected void handleMethodArgumentNotValidException_shouldReturnRestExceptionMessage_whenMethodArgumentNotValid()
     {
         // Arrange
         FieldError fieldError1 = new FieldError("objectName", "name", "não pode ser vazio");
@@ -55,7 +55,8 @@ class RestExceptionHandlerTest {
     }
 
     @Test
-    void handleEntityNotFoundException_shouldReturnRestExceptionMessage_whenEntityNotFound() {
+    @Tag("unit")
+    protected void handleEntityNotFoundException_shouldReturnRestExceptionMessage_whenEntityNotFound() {
         // Arrange
         String errorMessage = "Entidade não encontrada";
         EntityNotFoundException exception = new EntityNotFoundException(errorMessage);
@@ -74,7 +75,8 @@ class RestExceptionHandlerTest {
     }
 
     @Test
-    void handleEventUnavailableException_shouldReturnRestExceptionMessage_whenEventUnavailableException() {
+    @Tag("unit")
+    protected void handleEventUnavailableException_shouldReturnRestExceptionMessage_whenEventUnavailableException() {
         // Arrange
         EventUnavailableException exception = new EventUnavailableException();
 
@@ -92,7 +94,8 @@ class RestExceptionHandlerTest {
     }
 
     @Test
-    void handleEventUnavailableException_shouldReturnRestExceptionMessage_whenException() {
+    @Tag("unit")
+    protected void handleEventUnavailableException_shouldReturnRestExceptionMessage_whenException() {
         // Arrange
         String message = "Error de servirdor";
         Exception exception = new Exception(message);
@@ -111,7 +114,8 @@ class RestExceptionHandlerTest {
     }
 
     @Test
-    void handleEventUnavailableException_shouldReturnRestExceptionMessage_whenDateInvalidException() {
+    @Tag("unit")
+    protected void handleEventUnavailableException_shouldReturnRestExceptionMessage_whenDateInvalidException() {
         // Arrange
         DateInvalidException exception = new DateInvalidException();
 
@@ -129,7 +133,8 @@ class RestExceptionHandlerTest {
     }
 
     @Test
-    void handleEventUnavailableException_shouldReturnRestExceptionMessage_whenDateInitialGreaterThanDateFinalException() {
+    @Tag("unit")
+    protected void handleEventUnavailableException_shouldReturnRestExceptionMessage_whenDateInitialGreaterThanDateFinalException() {
         // Arrange
         DateInitialGreaterThanDateFinalException exception = new DateInitialGreaterThanDateFinalException();
 
@@ -147,7 +152,8 @@ class RestExceptionHandlerTest {
     }
 
     @Test
-    void handleEventUnavailableException_shouldReturnRestExceptionMessage_whenBusinessException() {
+    @Tag("unit")
+    protected void handleEventUnavailableException_shouldReturnRestExceptionMessage_whenBusinessException() {
         // Arrange
         String message = "Erro na regra de negócio";
         BusinessException exception = new BusinessException(message);
@@ -166,7 +172,8 @@ class RestExceptionHandlerTest {
     }
 
     @Test
-    void handleEventUnavailableException_shouldReturnRestExceptionMessage_whenEventAlreadyExistsException() {
+    @Tag("unit")
+    protected void handleEventUnavailableException_shouldReturnRestExceptionMessage_whenEventAlreadyExistsException() {
         // Arrange
         EventAlreadyExistsException exception = new EventAlreadyExistsException();
 
@@ -184,7 +191,8 @@ class RestExceptionHandlerTest {
     }
 
     @Test
-    void handleHttpMessageNotReadableException_shouldReturnDateFormatMessage_whenContainsLocalDateTime() {
+    @Tag("unit")
+    protected void handleHttpMessageNotReadableException_shouldReturnDateFormatMessage_whenContainsLocalDateTime() {
         // Arrange
         String exceptionMessage = "Failed to deserialize java.time.LocalDateTime";
         HttpMessageNotReadableException exception = new HttpMessageNotReadableException(exceptionMessage);
@@ -203,7 +211,8 @@ class RestExceptionHandlerTest {
     }
 
     @Test
-    void handleHttpMessageNotReadableException_shouldReturnJsonFormatMessage_whenDoesNotContainLocalDateTime() {
+    @Tag("unit")
+    protected void handleHttpMessageNotReadableException_shouldReturnJsonFormatMessage_whenDoesNotContainLocalDateTime() {
         // Arrange
         String exceptionMessage = "Unexpected character ('}' (code 125)): was expecting field name";
         HttpMessageNotReadableException exception = new HttpMessageNotReadableException(exceptionMessage);
