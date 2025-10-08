@@ -35,6 +35,8 @@ public class EventMapper {
                 .capacity(event.getCapacity())
                 .ageRestriction(event.getAgeRestriction())
                 .location(event.getLocation())
+                .createdAt(event.getCreatedAt())
+                .updatedAt(event.getUpdatedAt())
                 .build();
     }
 }
