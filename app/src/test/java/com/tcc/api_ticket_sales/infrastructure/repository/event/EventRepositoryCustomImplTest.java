@@ -4,6 +4,7 @@ import com.tcc.api_ticket_sales.BaseIntegrationTest;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.interfaces.dto.event.EventCreateDTO;
 import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,7 +13,7 @@ import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWit
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
+@Tag("integration")
 class EventRepositoryCustomImplTest extends BaseIntegrationTest {
     @Autowired
     private EntityManager entityManager;

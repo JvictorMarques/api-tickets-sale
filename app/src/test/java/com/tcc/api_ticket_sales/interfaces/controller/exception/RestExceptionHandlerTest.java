@@ -6,6 +6,7 @@ import com.tcc.api_ticket_sales.domain.exception.BusinessException;
 import com.tcc.api_ticket_sales.domain.exception.DateInitialGreaterThanDateFinalException;
 import com.tcc.api_ticket_sales.domain.exception.DateInvalidException;
 import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@Tag("unit")
 class RestExceptionHandlerTest {
 
     private final RestExceptionHandler restExceptionHandler = new RestExceptionHandler();

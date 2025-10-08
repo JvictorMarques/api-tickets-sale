@@ -7,6 +7,7 @@ import com.tcc.api_ticket_sales.interfaces.controller.exception.RestExceptionHan
 import com.tcc.api_ticket_sales.interfaces.dto.event.EventCreateDTO;
 import com.tcc.api_ticket_sales.interfaces.dto.event.EventResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
+@Tag("unit")
 @ExtendWith(MockitoExtension.class)
 class EventControllerTest {
     @Mock

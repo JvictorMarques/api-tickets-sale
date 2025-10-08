@@ -6,6 +6,7 @@ import com.tcc.api_ticket_sales.infrastructure.repository.event.EventRepository;
 import com.tcc.api_ticket_sales.interfaces.dto.event.EventCreateDTO;
 import com.tcc.api_ticket_sales.interfaces.dto.event.EventResponseDTO;
 import com.tcc.api_ticket_sales.interfaces.mapper.event.EventMapper;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-
+@Tag("unit")
 @ExtendWith(MockitoExtension.class)
 class EventServiceImplTest {
 

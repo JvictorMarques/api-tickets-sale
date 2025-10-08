@@ -2,13 +2,14 @@ package com.tcc.api_ticket_sales.domain.entity;
 
 import com.tcc.api_ticket_sales.domain.exception.BusinessException;
 import com.tcc.api_ticket_sales.domain.exception.DateInitialGreaterThanDateFinalException;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
+@Tag("unit")
 class EventEntityTest {
 
     @Test
