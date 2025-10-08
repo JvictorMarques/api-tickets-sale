@@ -8,6 +8,7 @@ import com.tcc.api_ticket_sales.domain.exception.DateInvalidException;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -38,16 +39,17 @@ class RestExceptionHandlerTest {
         when(exception.getFieldErrors()).thenReturn(fieldErrors);
 
         // Act
-        RestExceptionMessage response = restExceptionHandler.handleMethodArgumentNotValidException(exception);
+        ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleMethodArgumentNotValidException(exception);
 
         // Assert
-        assertNotNull(response);
-        assertEquals("Erro de validação", response.getMessage());
-        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatus());
-        assertNotNull(response.getTimeStamp());
-        assertTrue(response.getErrors().contains("name:não pode ser vazio"));
-        assertTrue(response.getErrors().contains("email:formato inválido"));
-        assertEquals(2, response.getErrors().size());
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatusCode().value());
+
+        RestExceptionMessage body = response.getBody();
+        assertNotNull(body);
+        assertEquals("Erro de validação", body.getMessage());
+        assertTrue(body.getErrors().contains("name:não pode ser vazio"));
+        assertTrue(body.getErrors().contains("email:formato inválido"));
+        assertEquals(2, body.getErrors().size());
     }
 
     @Test
@@ -57,14 +59,16 @@ class RestExceptionHandlerTest {
         EntityNotFoundException exception = new EntityNotFoundException(errorMessage);
 
         // Act
-        RestExceptionMessage response = restExceptionHandler.handleEntityNotFoundException(exception);
+        ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleEntityNotFoundException(exception);
 
         // Assert
-        assertNotNull(response);
-        assertEquals(errorMessage, response.getMessage());
-        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatus());
-        assertNotNull(response.getTimeStamp());
-        assertEquals(List.of(errorMessage), response.getErrors());
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatusCode().value());
+
+        RestExceptionMessage body = response.getBody();
+        assertNotNull(body);
+        assertEquals(errorMessage, body.getMessage());
+        assertNotNull(body.getTimeStamp());
+        assertEquals(List.of(errorMessage), body.getErrors());
     }
 
     @Test
@@ -73,14 +77,16 @@ class RestExceptionHandlerTest {
         EventUnavailableException exception = new EventUnavailableException();
 
         // Act
-        RestExceptionMessage response = restExceptionHandler.handleEventUnavailableException(exception);
+        ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleEventUnavailableException(exception);
 
         // Assert
-        assertNotNull(response);
-        assertEquals(EVENT_UNAVAILABLE, response.getMessage());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
-        assertNotNull(response.getTimeStamp());
-        assertEquals(List.of(EVENT_UNAVAILABLE), response.getErrors());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
+
+        RestExceptionMessage body = response.getBody();
+        assertNotNull(body);
+        assertEquals(EVENT_UNAVAILABLE, body.getMessage());
+        assertNotNull(body.getTimeStamp());
+        assertEquals(List.of(EVENT_UNAVAILABLE), body.getErrors());
     }
 
     @Test
@@ -90,14 +96,16 @@ class RestExceptionHandlerTest {
         Exception exception = new Exception(message);
 
         // Act
-        RestExceptionMessage response = restExceptionHandler.handleException(exception);
+        ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleException(exception);
 
         // Assert
-        assertNotNull(response);
-        assertEquals(message, response.getMessage());
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatus());
-        assertNotNull(response.getTimeStamp());
-        assertEquals(List.of(message), response.getErrors());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatusCode().value());
+
+        RestExceptionMessage body = response.getBody();
+        assertNotNull(body);
+        assertEquals(message, body.getMessage());
+        assertNotNull(body.getTimeStamp());
+        assertEquals(List.of(message), body.getErrors());
     }
 
     @Test
@@ -106,14 +114,16 @@ class RestExceptionHandlerTest {
         DateInvalidException exception = new DateInvalidException();
 
         // Act
-        RestExceptionMessage response = restExceptionHandler.handleDateInvalidException(exception);
+        ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleDateInvalidException(exception);
 
         // Assert
-        assertNotNull(response);
-        assertEquals(DATE_INVALID, response.getMessage());
-        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatus());
-        assertNotNull(response.getTimeStamp());
-        assertEquals(List.of(DATE_INVALID), response.getErrors());
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatusCode().value());
+
+        RestExceptionMessage body = response.getBody();
+        assertNotNull(body);
+        assertEquals(DATE_INVALID, body.getMessage());
+        assertNotNull(body.getTimeStamp());
+        assertEquals(List.of(DATE_INVALID), body.getErrors());
     }
 
     @Test
@@ -122,14 +132,16 @@ class RestExceptionHandlerTest {
         DateInitialGreaterThanDateFinalException exception = new DateInitialGreaterThanDateFinalException();
 
         // Act
-        RestExceptionMessage response = restExceptionHandler.handleDateInitialGreaterThanDateFinalException(exception);
+        ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleDateInitialGreaterThanDateFinalException(exception);
 
         // Assert
-        assertNotNull(response);
-        assertEquals(DATE_INITIAL_GREATER_THAN_DATE_FINAL, response.getMessage());
-        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatus());
-        assertNotNull(response.getTimeStamp());
-        assertEquals(List.of(DATE_INITIAL_GREATER_THAN_DATE_FINAL), response.getErrors());; // lista vazia
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatusCode().value());
+
+        RestExceptionMessage body = response.getBody();
+        assertNotNull(body);
+        assertEquals(DATE_INITIAL_GREATER_THAN_DATE_FINAL, body.getMessage());
+        assertNotNull(body.getTimeStamp());
+        assertEquals(List.of(DATE_INITIAL_GREATER_THAN_DATE_FINAL), body.getErrors());
     }
 
     @Test
@@ -139,14 +151,16 @@ class RestExceptionHandlerTest {
         BusinessException exception = new BusinessException(message);
 
         // Act
-        RestExceptionMessage response = restExceptionHandler.handleBusinessException(exception);
+        ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleBusinessException(exception);
 
         // Assert
-        assertNotNull(response);
-        assertEquals(message, response.getMessage());
-        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatus());
-        assertNotNull(response.getTimeStamp());
-        assertEquals(List.of(message), response.getErrors());
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatusCode().value());
+
+        RestExceptionMessage body = response.getBody();
+        assertNotNull(body);
+        assertEquals(message, body.getMessage());
+        assertNotNull(body.getTimeStamp());
+        assertEquals(List.of(message), body.getErrors());
     }
 
     @Test
@@ -155,14 +169,16 @@ class RestExceptionHandlerTest {
         EventAlreadyExistsException exception = new EventAlreadyExistsException();
 
         // Act
-        RestExceptionMessage response = restExceptionHandler.handleEventAlreadyExistsException(exception);
+        ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleEventAlreadyExistsException(exception);
 
         // Assert
-        assertNotNull(response);
-        assertEquals(EVENT_ALREADY_EXISTS, response.getMessage());
-        assertEquals(HttpStatus.CONFLICT.value(), response.getStatus());
-        assertNotNull(response.getTimeStamp());
-        assertEquals(List.of(EVENT_ALREADY_EXISTS), response.getErrors());
+        assertEquals(HttpStatus.CONFLICT.value(), response.getStatusCode().value());
+
+        RestExceptionMessage body =  response.getBody();
+        assertNotNull(body);
+        assertEquals(EVENT_ALREADY_EXISTS, body.getMessage());
+        assertNotNull(body.getTimeStamp());
+        assertEquals(List.of(EVENT_ALREADY_EXISTS), body.getErrors());
     }
 
     @Test
@@ -172,14 +188,16 @@ class RestExceptionHandlerTest {
         HttpMessageNotReadableException exception = new HttpMessageNotReadableException(exceptionMessage);
 
         // Act
-        RestExceptionMessage response = restExceptionHandler.handleHttpMessageNotReadableException(exception);
+        ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleHttpMessageNotReadableException(exception);
 
         // Assert
-        assertNotNull(response);
-        assertEquals("Formato de data inválido. Use o padrão yyyy-MM-dd'T'HH:mm:ss", response.getMessage());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
-        assertNotNull(response.getTimeStamp());
-        assertEquals(List.of(exceptionMessage), response.getErrors());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
+
+        RestExceptionMessage body = response.getBody();
+        assertNotNull(body);
+        assertEquals("Formato de data inválido. Use o padrão yyyy-MM-dd'T'HH:mm:ss", body.getMessage());
+        assertNotNull(body.getTimeStamp());
+        assertEquals(List.of(exceptionMessage), body.getErrors());
     }
 
     @Test
@@ -189,13 +207,15 @@ class RestExceptionHandlerTest {
         HttpMessageNotReadableException exception = new HttpMessageNotReadableException(exceptionMessage);
 
         // Act
-        RestExceptionMessage response = restExceptionHandler.handleHttpMessageNotReadableException(exception);
+        ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleHttpMessageNotReadableException(exception);
 
         // Assert
-        assertNotNull(response);
-        assertEquals("Formato de JSON inválido ou campo malformado", response.getMessage());
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
-        assertNotNull(response.getTimeStamp());
-        assertEquals(List.of(exceptionMessage), response.getErrors());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
+
+        RestExceptionMessage body = response.getBody();
+        assertNotNull(body);
+        assertEquals("Formato de JSON inválido ou campo malformado", body.getMessage());
+        assertNotNull(body.getTimeStamp());
+        assertEquals(List.of(exceptionMessage), body.getErrors());
     }
 }

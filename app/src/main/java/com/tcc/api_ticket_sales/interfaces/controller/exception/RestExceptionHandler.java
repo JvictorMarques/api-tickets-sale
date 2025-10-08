@@ -7,6 +7,7 @@ import com.tcc.api_ticket_sales.domain.exception.DateInvalidException;
 import com.tcc.api_ticket_sales.application.exception.EventUnavailableException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,97 +17,113 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.springframework.web.servlet.function.ServerResponse.unprocessableEntity;
+
 @RestControllerAdvice
 public class RestExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public RestExceptionMessage handleMethodArgumentNotValidException(MethodArgumentNotValidException e){
+    public ResponseEntity<RestExceptionMessage> handleMethodArgumentNotValidException(MethodArgumentNotValidException e){
         List<FieldError> fieldErrors = e.getFieldErrors();
 
         List<String> errors = fieldErrors.stream().map((fieldError) -> fieldError.getField() + ":" + fieldError.getDefaultMessage()).toList();
 
-        return new RestExceptionMessage("Erro de validação",
+        RestExceptionMessage body = new RestExceptionMessage("Erro de validação",
                 HttpStatus.UNPROCESSABLE_ENTITY.value(),
                 LocalDateTime.now(),
                 errors);
+
+        return ResponseEntity.unprocessableEntity().body(body);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public RestExceptionMessage handleEntityNotFoundException(EntityNotFoundException e){
-        return new RestExceptionMessage(e.getMessage(),
+    public ResponseEntity<RestExceptionMessage> handleEntityNotFoundException(EntityNotFoundException e){
+        RestExceptionMessage body = new RestExceptionMessage(e.getMessage(),
                 HttpStatus.UNPROCESSABLE_ENTITY.value(),
                 LocalDateTime.now(),
                 List.of(e.getMessage()));
+
+        return  ResponseEntity.unprocessableEntity().body(body);
     }
 
     @ExceptionHandler(EventUnavailableException.class)
-    public RestExceptionMessage handleEventUnavailableException(EventUnavailableException e){
-        return new RestExceptionMessage(e.getMessage(),
+    public ResponseEntity<RestExceptionMessage> handleEventUnavailableException(EventUnavailableException e){
+        RestExceptionMessage body = new RestExceptionMessage(e.getMessage(),
                 HttpStatus.BAD_REQUEST.value(),
                 LocalDateTime.now(),
                 List.of(e.getMessage()));
+
+        return  ResponseEntity.badRequest().body(body);
     }
 
     @ExceptionHandler(Exception.class)
-    public RestExceptionMessage handleException(Exception e){
-        return new RestExceptionMessage(e.getMessage(),
+    public ResponseEntity<RestExceptionMessage> handleException(Exception e){
+        RestExceptionMessage body = new RestExceptionMessage(e.getMessage(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 LocalDateTime.now(),
                 List.of(e.getMessage())
         );
+
+        return  ResponseEntity.internalServerError().body(body);
     }
 
     @ExceptionHandler(DateInvalidException.class)
-    public RestExceptionMessage handleDateInvalidException(Exception e){
-        return new RestExceptionMessage(e.getMessage(),
+    public ResponseEntity<RestExceptionMessage> handleDateInvalidException(Exception e){
+        RestExceptionMessage body = new RestExceptionMessage(e.getMessage(),
                 HttpStatus.UNPROCESSABLE_ENTITY.value(),
                 LocalDateTime.now(),
                 List.of(e.getMessage())
         );
+
+        return  ResponseEntity.unprocessableEntity().body(body);
     }
 
     @ExceptionHandler(DateInitialGreaterThanDateFinalException.class)
-    public RestExceptionMessage handleDateInitialGreaterThanDateFinalException(Exception e){
-        return new RestExceptionMessage(e.getMessage(),
+    public ResponseEntity<RestExceptionMessage> handleDateInitialGreaterThanDateFinalException(Exception e){
+        RestExceptionMessage body = new RestExceptionMessage(e.getMessage(),
                 HttpStatus.UNPROCESSABLE_ENTITY.value(),
                 LocalDateTime.now(),
                 List.of(e.getMessage())
         );
+
+        return  ResponseEntity.unprocessableEntity().body(body);
     }
 
     @ExceptionHandler(BusinessException.class)
-    public RestExceptionMessage handleBusinessException(Exception e){
-        return new RestExceptionMessage(e.getMessage(),
+    public ResponseEntity<RestExceptionMessage> handleBusinessException(Exception e){
+        RestExceptionMessage body = new RestExceptionMessage(e.getMessage(),
                 HttpStatus.UNPROCESSABLE_ENTITY.value(),
                 LocalDateTime.now(),
                 List.of(e.getMessage())
         );
+
+        return  ResponseEntity.unprocessableEntity().body(body);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public RestExceptionMessage handleHttpMessageNotReadableException(HttpMessageNotReadableException e){
-        if(e.getMessage().contains("LocalDateTime")){
-            return new RestExceptionMessage("Formato de data inválido. Use o padrão yyyy-MM-dd'T'HH:mm:ss",
-                    HttpStatus.BAD_REQUEST.value(),
-                    LocalDateTime.now(),
-                    List.of(e.getMessage())
-            );
-        }else{
-            return new RestExceptionMessage("Formato de JSON inválido ou campo malformado",
-                    HttpStatus.BAD_REQUEST.value(),
-                    LocalDateTime.now(),
-                    List.of(e.getMessage())
-            );
-        }
+    public ResponseEntity<RestExceptionMessage> handleHttpMessageNotReadableException(HttpMessageNotReadableException e){
+        String message = e.getMessage().contains("LocalDateTime")
+                ? "Formato de data inválido. Use o padrão yyyy-MM-dd'T'HH:mm:ss"
+                : "Formato de JSON inválido ou campo malformado";
+
+        RestExceptionMessage body = new RestExceptionMessage(message,
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now(),
+                List.of(e.getMessage())
+        );
+
+        return  ResponseEntity.badRequest().body(body);
     }
 
     @ExceptionHandler(EventAlreadyExistsException.class)
-    public RestExceptionMessage handleEventAlreadyExistsException(EventAlreadyExistsException e){
-        return new RestExceptionMessage(
+    public ResponseEntity<RestExceptionMessage> handleEventAlreadyExistsException(EventAlreadyExistsException e){
+        RestExceptionMessage body = new RestExceptionMessage(
                 e.getMessage(),
                 HttpStatus.CONFLICT.value(),
                 LocalDateTime.now(),
                 List.of(e.getMessage())
         );
+
+        return  ResponseEntity.status(HttpStatus.CONFLICT) .body(body);
     }
 }
