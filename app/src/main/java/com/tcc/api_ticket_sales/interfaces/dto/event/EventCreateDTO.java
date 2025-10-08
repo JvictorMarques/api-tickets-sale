@@ -1,6 +1,5 @@
 package com.tcc.api_ticket_sales.interfaces.dto.event;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

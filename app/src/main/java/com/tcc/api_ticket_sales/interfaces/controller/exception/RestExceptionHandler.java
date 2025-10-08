@@ -26,7 +26,7 @@ public class RestExceptionHandler {
     public ResponseEntity<RestExceptionMessage> handleMethodArgumentNotValidException(MethodArgumentNotValidException e){
         List<FieldError> fieldErrors = e.getFieldErrors();
 
-        List<String> errors = fieldErrors.stream().map((fieldError) -> fieldError.getField() + ":" + fieldError.getDefaultMessage()).toList();
+        List<String> errors = fieldErrors.stream().map(fieldError -> fieldError.getField() + ":" + fieldError.getDefaultMessage()).toList();
 
         RestExceptionMessage body = new RestExceptionMessage("Erro de validação",
                 HttpStatus.UNPROCESSABLE_ENTITY.value(),

@@ -2,7 +2,6 @@ package com.tcc.api_ticket_sales.application.service.event;
 
 import com.tcc.api_ticket_sales.application.exception.EventAlreadyExistsException;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
-import com.tcc.api_ticket_sales.domain.exception.BusinessException;
 import com.tcc.api_ticket_sales.infrastructure.repository.event.EventRepository;
 import com.tcc.api_ticket_sales.interfaces.dto.event.EventCreateDTO;
 import com.tcc.api_ticket_sales.interfaces.dto.event.EventResponseDTO;

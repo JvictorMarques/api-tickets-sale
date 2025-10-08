@@ -13,7 +13,7 @@ class EventEntityTest {
 
     @Test
     @Tag("unit")
-    protected void of_shouldThrowBusinessException_WhenNameIsNull(){
+    void of_shouldThrowBusinessException_WhenNameIsNull(){
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         LocalDateTime end = LocalDateTime.now().plusDays(2);
 
@@ -25,7 +25,7 @@ class EventEntityTest {
 
     @Test
     @Tag("unit")
-    protected void of_shouldThrowBusinessException_WhenNameIsEmpty(){
+    void of_shouldThrowBusinessException_WhenNameIsEmpty(){
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         LocalDateTime end = LocalDateTime.now().plusDays(2);
 
@@ -37,7 +37,7 @@ class EventEntityTest {
 
     @Test
     @Tag("unit")
-    protected void of_shouldThrowBusinessException_WhenLocationIsNull(){
+    void of_shouldThrowBusinessException_WhenLocationIsNull(){
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         LocalDateTime end = LocalDateTime.now().plusDays(2);
 
@@ -57,7 +57,7 @@ class EventEntityTest {
 
     @Test
     @Tag("unit")
-    protected void of_shouldThrowBusinessException_WhenLocationIsEmpty(){
+    void of_shouldThrowBusinessException_WhenLocationIsEmpty(){
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         LocalDateTime end = LocalDateTime.now().plusDays(2);
 
@@ -77,7 +77,7 @@ class EventEntityTest {
 
     @Test
     @Tag("unit")
-    protected void of_shouldThrowBusinessException_WhenCapacityEqual0(){
+    void of_shouldThrowBusinessException_WhenCapacityEqual0(){
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         LocalDateTime end = LocalDateTime.now().plusDays(1);
 
@@ -97,7 +97,7 @@ class EventEntityTest {
 
     @Test
     @Tag("unit")
-    protected void of_shouldThrowBusinessException_WhenCapacityLessThan0(){
+    void of_shouldThrowBusinessException_WhenCapacityLessThan0(){
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         LocalDateTime end = LocalDateTime.now().plusDays(1);
 
@@ -117,7 +117,7 @@ class EventEntityTest {
 
     @Test
     @Tag("unit")
-    protected void of_shouldThrowBusinessException_WhenDateInitialNull(){
+    void of_shouldThrowBusinessException_WhenDateInitialNull(){
         LocalDateTime end = LocalDateTime.now().plusDays(1);
 
         Exception exception = assertThrows(BusinessException.class, () -> {
@@ -137,7 +137,7 @@ class EventEntityTest {
 
     @Test
     @Tag("unit")
-    protected void of_shouldThrowBusinessException_WhenDateInitialIsBeforeNow(){
+    void of_shouldThrowBusinessException_WhenDateInitialIsBeforeNow(){
         LocalDateTime start = LocalDateTime.now();
         LocalDateTime end = LocalDateTime.now().plusDays(1);
 
@@ -158,7 +158,7 @@ class EventEntityTest {
 
     @Test
     @Tag("unit")
-    protected void of_shouldThrowBusinessException_WhenDateFinalNull(){
+    void of_shouldThrowBusinessException_WhenDateFinalNull(){
         LocalDateTime start = LocalDateTime.now().plusDays(1);
 
         Exception exception = assertThrows(BusinessException.class, () -> {
@@ -178,7 +178,7 @@ class EventEntityTest {
 
     @Test
     @Tag("unit")
-    protected void of_shouldThrowBusinessException_WhenDateFinalIsBeforeNow(){
+    void of_shouldThrowBusinessException_WhenDateFinalIsBeforeNow(){
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         LocalDateTime end = LocalDateTime.now();
 
@@ -199,7 +199,7 @@ class EventEntityTest {
 
     @Test
     @Tag("unit")
-    protected void of_shouldThrowDateInitialGreaterThanDateFinalException_WhenDateInitialGreaterThanDateFinal(){
+    void of_shouldThrowDateInitialGreaterThanDateFinalException_WhenDateInitialGreaterThanDateFinal(){
         LocalDateTime start = LocalDateTime.now().plusDays(2);
         LocalDateTime end = LocalDateTime.now().plusDays(1);
 

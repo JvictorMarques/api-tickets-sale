@@ -1,7 +1,5 @@
 package com.tcc.api_ticket_sales.interfaces.dto.event;
 
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

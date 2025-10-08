@@ -33,7 +33,7 @@ class EventServiceImplTest {
 
     @Test
     @Tag("unit")
-    public void createEvent_shouldThrowException_whenEventExists() {
+    void createEvent_shouldThrowException_whenEventExists() {
         // arrange
         when(eventRepository.checkExists(any())).thenReturn(true);
         EventCreateDTO dto = new EventCreateDTO();
@@ -47,7 +47,7 @@ class EventServiceImplTest {
 
     @Test
     @Tag("unit")
-    public void createEvent_shouldReturnEventResponseDTO_whenEventNotExists() {
+    void createEvent_shouldReturnEventResponseDTO_whenEventNotExists() {
         // arrange
         EventResponseDTO eventMock = createEventResponseDTO();
         EventEntity eventEntity = createEventEntityWithoutId();

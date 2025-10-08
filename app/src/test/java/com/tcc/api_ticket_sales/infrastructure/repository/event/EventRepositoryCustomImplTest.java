@@ -22,7 +22,7 @@ class EventRepositoryCustomImplTest extends BaseIntegrationTest {
 
     @Test
     @Tag("integration")
-    protected void checkExists_shouldReturnTrue_whenEventExists() {
+    void checkExists_shouldReturnTrue_whenEventExists() {
         EventEntity eventEntity = createEventEntityWithoutId();
         entityManager.persist(eventEntity);
 
@@ -37,7 +37,7 @@ class EventRepositoryCustomImplTest extends BaseIntegrationTest {
 
     @Test
     @Tag("integration")
-    protected void checkExists_shouldReturnFalse_whenLocationIsDifferent() {
+    void checkExists_shouldReturnFalse_whenLocationIsDifferent() {
         EventEntity eventEntity = createEventEntityWithoutId();
         entityManager.persist(eventEntity);
 
@@ -51,7 +51,7 @@ class EventRepositoryCustomImplTest extends BaseIntegrationTest {
 
     @Test
     @Tag("integration")
-    protected void checkExists_shouldReturnFalse_whenNameIsDifferent() {
+    void checkExists_shouldReturnFalse_whenNameIsDifferent() {
         EventEntity eventEntity = createEventEntityWithoutId();
         entityManager.persist(eventEntity);
 
@@ -65,7 +65,7 @@ class EventRepositoryCustomImplTest extends BaseIntegrationTest {
 
     @Test
     @Tag("integration")
-    protected void checkExists_shouldReturnFalse_whenDatesAreDifferent() {
+    void checkExists_shouldReturnFalse_whenDatesAreDifferent() {
         EventEntity eventEntity = createEventEntityWithoutId();
         entityManager.persist(eventEntity);
 

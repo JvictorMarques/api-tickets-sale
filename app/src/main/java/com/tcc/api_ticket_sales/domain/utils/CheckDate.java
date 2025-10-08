@@ -7,14 +7,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class CheckDate {
-//    public static void checkFormat(String date) {
-//        try {
-//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//            LocalDate.parse(date, formatter);
-//        } catch (Exception e) {
-//            throw new DateInvalidException();
-//        }
-//    }
+
+    private CheckDate() {
+        throw new IllegalStateException("Utility class");
+    }
 
     public static void checkDateInitialGreaterThanDateFinal(LocalDate dateInitial, LocalDate dateFinal) {
         if(dateInitial == null || dateFinal == null){

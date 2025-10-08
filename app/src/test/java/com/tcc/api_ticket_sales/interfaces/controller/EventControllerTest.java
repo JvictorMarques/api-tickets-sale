@@ -47,7 +47,7 @@ class EventControllerTest {
 
     @Test
     @Tag("unit")
-    protected void createEvent_shouldReturnStatusCreated_whenEventIsCreated () throws Exception {
+    void createEvent_shouldReturnStatusCreated_whenEventIsCreated () throws Exception {
         EventCreateDTO eventCreateDTO = createEventCreateDTOValid();
         EventResponseDTO eventResponseDTO = createEventResponseDTO();
 
@@ -67,7 +67,7 @@ class EventControllerTest {
 
     @Test
     @Tag("unit")
-    protected void createEvent_shouldReturnStatusBadRequest_whenDateInvalid() throws Exception {
+    void createEvent_shouldReturnStatusBadRequest_whenDateInvalid() throws Exception {
         String invalidJson = """
             {
                 "dateInitial": "2025-10-10 20:00",
@@ -83,7 +83,7 @@ class EventControllerTest {
 
     @Test
     @Tag("unit")
-    protected void createEvent_shouldReturnStatusUnprocessableEntity_whenDataInvalid() throws Exception {
+    void createEvent_shouldReturnStatusUnprocessableEntity_whenDataInvalid() throws Exception {
         EventCreateDTO eventCreateDTO = createEventCreateDTOInvalid();
         System.out.println(eventCreateDTO.toString());
         mockMvc.perform(
