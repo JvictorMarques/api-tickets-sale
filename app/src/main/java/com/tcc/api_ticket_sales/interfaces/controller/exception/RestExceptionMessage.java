@@ -11,7 +11,6 @@ import java.util.List;
 public class RestExceptionMessage {
     private String message;
     private int status;
-    private String path;
     private LocalDateTime timeStamp;
     private List<String> errors = List.of();
 }

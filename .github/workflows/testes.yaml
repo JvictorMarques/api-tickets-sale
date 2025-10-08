@@ -53,11 +53,8 @@ jobs:
 
       - name: Executar testes de integração
         working-directory: ./app
-        env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/ticket_sales
-          SPRING_DATASOURCE_USERNAME: postgres
-          SPRING_DATASOURCE_PASSWORD: password
         run: mvn test -Dgroups=integration
+
   sonarqube:
     name: Executando análise de código com SonarQube
     needs: [unit-test, integration-test]
@@ -100,7 +97,9 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
         run: |
-          mvn -B sonar:sonar -Dsonar.projectKey=JvictorMarques_api-tickets-sale \
-          -Dsonar.organization=jvictormarques -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
-          -Dsonar.java.binaries=target/classes
+          mvn -B sonar:sonar \
+            -Dsonar.projectKey=JvictorMarques_api-tickets-sale \
+            -Dsonar.organization=jvictormarques \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+            -Dsonar.java.binaries=target/classes

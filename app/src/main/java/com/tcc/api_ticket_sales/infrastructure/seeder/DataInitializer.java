@@ -6,12 +6,14 @@ import com.tcc.api_ticket_sales.infrastructure.repository.PaymentMethodRepositor
 import com.tcc.api_ticket_sales.infrastructure.repository.PaymentStatusRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Profile("!test")
 public class DataInitializer implements CommandLineRunner {
 
     private final PaymentMethodRepository paymentMethodRepository;
