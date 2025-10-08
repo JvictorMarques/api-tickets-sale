@@ -5,12 +5,13 @@ on:
     #   - main
     paths:
       - .github/workflows/deploy.yaml
-      - .github/workflows/build.yaml
+      - .github/workflows/cd.yaml
       - app/Dockerfile
       - app/src/**
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
 jobs:
   deploy-staging:
     name: Realizando o deploy para o ambiente de staging

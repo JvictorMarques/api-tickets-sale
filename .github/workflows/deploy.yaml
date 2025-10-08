@@ -17,8 +17,9 @@ jobs:
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout do código
+        uses: actions/checkout@v5
 
-      - name: Deploy to production
+      - name: Deploy para ${{ inputs.RAILWAY_ENVIRONMENT }}
         working-directory: ./app
         run: railway up --service=${{ vars.SVC_ID }}
