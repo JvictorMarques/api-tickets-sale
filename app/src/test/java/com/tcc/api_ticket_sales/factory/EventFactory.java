@@ -6,6 +6,7 @@ import com.tcc.api_ticket_sales.interfaces.dto.event.EventResponseDTO;
 import org.instancio.Instancio;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.instancio.Select.field;
@@ -25,6 +26,27 @@ public class EventFactory {
                 18,  // idade mínima fixa
                 "São Paulo" // local fixo
         );
+    }
+
+    public static EventEntity createEventEntityWithId(){
+        String randomName = "Evento " + ThreadLocalRandom.current().nextInt(100, 999);
+        int randomCapacity = ThreadLocalRandom.current().nextInt(50, 201);
+
+        EventEntity entity = EventEntity.of(
+                randomName,
+                "Descricao Teste",
+                LocalDateTime.now().plusDays(1),
+                LocalDateTime.now().plusDays(2),
+                randomCapacity, // capacidade fixa
+                18,  // idade mínima fixa
+                "São Paulo" // local fixo
+        );
+
+        entity.setId(UUID.randomUUID());
+        entity.setCreatedAt(LocalDateTime.now());
+        entity.setUpdatedAt(LocalDateTime.now());
+
+        return entity;
     }
 
     public static EventResponseDTO createEventResponseDTO(){
