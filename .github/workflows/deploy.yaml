@@ -13,7 +13,7 @@ jobs:
     container: ghcr.io/railwayapp/cli:latest
     environment:
       name: ${{ inputs.RAILWAY_ENVIRONMENT }}
-      url: ${{ env.RAILWAY_URL }}
+      url: ${{ vars.RAILWAY_URL }}
     env:
       RAILWAY_API_KEY: ${{ secrets.RAILWAY_TOKEN }}
     steps:
@@ -21,4 +21,4 @@ jobs:
 
       - name: Deploy to production
         working-directory: ./app
-        run: railway up --service=${{ env.SVC_ID }}
+        run: railway up --service=${{ vars.SVC_ID }}

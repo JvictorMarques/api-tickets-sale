@@ -12,12 +12,16 @@ concurrency:
   cancel-in-progress: true
 jobs:
   deploy-staging:
+    name: Realizando o deploy para o ambiente de staging
     uses: ./.github/workflows/deploy.yaml
+    secrets: inherit
     with:
       RAILWAY_ENVIRONMENT: staging
 
   deploy-production:
     needs: deploy-staging
+    name: Realizando o deploy para o ambiente de production
     uses: ./.github/workflows/deploy.yaml
+    secrets: inherit
     with:
       RAILWAY_ENVIRONMENT: production
