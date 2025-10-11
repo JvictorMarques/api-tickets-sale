@@ -39,7 +39,7 @@ public class HolderEntity extends Auditable {
     private String phone;
 
     @Column(nullable = false)
-    private LocalDate bithDate;
+    private LocalDate birthDate;
 
     @ManyToMany(mappedBy = "holderEntities")
     private List<TicketEntity> ticketEntities;

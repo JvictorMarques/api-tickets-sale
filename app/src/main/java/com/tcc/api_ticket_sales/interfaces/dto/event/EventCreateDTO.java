@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 public class EventCreateDTO {
 
-    @NotBlank(message = "Nome do evento não informao")
+    @NotBlank(message = "Nome do evento não informado")
     private String name;
 
     private String description;

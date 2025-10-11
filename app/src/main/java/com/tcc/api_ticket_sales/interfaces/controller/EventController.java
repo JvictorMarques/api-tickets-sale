@@ -21,7 +21,7 @@ public class EventController {
     private final EventService eventService;
 
     @PostMapping
-    public ResponseEntity<EventResponseDTO> fromEventCreateToEventEntity (@RequestBody @Valid EventCreateDTO dto){
+    public ResponseEntity<EventResponseDTO> createEvent (@RequestBody @Valid EventCreateDTO dto){
         EventResponseDTO event = eventService.createEvent(dto);
 
         URI location = URI.create("/event/" + event.getId());

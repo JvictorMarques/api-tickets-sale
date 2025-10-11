@@ -5,5 +5,5 @@ import com.tcc.api_ticket_sales.interfaces.dto.event.EventResponseDTO;
 
 public interface EventService {
 
-    public EventResponseDTO createEvent(EventCreateDTO event);
+    EventResponseDTO createEvent(EventCreateDTO event);
 }

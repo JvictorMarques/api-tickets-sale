@@ -16,7 +16,7 @@ class ErrorMessagesApplicationTest {
     void testConstants() {
         assertEquals("Ingresso inválido.", ErrorMessagesApplication.TICKET_NOT_FOUND);
         assertEquals("Titular inválido.", ErrorMessagesApplication.HOLDER_NOT_FOUND);
-        assertEquals("Evento inválido.", ErrorMessagesApplication.EVENT_NOT_FOUND);
+        assertEquals("Evento encerrado.", ErrorMessagesApplication.EVENT_CLOSED);
         assertEquals("Evento indisponível.", ErrorMessagesApplication.EVENT_UNAVAILABLE);
         assertEquals("Evento existente.", ErrorMessagesApplication.EVENT_ALREADY_EXISTS);
     }
