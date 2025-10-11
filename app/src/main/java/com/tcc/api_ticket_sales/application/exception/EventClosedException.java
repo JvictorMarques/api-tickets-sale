@@ -1,9 +1,9 @@
 package com.tcc.api_ticket_sales.application.exception;
 
-import static com.tcc.api_ticket_sales.application.exception.ErrorMessagesApplication.EVENT_CLOSED;
+import com.tcc.api_ticket_sales.domain.exception.ConflictException;
 
-public class EventClosedException extends RuntimeException {
+public class EventClosedException extends ConflictException {
     public EventClosedException() {
-        super(EVENT_CLOSED);
+        super("Evento encerrado.");
     }
 }

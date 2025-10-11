@@ -1,12 +1,6 @@
 package com.tcc.api_ticket_sales.interfaces.controller.exception;
 
-import com.tcc.api_ticket_sales.application.exception.EventAlreadyExistsException;
-import com.tcc.api_ticket_sales.application.exception.EventClosedException;
-import com.tcc.api_ticket_sales.application.exception.TicketAlreadyExistsException;
-import com.tcc.api_ticket_sales.domain.exception.BusinessException;
-import com.tcc.api_ticket_sales.domain.exception.DateInitialGreaterThanDateFinalException;
-import com.tcc.api_ticket_sales.domain.exception.DateInvalidException;
-import com.tcc.api_ticket_sales.application.exception.EventUnavailableException;
+import com.tcc.api_ticket_sales.domain.exception.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,14 +41,25 @@ public class RestExceptionHandler {
         return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
-    @ExceptionHandler(EventUnavailableException.class)
-    public ResponseEntity<RestExceptionMessage> handleEventUnavailableException(EventUnavailableException e){
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<RestExceptionMessage> handleBadRequestException(BadRequestException e){
         RestExceptionMessage body = new RestExceptionMessage(e.getMessage(),
                 HttpStatus.BAD_REQUEST.value(),
                 LocalDateTime.now(),
                 List.of(e.getMessage()));
 
         return  ResponseEntity.badRequest().body(body);
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<RestExceptionMessage> handleConflictException(ConflictException e){
+        RestExceptionMessage body = new RestExceptionMessage(e.getMessage(),
+                HttpStatus.CONFLICT.value(),
+                LocalDateTime.now(),
+                List.of(e.getMessage())
+        );
+
+        return  ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
 
     @ExceptionHandler(Exception.class)
@@ -68,27 +73,6 @@ public class RestExceptionHandler {
         return  ResponseEntity.internalServerError().body(body);
     }
 
-    @ExceptionHandler(DateInvalidException.class)
-    public ResponseEntity<RestExceptionMessage> handleDateInvalidException(Exception e){
-        RestExceptionMessage body = new RestExceptionMessage(e.getMessage(),
-                HttpStatus.UNPROCESSABLE_ENTITY.value(),
-                LocalDateTime.now(),
-                List.of(e.getMessage())
-        );
-
-        return  ResponseEntity.unprocessableEntity().body(body);
-    }
-
-    @ExceptionHandler(DateInitialGreaterThanDateFinalException.class)
-    public ResponseEntity<RestExceptionMessage> handleDateInitialGreaterThanDateFinalException(Exception e){
-        RestExceptionMessage body = new RestExceptionMessage(e.getMessage(),
-                HttpStatus.UNPROCESSABLE_ENTITY.value(),
-                LocalDateTime.now(),
-                List.of(e.getMessage())
-        );
-
-        return  ResponseEntity.unprocessableEntity().body(body);
-    }
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<RestExceptionMessage> handleBusinessException(Exception e){
@@ -114,42 +98,6 @@ public class RestExceptionHandler {
         );
 
         return  ResponseEntity.badRequest().body(body);
-    }
-
-    @ExceptionHandler(EventAlreadyExistsException.class)
-    public ResponseEntity<RestExceptionMessage> handleEventAlreadyExistsException(EventAlreadyExistsException e){
-        RestExceptionMessage body = new RestExceptionMessage(
-                e.getMessage(),
-                HttpStatus.CONFLICT.value(),
-                LocalDateTime.now(),
-                List.of(e.getMessage())
-        );
-
-        return  ResponseEntity.status(HttpStatus.CONFLICT).body(body);
-    }
-
-    @ExceptionHandler(TicketAlreadyExistsException.class)
-    public ResponseEntity<RestExceptionMessage> handleEventAlreadyExistsException(TicketAlreadyExistsException e){
-        RestExceptionMessage body = new RestExceptionMessage(
-                e.getMessage(),
-                HttpStatus.CONFLICT.value(),
-                LocalDateTime.now(),
-                List.of(e.getMessage())
-        );
-
-        return  ResponseEntity.status(HttpStatus.CONFLICT) .body(body);
-    }
-
-    @ExceptionHandler(EventClosedException.class)
-    public ResponseEntity<RestExceptionMessage> handleEventNotFoundException(EventClosedException e){
-        RestExceptionMessage body = new RestExceptionMessage(
-                e.getMessage(),
-                HttpStatus.BAD_REQUEST.value(),
-                LocalDateTime.now(),
-                List.of(e.getMessage())
-        );
-
-        return  ResponseEntity.status(HttpStatus.CONFLICT) .body(body);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

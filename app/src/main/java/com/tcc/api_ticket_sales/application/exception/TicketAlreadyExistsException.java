@@ -1,9 +1,9 @@
 package com.tcc.api_ticket_sales.application.exception;
 
-import static com.tcc.api_ticket_sales.application.exception.ErrorMessagesApplication.TICKET_ALREADY_EXISTS;
+import com.tcc.api_ticket_sales.domain.exception.ConflictException;
 
-public class TicketAlreadyExistsException extends RuntimeException {
+public class TicketAlreadyExistsException extends ConflictException {
     public TicketAlreadyExistsException() {
-        super(TICKET_ALREADY_EXISTS);
+        super("Ingresso duplicado: este evento já o ingresso");
     }
 }

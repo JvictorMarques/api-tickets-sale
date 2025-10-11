@@ -2,9 +2,10 @@ package com.tcc.api_ticket_sales.application.service.ticket;
 
 import com.tcc.api_ticket_sales.application.exception.EventClosedException;
 import com.tcc.api_ticket_sales.application.exception.TicketAlreadyExistsException;
+import com.tcc.api_ticket_sales.application.exception.TicketCapacityExceedsEventLimitException;
+import com.tcc.api_ticket_sales.application.exception.TicketDatesExceedsEventDateException;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketEntity;
-import com.tcc.api_ticket_sales.domain.exception.BusinessException;
 import com.tcc.api_ticket_sales.infrastructure.repository.event.EventRepository;
 import com.tcc.api_ticket_sales.infrastructure.repository.ticket.TicketRepository;
 import com.tcc.api_ticket_sales.interfaces.dto.ticket.TicketCreateRequestDTO;
@@ -39,26 +40,21 @@ public class TicketServiceImpl implements TicketService {
 
         List<TicketEntity> ticketEntities = ticketRepository.findByEventEntityId(eventId);
         int sumCapacity = ticketEntities.stream().mapToInt(TicketEntity::getCapacity).sum();
-        if(sumCapacity >= eventEntity.getCapacity()){
-            throw new BusinessException("O evento já possui ingressos com a capacidade necessária.");
-        }
-        if((sumCapacity+dto.getCapacity()) > eventEntity.getCapacity()){
-            throw new BusinessException("A capacidade do ingresso excede o permitido no evento");
+        if((sumCapacity + dto.getCapacity()) > eventEntity.getCapacity()){
+            int availableCapacity = eventEntity.getCapacity() - sumCapacity;
+            throw new TicketCapacityExceedsEventLimitException(availableCapacity);
         }
 
         if(dto.getDateInitial().isAfter(eventEntity.getDateFinal()) ||
                 (dto.getDateFinal() != null && dto.getDateFinal().isAfter(eventEntity.getDateFinal())
                 )){
-            throw new BusinessException("A data de venda dos ingressos não pode ser após o evento.");
+            throw new TicketDatesExceedsEventDateException();
         }
 
         if(!ticketRepository.findByEventEntityIdAndNameIgnoreCase(eventId, dto.getName()).isEmpty()){
             throw new TicketAlreadyExistsException();
         }
 
-        if(dto.getCapacity() > eventEntity.getCapacity()){
-            throw new BusinessException("A capacidade de pessoas que podem adquirir o ingresso deve ser inferior ou igual a do evento.");
-        }
 
         if(dto.getDateFinal() == null){
             dto.setDateFinal(eventEntity.getDateFinal());
