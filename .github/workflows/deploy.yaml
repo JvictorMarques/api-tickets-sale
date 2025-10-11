@@ -1,0 +1,25 @@
+name: Rodando o deploy no Railway
+on:
+  workflow_call:
+    inputs:
+      RAILWAY_ENVIRONMENT:
+        description: 'Railway environment name'
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    container: ghcr.io/railwayapp/cli:latest
+    environment:
+      name: ${{ inputs.RAILWAY_ENVIRONMENT }}
+      url: ${{ vars.RAILWAY_URL }}
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v5
+
+      - name: Deploy para ${{ inputs.RAILWAY_ENVIRONMENT }}
+        working-directory: ./app
+        run: railway up --service=${{ vars.SVC_ID }}
