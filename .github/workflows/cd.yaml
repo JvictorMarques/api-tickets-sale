@@ -20,8 +20,45 @@ jobs:
     with:
       RAILWAY_ENVIRONMENT: staging
 
-  deploy-production:
+  robot-tests:
+    name: Executando os testes automatizados com Robot Framework
     needs: deploy-staging
+    runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: 3.12
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        working-directory: robot
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Robot Framework tests
+        working-directory: robot
+        env:
+          BASE_URL: ${{ vars.BASE_URL }}
+        run: robot cases_api_event.robot
+
+      - name: Upload Robot Framework reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: robot-reports
+          path: |
+            robot/report.html
+            robot/log.html
+            robot/output.xml
+
+
+  deploy-production:
+    needs: robot-tests
     name: Realizando o deploy para o ambiente de production
     uses: ./.github/workflows/deploy.yaml
     secrets: inherit
