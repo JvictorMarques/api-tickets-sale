@@ -2,19 +2,18 @@
 Library    RequestsLibrary
 Library    Collections
 Library    DateTime
-# Importa o arquivo de Keywords que contém a lógica dos testes
-Resource   script_api_event.robot
+Library    FakerLibrary
 
+#teste
 *** Variables ***
 # Configurações Base da API
-${BASE_URL}    %{BASE_URL}
-${ENDPOINT}    /api/event
-&{HEADERS}     content-type=application/json
+{BASE_URL}    Set Variable    %{BASE_URL}
+${ENDPOINT}             /event
+${HEADERS}              Content-Type=application/json
 
 # Dados de Teste Comuns (Sucesso)
 ${FUTURE_DATE_INITIAL}  2030-10-10T18:00:00
 ${FUTURE_DATE_FINAL}    2030-10-10T21:00:00
-${SUCCESS_NAME}         Evento de Lançamento
 ${SUCCESS_LOCATION}     Sala Alpha
 ${SUCCESS_CAPACITY}     100
 
@@ -24,4 +23,5 @@ ${TAG_ALL_TESTS}        POST_EVENT
 # Códigos de Status Esperados
 ${STATUS_201}           201
 ${STATUS_400}           400
+${STATUS_409}           409
 ${STATUS_422}           422

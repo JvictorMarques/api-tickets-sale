@@ -1,114 +1,131 @@
+*** Settings ***
+Library    RequestsLibrary
+Library    Collections
+Library    DateTime
+Resource    resource_api_event.robot
+
 *** Keywords ***
 # --- SETUP E VALIDAÇÕES GERAIS ---
+#teste
 
 Criar Sessao API
     [Documentation]    Cria uma sessão HTTP persistente.
     Create Session    api_session    ${BASE_URL}    verify=True
 
 Executar POST e Validar Status
+    [Documentation]    Executa POST com payload e valida status code.
     [Arguments]    ${payload}    ${expected_status}
-    [Documentation]    Executa a requisição POST com o payload e valida o status code.
-    Criar Sessao API
+    
+    ${headers}=    Create Dictionary    Content-Type=application/json
     ${response}=    POST On Session    api_session    ${ENDPOINT}
-    ...    json=${payload}
-    ...    headers=${HEADERS}
+    ...    json=${payload} 
+    ...    headers=${headers}
+    ...    expected_status=any
 
     Should Be Equal As Integers    ${response.status_code}    ${expected_status}
-    [Return]    ${response}
+    RETURN    ${response}
 
-Validar Response Sucesso (201)
-    [Arguments]    ${response}
+Validar Response Sucesso 201
+    [Arguments]    ${response}    ${expected_name}
     [Documentation]    Valida o conteúdo da resposta 201.
     ${response_json}=    Set Variable    ${response.json()}
     Should Not Be Empty    ${response_json['id']}
-    Should Be True    ${response_json['createdAt']} is not None
-    Should Be True    ${response_json['updatedAt']} is not None
+    Should Not Be Empty    ${response_json['createdAt']}
+    Should Not Be Empty    ${response_json['updatedAt']}
     
     # Validações de dados de sucesso
-    Should Be Equal    ${response_json['name']}    ${SUCCESS_NAME}
+    Should Be Equal    ${response_json['name']}    ${expected_name}
     Should Be Equal As Integers    ${response_json['capacity']}    ${SUCCESS_CAPACITY}
 
-Validar Mensagem de Erro
-    [Arguments]    ${response}    ${partial_message}
-    [Documentation]    Verifica se a resposta de erro contém a mensagem esperada.
-    ${response_text}=    Set Variable    ${response.text}
-    Should Contain    ${response_text}    ${partial_message}
+# --- GERAÇÃO DE PAYLOADS COM FAKER ---
 
-
-# --- GERAÇÃO DE PAYLOADS DE SUCESSO ---
+Gerar Nome Evento Aleatorio
+    [Documentation]    Gera um nome de evento único e aleatório
+    ${random_name}=    FakerLibrary.Word
+    ${timestamp}=    Get Current Date    result_format=%H%M%S
+    ${event_name}=    Set Variable    Evento ${random_name} ${timestamp}
+    RETURN    ${event_name}
 
 Gerar Payload Sucesso Completo
     [Documentation]    Gera um payload com todos os campos válidos.
+    ${event_name}=    Gerar Nome Evento Aleatorio
     &{payload}=    Create Dictionary
-    ...    name=${SUCCESS_NAME}
+    ...    name=${event_name}
     ...    description=Descrição completa do evento.
     ...    location=${SUCCESS_LOCATION}
     ...    capacity=${SUCCESS_CAPACITY}
     ...    ageRestriction=18
     ...    dateInitial=${FUTURE_DATE_INITIAL}
     ...    dateFinal=${FUTURE_DATE_FINAL}
-    [Return]    ${payload}
+    RETURN    ${payload}
 
 Gerar Payload Sucesso Minimo
     [Documentation]    Gera um payload apenas com campos obrigatórios válidos.
+    ${event_name}=    Gerar Nome Evento Aleatorio
     &{payload}=    Create Dictionary
-    ...    name=${SUCCESS_NAME}
+    ...    name=${event_name}
     ...    location=${SUCCESS_LOCATION}
     ...    capacity=${SUCCESS_CAPACITY}
     ...    dateInitial=${FUTURE_DATE_INITIAL}
     ...    dateFinal=${FUTURE_DATE_FINAL}
-    [Return]    ${payload}
+    RETURN    ${payload}
 
 Gerar Payload Datas Iguais
     [Documentation]    Gera um payload onde data inicial é igual à final.
+    ${event_name}=    Gerar Nome Evento Aleatorio
     &{payload}=    Create Dictionary
-    ...    name=${SUCCESS_NAME}
+    ...    name=${event_name}
     ...    location=${SUCCESS_LOCATION}
     ...    capacity=${SUCCESS_CAPACITY}
     ...    dateInitial=${FUTURE_DATE_INITIAL}
     ...    dateFinal=${FUTURE_DATE_INITIAL}
-    [Return]    ${payload}
-
+    RETURN    ${payload}
 
 # --- GERAÇÃO DE PAYLOADS DE FALHA ---
 
 Gerar Payload Campo Ausente
     [Arguments]    ${missing_field}
     [Documentation]    Remove um campo obrigatório do payload de sucesso mínimo.
-    ${payload}=    Gerar Payload Sucesso Minimo
+    ${event_name}=    Gerar Nome Evento Aleatorio
+    &{payload}=    Create Dictionary
+    ...    name=${event_name}
+    ...    location=${SUCCESS_LOCATION}
+    ...    capacity=${SUCCESS_CAPACITY}
+    ...    dateInitial=${FUTURE_DATE_INITIAL}
+    ...    dateFinal=${FUTURE_DATE_FINAL}
     Remove From Dictionary    ${payload}    ${missing_field}
-    [Return]    ${payload}
+    RETURN    ${payload}
 
 Gerar Payload Campo Negativo
     [Arguments]    ${field_name}    ${field_value}
     [Documentation]    Define um valor inválido (negativo) para um campo numérico.
-    ${payload}=    Gerar Payload Sucesso Minimo
+    &{payload}=    Gerar Payload Sucesso Minimo
     Set To Dictionary    ${payload}    ${field_name}=${field_value}
-    [Return]    ${payload}
+    RETURN    ${payload}
 
 Gerar Payload Data Passada
     [Documentation]    Define dateInitial como uma data passada.
     ${past_date}=    Convert Date    2020-01-01T10:00:00    result_format=%Y-%m-%dT%H:%M:%S
-    ${payload}=    Gerar Payload Sucesso Minimo
+    &{payload}=    Gerar Payload Sucesso Minimo
     Set To Dictionary    ${payload}    dateInitial=${past_date}
-    [Return]    ${payload}
+    RETURN    ${payload}
 
 Gerar Payload Data Final Anterior
     [Documentation]    Define dateFinal anterior a dateInitial.
-    ${payload}=    Gerar Payload Sucesso Minimo
+    &{payload}=    Gerar Payload Sucesso Minimo
     Set To Dictionary    ${payload}    dateInitial=2030-10-10T12:00:00
     Set To Dictionary    ${payload}    dateFinal=2030-10-10T11:00:00
-    [Return]    ${payload}
+    RETURN    ${payload}
 
 Gerar Payload Formato Data Invalido
     [Documentation]    Define um formato de data inválido.
-    ${payload}=    Gerar Payload Sucesso Minimo
+    &{payload}=    Gerar Payload Sucesso Minimo
     Set To Dictionary    ${payload}    dateInitial=10/10/2030 18:00
-    [Return]    ${payload}
+    RETURN   ${payload}
 
 Gerar Payload Tipo Invalido
     [Arguments]    ${field_name}    ${invalid_value}
     [Documentation]    Define um tipo de dado inválido (ex: int em vez de string).
-    ${payload}=    Gerar Payload Sucesso Minimo
+    &{payload}=    Gerar Payload Sucesso Minimo
     Set To Dictionary    ${payload}    ${field_name}=${invalid_value}
-    [Return]    ${payload}
+    RETURN    ${payload}
