@@ -4,9 +4,10 @@ Library    Collections
 Library    DateTime
 Library    FakerLibrary
 
+#teste
 *** Variables ***
 # Configurações Base da API
-${BASE_URL}             https://api-ticket-sales-staging.up.railway.app/api
+{BASE_URL}    Set Variable    %{BASE_URL}
 ${ENDPOINT}             /event
 ${HEADERS}              Content-Type=application/json
 

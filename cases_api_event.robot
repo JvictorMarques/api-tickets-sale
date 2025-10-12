@@ -5,6 +5,7 @@ Test Setup    Criar Sessao API
 
 *** Test Cases ***
 # --- 1. CENÁRIOS DE SUCESSO (STATUS 201) ---
+#teste
 
 TC-001: Cadastro com Campos Obrigatórios
     [Tags]    ${TAG_ALL_TESTS}    SUCESSO    MINIMO

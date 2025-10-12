@@ -6,6 +6,7 @@ Resource    resource_api_event.robot
 
 *** Keywords ***
 # --- SETUP E VALIDAÇÕES GERAIS ---
+#teste
 
 Criar Sessao API
     [Documentation]    Cria uma sessão HTTP persistente.
