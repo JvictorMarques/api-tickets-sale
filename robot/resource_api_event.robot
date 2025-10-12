@@ -7,9 +7,9 @@ Resource   script_api_event.robot
 
 *** Variables ***
 # Configurações Base da API
-${BASE_URL}             http://api.seu-sistema.com
-${ENDPOINT}             /event
-${HEADERS}              content-type=application/json
+${BASE_URL}    %{BASE_URL}
+${ENDPOINT}    /api/event
+&{HEADERS}     content-type=application/json
 
 # Dados de Teste Comuns (Sucesso)
 ${FUTURE_DATE_INITIAL}  2030-10-10T18:00:00
