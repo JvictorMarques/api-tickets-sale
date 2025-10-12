@@ -1,0 +1,4 @@
+robotframework
+robotframework-requests
+robotframework-databaselibrary
+robotframework-faker
