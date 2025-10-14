@@ -273,7 +273,7 @@ public class EventController {
                     )
             ),
     })
-    @PostMapping("/event/{eventId}/ticket")
+    @PostMapping("/{eventId}/ticket")
     public ResponseEntity<TicketCreateResponseDTO> createTicket(@RequestBody @Valid TicketCreateRequestDTO dto, @PathVariable UUID eventId){
         TicketCreateResponseDTO ticket = ticketService.create(eventId, dto);
 
