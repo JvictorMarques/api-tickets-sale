@@ -1,30 +1,252 @@
 package com.tcc.api_ticket_sales.interfaces.controller;
 
 import com.tcc.api_ticket_sales.application.service.event.EventService;
+import com.tcc.api_ticket_sales.application.service.ticket.TicketService;
+import com.tcc.api_ticket_sales.interfaces.controller.exception.RestExceptionMessage;
 import com.tcc.api_ticket_sales.interfaces.dto.event.EventCreateDTO;
 import com.tcc.api_ticket_sales.interfaces.dto.event.EventResponseDTO;
+import com.tcc.api_ticket_sales.interfaces.dto.ticket.TicketCreateRequestDTO;
+import com.tcc.api_ticket_sales.interfaces.dto.ticket.TicketCreateResponseDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/event")
+@Tag(name = "Event")
 public class EventController {
 
     private final EventService eventService;
+    private final TicketService ticketService;
 
+    @Operation(
+            summary = "Cadastrar Evento"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Evento criado com sucesso"),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Json malformado",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples= @ExampleObject(
+                                    summary = "O campo de data/hora foi enviado em formato incorreto",
+                                    value = """
+                                    {
+                                        "message": "Formato de data inválido. Use o padrão yyyy-MM-dd'T'HH:mm:ss",
+                                        "status": 400,
+                                        "timeStamp": "2025-10-13T18:00:00",
+                                        "errors": [
+                                            "Formato de data/hora inválido para o campo 'saleStartDate'. Valor recebido: '13/10/2025 18:00'. Formato esperado: 'yyyy-MM-dd'T'HH:mm:ss'."
+                                        ]
+                                    }
+                                    """
+                            )
+
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "Evento duplicado (mesmo nome, local e período)",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples= @ExampleObject(
+                                    name = "Evento existente",
+                                    summary = "Evento existente",
+                                    value = """
+                                            {
+                                                "message": "Evento existente.",
+                                                "status": 409,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "Evento existente.a"
+                                                ]
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    description = "Falha na validação de campos e regras de negócio",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples= @ExampleObject(
+                                    summary = "Erro de validação",
+                                    value = """
+                                            {
+                                                "message": "Erro de validação",
+                                                "status": 422,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "dateInitial": "Data/hora inicial é obrigatória"
+                                                ]
+                                            }
+                                            """
+                            )
+                    )
+            ),
+    })
     @PostMapping
     public ResponseEntity<EventResponseDTO> createEvent (@RequestBody @Valid EventCreateDTO dto){
         EventResponseDTO event = eventService.createEvent(dto);
 
         URI location = URI.create("/event/" + event.getId());
         return ResponseEntity.created(location).body(event);
+    }
+
+    @Operation(
+            summary = "Cadastrar ingresso a um evento"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Ingresso cadastrado com sucesso"),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Json malformado",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples= @ExampleObject(
+                                    summary = "O campo de data/hora foi enviado em formato incorreto",
+                                    value = """
+                                    {
+                                        "message": "Formato de data inválido. Use o padrão yyyy-MM-dd'T'HH:mm:ss",
+                                        "status": 400,
+                                        "timeStamp": "2025-10-13T18:00:00",
+                                        "errors": [
+                                            "Formato de data/hora inválido para o campo 'saleStartDate'. Valor recebido: '13/10/2025 18:00'. Formato esperado: 'yyyy-MM-dd'T'HH:mm:ss'."
+                                        ]
+                                    }
+                                    """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Recursos não encontrados",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Evento não possue registro",
+                                            summary = "Evento não possue registro",
+                                            value = """
+                                            {
+                                                "message": "Evento não encontrado",
+                                                "status": 404,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "Evento não encontrado."
+                                                ]
+                                            }
+                                            """
+                                    ),
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "Conflitos",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Evento encerrado",
+                                            summary = "Evento encerrado",
+                                            value = """
+                                            {
+                                                "message": "Operação inválida.",
+                                                "status": 409,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "Evento encerrado."
+                                                ]
+                                            }
+                                            """
+                                    ),
+                                    @ExampleObject(
+                                            name="Evento não possui vagas suficientes para novos ingressos",
+                                            summary = "Evento não possui vagas suficientes para novos ingressos",
+                                            value = """
+                                            {
+                                                "message": "Capacidade insuficiente: apenas 3 vagas restantes no evento para novos ingressos.",
+                                                "status": 409,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "Capacidade insuficiente: apenas 3 vagas restantes no evento para novos ingressos."
+                                                ]
+                                            }
+                                            """
+                                    ),
+                                    @ExampleObject(
+                                            name = "A data de venda do ingresso não pode ocorrer após a data do evento",
+                                            summary = "A data de venda do ingresso não pode ocorrer após a data do evento",
+                                            value = """
+                                            {
+                                                "message": "A data de venda dos ingressos não pode ser após o evento.",
+                                                "status": 409,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "A data de venda dos ingressos não pode ser após o evento."
+                                                ]
+                                            }
+                                            """
+                                    ),
+                                    @ExampleObject(
+                                            name = "O evento já possui um ingresso com as mesmas características",
+                                            summary = "O evento já possui um ingresso com as mesmas características",
+                                            value = """
+                                            {
+                                                "message": "Ingresso duplicado: este evento já possui o ingresso informado.",
+                                                "status": 409,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "Ingresso duplicado: este evento já possui o ingresso informado."
+                                                ]
+                                            }
+                                            """
+                                    )
+                            }
+
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    description = "Falha na validação campos e  regras de negócio",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples= @ExampleObject(
+                                    summary = "Erro de validação",
+                                    value = """
+                                            {
+                                                "message": "Erro de validação",
+                                                "status": 422,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "dateInitial": "Data/hora inicial é obrigatória"
+                                                ]
+                                            }
+                                            """
+                            )
+                    )
+            ),
+    })
+    @PostMapping("/event/{eventId}/ticket")
+    public ResponseEntity<TicketCreateResponseDTO> createTicket(@RequestBody @Valid TicketCreateRequestDTO dto, @PathVariable UUID eventId){
+        TicketCreateResponseDTO ticket = ticketService.create(eventId, dto);
+
+        URI location = URI.create("/ticket/" + ticket.getId());
+        return ResponseEntity.created(location).body(ticket);
     }
 }
