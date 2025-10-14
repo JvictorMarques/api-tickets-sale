@@ -38,7 +38,7 @@ class RestExceptionHandlerTest {
         ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleMethodArgumentNotValidException(exception);
 
         // Assert
-        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatusCode().value());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
 
         RestExceptionMessage body = response.getBody();
         assertNotNull(body);

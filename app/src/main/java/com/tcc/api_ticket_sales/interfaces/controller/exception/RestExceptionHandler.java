@@ -24,11 +24,11 @@ public class RestExceptionHandler {
         List<String> errors = fieldErrors.stream().map(fieldError -> fieldError.getField() + ":" + fieldError.getDefaultMessage()).toList();
 
         RestExceptionMessage body = new RestExceptionMessage("Erro de validação",
-                HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                HttpStatus.BAD_REQUEST.value(),
                 LocalDateTime.now(),
                 errors);
 
-        return ResponseEntity.unprocessableEntity().body(body);
+        return ResponseEntity.badRequest().body(body);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
