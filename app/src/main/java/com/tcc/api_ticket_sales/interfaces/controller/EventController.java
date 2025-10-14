@@ -38,32 +38,47 @@ public class EventController {
             @ApiResponse(responseCode = "201", description = "Evento criado com sucesso"),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Json malformado",
+                    description = "Formato de requisição inválido e validações dos campos",
                     content = @Content(
                             schema = @Schema(implementation = RestExceptionMessage.class),
-                            examples= @ExampleObject(
-                                    summary = "O campo de data/hora foi enviado em formato incorreto",
-                                    value = """
-                                    {
-                                        "message": "Formato de data inválido. Use o padrão yyyy-MM-dd'T'HH:mm:ss",
-                                        "status": 400,
-                                        "timeStamp": "2025-10-13T18:00:00",
-                                        "errors": [
-                                            "Formato de data/hora inválido para o campo 'saleStartDate'. Valor recebido: '13/10/2025 18:00'. Formato esperado: 'yyyy-MM-dd'T'HH:mm:ss'."
-                                        ]
-                                    }
-                                    """
-                            )
-
+                            examples= {
+                                    @ExampleObject(
+                                            name = "Json malformado",
+                                            summary = "Json malformado",
+                                            value = """
+                                            {
+                                                "message": "Formato de data inválido. Use o padrão yyyy-MM-dd'T'HH:mm:ss",
+                                                "status": 400,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "Formato de data/hora inválido para o campo 'saleStartDate'. Valor recebido: '13/10/2025 18:00'. Formato esperado: 'yyyy-MM-dd'T'HH:mm:ss'."
+                                                ]
+                                            }
+                                            """
+                                    ),
+                                    @ExampleObject(
+                                            name = "Validação de campo",
+                                            summary = "Validação de campo",
+                                            value = """
+                                            {
+                                                "message": "Erro de validação",
+                                                "status": 400,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "dateInitial": "Data/hora inicial é obrigatória"
+                                                ]
+                                            }
+                                            """
+                                    )
+                            }
                     )
             ),
             @ApiResponse(
                     responseCode = "409",
-                    description = "Evento duplicado (mesmo nome, local e período)",
+                    description = "Conflitos",
                     content = @Content(
                             schema = @Schema(implementation = RestExceptionMessage.class),
                             examples= @ExampleObject(
-                                    name = "Evento existente",
                                     summary = "Evento existente",
                                     value = """
                                             {
@@ -80,18 +95,18 @@ public class EventController {
             ),
             @ApiResponse(
                     responseCode = "422",
-                    description = "Falha na validação de campos e regras de negócio",
+                    description = "Violação da regra de negócio",
                     content = @Content(
                             schema = @Schema(implementation = RestExceptionMessage.class),
                             examples= @ExampleObject(
-                                    summary = "Erro de validação",
+                                    summary = "Data inicial maior que data final.",
                                     value = """
                                             {
-                                                "message": "Erro de validação",
+                                                "message": "Data inicial maior que data final.",
                                                 "status": 422,
                                                 "timeStamp": "2025-10-13T18:00:00",
                                                 "errors": [
-                                                    "dateInitial": "Data/hora inicial é obrigatória"
+                                                    "Data inicial maior que data final."
                                                 ]
                                             }
                                             """
@@ -114,22 +129,39 @@ public class EventController {
             @ApiResponse(responseCode = "201", description = "Ingresso cadastrado com sucesso"),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Json malformado",
+                    description = "Formato de requisição inválido e validações dos campos",
                     content = @Content(
                             schema = @Schema(implementation = RestExceptionMessage.class),
-                            examples= @ExampleObject(
-                                    summary = "O campo de data/hora foi enviado em formato incorreto",
-                                    value = """
-                                    {
-                                        "message": "Formato de data inválido. Use o padrão yyyy-MM-dd'T'HH:mm:ss",
-                                        "status": 400,
-                                        "timeStamp": "2025-10-13T18:00:00",
-                                        "errors": [
-                                            "Formato de data/hora inválido para o campo 'saleStartDate'. Valor recebido: '13/10/2025 18:00'. Formato esperado: 'yyyy-MM-dd'T'HH:mm:ss'."
-                                        ]
-                                    }
-                                    """
-                            )
+                            examples= {
+                                    @ExampleObject(
+                                            name = "Json malformado",
+                                            summary = "Json malformado",
+                                            value = """
+                                            {
+                                                "message": "Formato de data inválido. Use o padrão yyyy-MM-dd'T'HH:mm:ss",
+                                                "status": 400,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "Formato de data/hora inválido para o campo 'saleStartDate'. Valor recebido: '13/10/2025 18:00'. Formato esperado: 'yyyy-MM-dd'T'HH:mm:ss'."
+                                                ]
+                                            }
+                                            """
+                                    ),
+                                    @ExampleObject(
+                                            name = "Validação de campo",
+                                            summary = "Validação de campo",
+                                            value = """
+                                            {
+                                                "message": "Erro de validação",
+                                                "status": 400,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "dateInitial": "Data/hora inicial é obrigatória"
+                                                ]
+                                            }
+                                            """
+                                    )
+                            }
                     )
             ),
             @ApiResponse(
@@ -139,7 +171,6 @@ public class EventController {
                             schema = @Schema(implementation = RestExceptionMessage.class),
                             examples = {
                                     @ExampleObject(
-                                            name = "Evento não possue registro",
                                             summary = "Evento não possue registro",
                                             value = """
                                             {
@@ -223,18 +254,18 @@ public class EventController {
             ),
             @ApiResponse(
                     responseCode = "422",
-                    description = "Falha na validação campos e  regras de negócio",
+                    description = "Violação da regra de negócio",
                     content = @Content(
                             schema = @Schema(implementation = RestExceptionMessage.class),
                             examples= @ExampleObject(
-                                    summary = "Erro de validação",
+                                    summary = "Data inicial maior que data final.",
                                     value = """
                                             {
-                                                "message": "Erro de validação",
+                                                "message": "Data inicial maior que data final.",
                                                 "status": 422,
                                                 "timeStamp": "2025-10-13T18:00:00",
                                                 "errors": [
-                                                    "dateInitial": "Data/hora inicial é obrigatória"
+                                                    "Data inicial maior que data final."
                                                 ]
                                             }
                                             """
