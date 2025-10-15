@@ -6,8 +6,7 @@ Library    FakerLibrary
 
 #teste
 *** Variables ***
-# Configurações Base da API
-{BASE_URL}    Set Variable    %{BASE_URL}
+${BASE_URL}    %{BASE_URL}
 ${ENDPOINT}             /event
 ${HEADERS}              Content-Type=application/json
 
