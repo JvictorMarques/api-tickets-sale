@@ -17,12 +17,12 @@ import java.time.LocalDateTime;
 @Builder
 public class EventCreateDTO {
 
-    @NotBlank(message = "Nome do evento não informao")
+    @NotBlank(message = "Nome do evento é obrigatório")
     private String name;
 
     private String description;
 
-    @NotBlank(message = "Local do evento não informado")
+    @NotBlank(message = "Local do evento é obrigatório")
     private String location;
 
     @Positive(message = "Capacidade do evento precisa ser maior que 0")
@@ -30,11 +30,11 @@ public class EventCreateDTO {
 
     private int ageRestriction;
 
-    @NotNull(message = "Data/hora inicial é obrigatória")
+    @NotNull(message = "Data/hora inicial é obrigatório")
     @FutureOrPresent(message = "A data/hora do evento deve ser futura ou presente")
     private LocalDateTime dateInitial;
 
-    @NotNull(message = "Data/hora final é obrigatória")
+    @NotNull(message = "Data/hora final é obrigatório")
     @FutureOrPresent(message = "A data/hora do evento deve ser futura ou presente")
     private LocalDateTime dateFinal;
 }
