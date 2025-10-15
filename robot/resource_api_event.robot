@@ -7,7 +7,7 @@ Library    FakerLibrary
 #teste
 *** Variables ***
 ${BASE_URL}    %{BASE_URL}
-${ENDPOINT}             /api/event
+${ENDPOINT}             /event
 ${HEADERS}              Content-Type=application/json
 
 # Dados de Teste Comuns (Sucesso)
