@@ -8,6 +8,7 @@ on:
       - .github/workflows/cd.yaml
       - app/Dockerfile
       - app/src/**
+      - robot/**
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
