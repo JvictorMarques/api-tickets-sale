@@ -24,8 +24,6 @@ jobs:
     name: Executando os testes automatizados com Robot Framework
     needs: deploy-staging
     runs-on: ubuntu-latest
-    env:
-      PYTHON_VERSION: 3.12
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -33,7 +31,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version: 3.12
 
       - name: Install dependencies
         working-directory: robot
@@ -55,7 +53,6 @@ jobs:
             robot/report.html
             robot/log.html
             robot/output.xml
-
 
   deploy-production:
     needs: robot-tests
