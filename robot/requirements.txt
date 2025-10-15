@@ -1,2 +1,4 @@
-robotframework==7.0.1
-robotframework-requests==0.9.7
+robotframework
+robotframework-requests
+robotframework-databaselibrary
+robotframework-faker
