@@ -1,6 +1,12 @@
 package com.tcc.api_ticket_sales.domain.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -22,6 +28,11 @@ public class OrderEntity extends Auditable{
     @Column(precision = 10, scale = 2, nullable = false)
     private BigDecimal totalPrice;
 
+    private String preferenceId;
+
     @OneToMany(mappedBy = "orderEntity")
     private List<PaymentEntity> paymentEntities;
+
+    @OneToMany(mappedBy = "orderEntity")
+    private List<TicketEntity>  ticketEntities;
 }
