@@ -1,28 +1,26 @@
-package com.tcc.api_ticket_sales.interfaces.mapper.ticket;
+package com.tcc.api_ticket_sales.interfaces.mapper.ticket_type;
 
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
-import com.tcc.api_ticket_sales.domain.entity.TicketEntity;
+import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
 import com.tcc.api_ticket_sales.factory.EventFactory;
-import com.tcc.api_ticket_sales.interfaces.dto.event.EventResponseDTO;
-import com.tcc.api_ticket_sales.interfaces.dto.ticket.TicketCreateRequestDTO;
-import com.tcc.api_ticket_sales.interfaces.dto.ticket.TicketCreateResponseDTO;
+import com.tcc.api_ticket_sales.interfaces.dto.ticket_type.TicketTypeCreateRequestDTO;
+import com.tcc.api_ticket_sales.interfaces.dto.ticket_type.TicketTypeCreateResponseDTO;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWithId;
-import static com.tcc.api_ticket_sales.factory.TicketFactory.createTicketCreateRequestDTOValid;
-import static com.tcc.api_ticket_sales.factory.TicketFactory.createTicketEntityWithId;
+import static com.tcc.api_ticket_sales.factory.TicketTypeFactory.createTicketTypeCreateRequestDTOValid;
+import static com.tcc.api_ticket_sales.factory.TicketTypeFactory.createTicketTypeEntityWithId;
 import static org.junit.jupiter.api.Assertions.*;
 
-class TicketMapperTest {
+class TicketTypeMapperTest {
     @Test
     @Tag("unit")
-    void shouldMapTicketCreateRequestDTOToTicketEntity(){
-        TicketMapper mapper= new TicketMapper();
-        TicketCreateRequestDTO dto = createTicketCreateRequestDTOValid();
+    void shouldMapTicketTypeCreateRequestDTOToTicketEntity(){
+        TicketTypeMapper mapper= new TicketTypeMapper();
+        TicketTypeCreateRequestDTO dto = createTicketTypeCreateRequestDTOValid();
         EventEntity eventEntity = EventFactory.createEventEntityWithId();
 
-        TicketEntity entity = mapper.fromTicketCreateRequestDTOToTicketEntity(dto, eventEntity.getId());
+        TicketTypeEntity entity = mapper.fromTicketTypeCreateRequestDTOToTicketTypeEntity(dto, eventEntity.getId());
 
         assertNotNull(entity);
         assertEquals(dto.getName(), entity.getName());
@@ -36,11 +34,11 @@ class TicketMapperTest {
 
     @Test
     @Tag("unit")
-    void shouldMapTicketEntityToTicketCreateResponseDTO(){
-        TicketEntity entity = createTicketEntityWithId();
-        TicketMapper mapper= new TicketMapper();
+    void shouldMapTicketTypeEntityToTicketCreateResponseDTO(){
+        TicketTypeEntity entity = createTicketTypeEntityWithId();
+        TicketTypeMapper mapper= new TicketTypeMapper();
 
-        TicketCreateResponseDTO dto = mapper.fromTicketEntityToTicketCreateResponseDTO(entity);
+        TicketTypeCreateResponseDTO dto = mapper.fromTicketTypeEntityToTicketTypeCreateResponseDTO(entity);
 
         assertNotNull(dto);
         assertEquals(dto.getId(), entity.getId());

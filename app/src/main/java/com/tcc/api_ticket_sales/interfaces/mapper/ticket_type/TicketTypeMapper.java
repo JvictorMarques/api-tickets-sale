@@ -1,9 +1,9 @@
-package com.tcc.api_ticket_sales.interfaces.mapper.ticket;
+package com.tcc.api_ticket_sales.interfaces.mapper.ticket_type;
 
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
-import com.tcc.api_ticket_sales.domain.entity.TicketEntity;
-import com.tcc.api_ticket_sales.interfaces.dto.ticket.TicketCreateRequestDTO;
-import com.tcc.api_ticket_sales.interfaces.dto.ticket.TicketCreateResponseDTO;
+import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
+import com.tcc.api_ticket_sales.interfaces.dto.ticket_type.TicketTypeCreateRequestDTO;
+import com.tcc.api_ticket_sales.interfaces.dto.ticket_type.TicketTypeCreateResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,11 +15,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Component
-public class TicketMapper {
+public class TicketTypeMapper {
 
-    public TicketEntity fromTicketCreateRequestDTOToTicketEntity(TicketCreateRequestDTO dto, UUID eventId) {
+    public TicketTypeEntity fromTicketTypeCreateRequestDTOToTicketTypeEntity(TicketTypeCreateRequestDTO dto, UUID eventId) {
         EventEntity eventEntity= EventEntity.reference(eventId);
-        return TicketEntity.of(
+        return TicketTypeEntity.of(
                 dto.getName(),
                 dto.getDescription(),
                 dto.getPrice(),
@@ -30,8 +30,8 @@ public class TicketMapper {
         );
     }
 
-    public TicketCreateResponseDTO fromTicketEntityToTicketCreateResponseDTO(TicketEntity entity) {
-        return TicketCreateResponseDTO.builder()
+    public TicketTypeCreateResponseDTO fromTicketTypeEntityToTicketTypeCreateResponseDTO(TicketTypeEntity entity) {
+        return TicketTypeCreateResponseDTO.builder()
                 .id(entity.getId())
                 .name(entity.getName())
                 .description(entity.getDescription())

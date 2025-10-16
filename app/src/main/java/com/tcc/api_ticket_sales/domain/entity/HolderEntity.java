@@ -40,7 +40,4 @@ public class HolderEntity extends Auditable {
 
     @Column(nullable = false)
     private LocalDate birthDate;
-
-    @ManyToMany(mappedBy = "holderEntities")
-    private List<TicketEntity> ticketEntities;
 }

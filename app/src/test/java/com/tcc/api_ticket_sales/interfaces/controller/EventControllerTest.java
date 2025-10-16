@@ -3,12 +3,12 @@ package com.tcc.api_ticket_sales.interfaces.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.tcc.api_ticket_sales.application.service.event.EventService;
-import com.tcc.api_ticket_sales.application.service.ticket.TicketService;
+import com.tcc.api_ticket_sales.application.service.ticket_type.TicketTypeService;
 import com.tcc.api_ticket_sales.interfaces.controller.exception.RestExceptionHandler;
 import com.tcc.api_ticket_sales.interfaces.dto.event.EventCreateDTO;
 import com.tcc.api_ticket_sales.interfaces.dto.event.EventResponseDTO;
-import com.tcc.api_ticket_sales.interfaces.dto.ticket.TicketCreateRequestDTO;
-import com.tcc.api_ticket_sales.interfaces.dto.ticket.TicketCreateResponseDTO;
+import com.tcc.api_ticket_sales.interfaces.dto.ticket_type.TicketTypeCreateRequestDTO;
+import com.tcc.api_ticket_sales.interfaces.dto.ticket_type.TicketTypeCreateResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.UUID;
 
 import static com.tcc.api_ticket_sales.factory.EventFactory.*;
-import static com.tcc.api_ticket_sales.factory.TicketFactory.*;
+import static com.tcc.api_ticket_sales.factory.TicketTypeFactory.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -36,7 +36,7 @@ class EventControllerTest {
     private EventService eventService;
 
     @Mock
-    private TicketService ticketService;
+    private TicketTypeService ticketTypeService;
 
     @InjectMocks
     private EventController eventController;
@@ -103,7 +103,7 @@ class EventControllerTest {
 
     @Test
     @Tag("unit")
-    void createTicket_shouldReturnStatusBadRequest_whenDateInvalid() throws Exception {
+    void createTicketType_shouldReturnStatusBadRequest_whenDateInvalid() throws Exception {
         UUID uuid = UUID.randomUUID();
         String invalidJson = """
             {
@@ -120,9 +120,9 @@ class EventControllerTest {
 
     @Test
     @Tag("unit")
-    void createTicket_shouldReturnStatusUnprocessableEntity_whenDataInvalid() throws Exception {
+    void createTicketType_shouldReturnStatusUnprocessableEntity_whenDataInvalid() throws Exception {
         UUID uuid = UUID.randomUUID();
-        TicketCreateRequestDTO ticketCreateDTO = createTicketCreateRequestDTOInvalid();
+        TicketTypeCreateRequestDTO ticketCreateDTO = createTicketTypeCreateRequestDTOInvalid();
 
         mockMvc.perform(
                 post(String.format("/event/%s/ticket", uuid))
@@ -133,12 +133,12 @@ class EventControllerTest {
 
     @Test
     @Tag("unit")
-    void createTicket_shouldReturnStatusCreated_whenTicketIsCreated () throws Exception {
+    void createTicketType_shouldReturnStatusCreated_whenTicketTypeIsCreated () throws Exception {
         UUID uuid = UUID.randomUUID();
-        TicketCreateRequestDTO dtoRequest = createTicketCreateRequestDTOValid();
-        TicketCreateResponseDTO dtoResponse = createTicketCreateResponseDTODefault();
+        TicketTypeCreateRequestDTO dtoRequest = createTicketTypeCreateRequestDTOValid();
+        TicketTypeCreateResponseDTO dtoResponse = createTicketTypeCreateResponseDTODefault();
 
-        when(ticketService.create(any(), any())).thenReturn(dtoResponse);
+        when(ticketTypeService.create(any(), any())).thenReturn(dtoResponse);
 
         mockMvc.perform(
                         post(String.format("/event/%s/ticket", uuid))

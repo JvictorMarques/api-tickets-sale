@@ -1,4 +1,4 @@
-package com.tcc.api_ticket_sales.interfaces.dto.ticket;
+package com.tcc.api_ticket_sales.interfaces.dto.ticket_type;
 
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TicketCreateRequestDTO {
+public class TicketTypeCreateRequestDTO {
     @NotBlank(message = "Nome do ingresso não informado")
     private String name;
 

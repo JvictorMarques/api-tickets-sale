@@ -46,7 +46,7 @@ public class EventEntity extends Auditable{
     private String location;
 
     @OneToMany(mappedBy = "eventEntity")
-    private List<TicketEntity> ticketEntities;
+    private List<TicketTypeEntity> ticketTypeEntities;
 
 
     private EventEntity(

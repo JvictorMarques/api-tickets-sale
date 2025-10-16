@@ -1,13 +1,13 @@
-package com.tcc.api_ticket_sales.application.service.ticket;
+package com.tcc.api_ticket_sales.application.service.ticket_type;
 
 import com.tcc.api_ticket_sales.application.exception.*;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
-import com.tcc.api_ticket_sales.domain.entity.TicketEntity;
+import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
 import com.tcc.api_ticket_sales.infrastructure.repository.event.EventRepository;
-import com.tcc.api_ticket_sales.infrastructure.repository.ticket.TicketRepository;
-import com.tcc.api_ticket_sales.interfaces.dto.ticket.TicketCreateRequestDTO;
-import com.tcc.api_ticket_sales.interfaces.dto.ticket.TicketCreateResponseDTO;
-import com.tcc.api_ticket_sales.interfaces.mapper.ticket.TicketMapper;
+import com.tcc.api_ticket_sales.infrastructure.repository.ticket_type.TicketTypeRepository;
+import com.tcc.api_ticket_sales.interfaces.dto.ticket_type.TicketTypeCreateRequestDTO;
+import com.tcc.api_ticket_sales.interfaces.dto.ticket_type.TicketTypeCreateResponseDTO;
+import com.tcc.api_ticket_sales.interfaces.mapper.ticket_type.TicketTypeMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -21,33 +21,33 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.tcc.api_ticket_sales.factory.TicketFactory.createTicketCreateResponseDTODefault;
-import static com.tcc.api_ticket_sales.factory.TicketFactory.createTicketEntityWithoutId;
+import static com.tcc.api_ticket_sales.factory.TicketTypeFactory.createTicketTypeCreateResponseDTODefault;
+import static com.tcc.api_ticket_sales.factory.TicketTypeFactory.createTicketTypeEntityWithoutId;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TicketServiceImplTest {
+class TicketTypeServiceImplTest {
 
     @Mock
-    private TicketRepository ticketRepository;
+    private TicketTypeRepository ticketTypeRepository;
     @Mock
     private EventRepository eventRepository;
     @Mock
     private EventEntity eventEntity;
     @Mock
-    private TicketMapper ticketMapper;
+    private TicketTypeMapper ticketTypeMapper;
 
     @InjectMocks
-    private TicketServiceImpl ticketServiceImpl;
+    private TicketTypeServiceImpl ticketServiceImpl;
 
     @Test
     @Tag("unit")
     void create_shouldThrowException_whenEventNotFound() {
         // arrange
         when(eventRepository.findById(any())).thenReturn(Optional.empty());
-        TicketCreateRequestDTO dto = new TicketCreateRequestDTO();
+        TicketTypeCreateRequestDTO dto = new TicketTypeCreateRequestDTO();
 
         // action e assert
         assertThrows(
@@ -62,7 +62,7 @@ class TicketServiceImplTest {
         // arrange
         when(eventRepository.findById(any())).thenReturn(Optional.of(eventEntity));
         when(eventEntity.isClosed()).thenReturn(true);
-        TicketCreateRequestDTO dto = new TicketCreateRequestDTO();
+        TicketTypeCreateRequestDTO dto = new TicketTypeCreateRequestDTO();
 
         // action e assert
         assertThrows(
@@ -79,36 +79,36 @@ class TicketServiceImplTest {
         when(eventRepository.findById(any())).thenReturn(Optional.of(eventEntity));
         when(eventEntity.isClosed()).thenReturn(false);
 
-        when(ticketRepository.findByEventEntityId(any())).thenReturn(List.of());
+        when(ticketTypeRepository.findByEventEntityId(any())).thenReturn(List.of());
 
-        TicketCreateRequestDTO dto = new TicketCreateRequestDTO();
+        TicketTypeCreateRequestDTO dto = new TicketTypeCreateRequestDTO();
         dto.setCapacity(11);
 
         // action e assert
         assertThrows(
-                TicketCapacityExceedsEventLimitException.class,
+                TicketTypeCapacityExceedsEventLimitException.class,
                 () -> ticketServiceImpl.create(UUID.randomUUID(), dto)
         );
     }
 
     @Test
     @Tag("unit")
-    void create_shouldThrowException_whenTotalTicketCapacityExceedsEventCapacity() {
+    void create_shouldThrowException_whenTotalTicketTypeCapacityExceedsEventCapacity() {
         // arrange
         when(eventRepository.findById(any())).thenReturn(Optional.of(eventEntity));
         when(eventEntity.isClosed()).thenReturn(false);
         when(eventEntity.getCapacity()).thenReturn(20);
 
-        TicketEntity ticketEntity = createTicketEntityWithoutId();
-        ticketEntity.setCapacity(15);
-        when(ticketRepository.findByEventEntityId(any())).thenReturn(List.of(ticketEntity));
+        TicketTypeEntity ticketTypeEntity = createTicketTypeEntityWithoutId();
+        ticketTypeEntity.setCapacity(15);
+        when(ticketTypeRepository.findByEventEntityId(any())).thenReturn(List.of(ticketTypeEntity));
 
-        TicketCreateRequestDTO dto = new TicketCreateRequestDTO();
+        TicketTypeCreateRequestDTO dto = new TicketTypeCreateRequestDTO();
         dto.setCapacity(10);
 
         // action e assert
         assertThrows(
-                TicketCapacityExceedsEventLimitException.class,
+                TicketTypeCapacityExceedsEventLimitException.class,
                 () -> ticketServiceImpl.create(UUID.randomUUID(), dto)
         );
     }
@@ -120,16 +120,16 @@ class TicketServiceImplTest {
         LocalDateTime date = LocalDateTime.now();
         when(eventRepository.findById(any())).thenReturn(Optional.of(eventEntity));
         when(eventEntity.isClosed()).thenReturn(false);
-        when(ticketRepository.findByEventEntityId(any())).thenReturn(List.of());
+        when(ticketTypeRepository.findByEventEntityId(any())).thenReturn(List.of());
         when(eventEntity.getDateFinal()).thenReturn(date);
 
-        TicketCreateRequestDTO dto = new TicketCreateRequestDTO();
+        TicketTypeCreateRequestDTO dto = new TicketTypeCreateRequestDTO();
         dto.setCapacity(eventEntity.getCapacity());
         dto.setDateInitial(date.plusDays(1));
 
         // action e assert
         assertThrows(
-                TicketDatesExceedsEventDateException.class,
+                TicketTypeDatesExceedsEventDateException.class,
                 () -> ticketServiceImpl.create(UUID.randomUUID(), dto)
         );
     }
@@ -141,69 +141,69 @@ class TicketServiceImplTest {
         LocalDateTime date = LocalDateTime.now();
         when(eventRepository.findById(any())).thenReturn(Optional.of(eventEntity));
         when(eventEntity.isClosed()).thenReturn(false);
-        when(ticketRepository.findByEventEntityId(any())).thenReturn(List.of());
+        when(ticketTypeRepository.findByEventEntityId(any())).thenReturn(List.of());
         when(eventEntity.getDateFinal()).thenReturn(date);
 
-        TicketCreateRequestDTO dto = new TicketCreateRequestDTO();
+        TicketTypeCreateRequestDTO dto = new TicketTypeCreateRequestDTO();
         dto.setCapacity(eventEntity.getCapacity());
         dto.setDateInitial(date.minusDays(1));
         dto.setDateFinal(date.plusDays(1));
 
         // action e assert
         assertThrows(
-                TicketDatesExceedsEventDateException.class,
+                TicketTypeDatesExceedsEventDateException.class,
                 () -> ticketServiceImpl.create(UUID.randomUUID(), dto)
         );
     }
 
     @Test
     @Tag("unit")
-    void create_shouldThrowException_whenTicketAlreadyExists() {
+    void create_shouldThrowException_whenTicketTypeAlreadyExists() {
         // arrange
         LocalDateTime date = LocalDateTime.now();
-        TicketEntity ticketEntity = createTicketEntityWithoutId();
+        TicketTypeEntity ticketTypeEntity = createTicketTypeEntityWithoutId();
 
         when(eventRepository.findById(any())).thenReturn(Optional.of(eventEntity));
         when(eventEntity.isClosed()).thenReturn(false);
-        when(ticketRepository.findByEventEntityId(any())).thenReturn(List.of());
+        when(ticketTypeRepository.findByEventEntityId(any())).thenReturn(List.of());
         when(eventEntity.getDateFinal()).thenReturn(date);
-        when(ticketRepository.findByEventEntityIdAndNameIgnoreCase(any(), any())).thenReturn(List.of(ticketEntity));
+        when(ticketTypeRepository.findByEventEntityIdAndNameIgnoreCase(any(), any())).thenReturn(List.of(ticketTypeEntity));
 
-        TicketCreateRequestDTO dto = new TicketCreateRequestDTO();
+        TicketTypeCreateRequestDTO dto = new TicketTypeCreateRequestDTO();
         dto.setCapacity(eventEntity.getCapacity());
         dto.setDateInitial(date.minusDays(1));
-        dto.setName(ticketEntity.getName());
+        dto.setName(ticketTypeEntity.getName());
 
         // action e assert
         assertThrows(
-                TicketAlreadyExistsException.class,
+                TicketTypeAlreadyExistsException.class,
                 () -> ticketServiceImpl.create(UUID.randomUUID(), dto)
         );
     }
 
     @Test
     @Tag("unit")
-    void create_shouldReturnTicketCreateResponseDTO_whenTicketCreateRequestDTOIsOK_AndDateFinalIsNull() {
+    void create_shouldReturnTicketCreateResponseDTO_whenTicketTypeCreateRequestDTOIsOK_AndDateFinalIsNull() {
         // arrange
         LocalDateTime date = LocalDateTime.now();
-        TicketEntity ticketEntity = createTicketEntityWithoutId();
-        TicketCreateResponseDTO mock = createTicketCreateResponseDTODefault();
+        TicketTypeEntity ticketTypeEntity = createTicketTypeEntityWithoutId();
+        TicketTypeCreateResponseDTO mock = createTicketTypeCreateResponseDTODefault();
 
         when(eventRepository.findById(any())).thenReturn(Optional.of(eventEntity));
         when(eventEntity.isClosed()).thenReturn(false);
-        when(ticketRepository.findByEventEntityId(any())).thenReturn(List.of());
+        when(ticketTypeRepository.findByEventEntityId(any())).thenReturn(List.of());
         when(eventEntity.getDateFinal()).thenReturn(date);
-        when(ticketRepository.findByEventEntityIdAndNameIgnoreCase(any(), any())).thenReturn(List.of());
+        when(ticketTypeRepository.findByEventEntityIdAndNameIgnoreCase(any(), any())).thenReturn(List.of());
 
-        TicketCreateRequestDTO dto = new TicketCreateRequestDTO();
+        TicketTypeCreateRequestDTO dto = new TicketTypeCreateRequestDTO();
         dto.setCapacity(eventEntity.getCapacity());
         dto.setDateInitial(date.minusDays(1));
 
-        when(ticketRepository.save(any())).thenReturn(ticketEntity);
-        when(ticketMapper.fromTicketEntityToTicketCreateResponseDTO(any())).thenReturn(mock);
+        when(ticketTypeRepository.save(any())).thenReturn(ticketTypeEntity);
+        when(ticketTypeMapper.fromTicketTypeEntityToTicketTypeCreateResponseDTO(any())).thenReturn(mock);
 
         // action e assert
-        TicketCreateResponseDTO response =  ticketServiceImpl.create(UUID.randomUUID(), dto);
+        TicketTypeCreateResponseDTO response =  ticketServiceImpl.create(UUID.randomUUID(), dto);
         assertEquals(
                 response.getId(),
                 mock.getId()
@@ -212,28 +212,28 @@ class TicketServiceImplTest {
 
     @Test
     @Tag("unit")
-    void create_shouldReturnTicketCreateResponseDTO_whenTicketCreateRequestDTOIsOK_AndDateFinalIsNotNull() {
+    void create_shouldReturnTicketCreateResponseDTO_whenTicketTypeCreateRequestDTOIsOK_AndDateFinalIsNotNull() {
         // arrange
         LocalDateTime date = LocalDateTime.now();
-        TicketEntity ticketEntity = createTicketEntityWithoutId();
-        TicketCreateResponseDTO mock = createTicketCreateResponseDTODefault();
+        TicketTypeEntity ticketTypeEntity = createTicketTypeEntityWithoutId();
+        TicketTypeCreateResponseDTO mock = createTicketTypeCreateResponseDTODefault();
 
         when(eventRepository.findById(any())).thenReturn(Optional.of(eventEntity));
         when(eventEntity.isClosed()).thenReturn(false);
-        when(ticketRepository.findByEventEntityId(any())).thenReturn(List.of());
+        when(ticketTypeRepository.findByEventEntityId(any())).thenReturn(List.of());
         when(eventEntity.getDateFinal()).thenReturn(date);
-        when(ticketRepository.findByEventEntityIdAndNameIgnoreCase(any(), any())).thenReturn(List.of());
+        when(ticketTypeRepository.findByEventEntityIdAndNameIgnoreCase(any(), any())).thenReturn(List.of());
 
-        TicketCreateRequestDTO dto = new TicketCreateRequestDTO();
+        TicketTypeCreateRequestDTO dto = new TicketTypeCreateRequestDTO();
         dto.setCapacity(eventEntity.getCapacity());
         dto.setDateInitial(date.minusDays(1));
         dto.setDateFinal(date.minusDays(1));
 
-        when(ticketRepository.save(any())).thenReturn(ticketEntity);
-        when(ticketMapper.fromTicketEntityToTicketCreateResponseDTO(any())).thenReturn(mock);
+        when(ticketTypeRepository.save(any())).thenReturn(ticketTypeEntity);
+        when(ticketTypeMapper.fromTicketTypeEntityToTicketTypeCreateResponseDTO(any())).thenReturn(mock);
 
         // action e assert
-        TicketCreateResponseDTO response =  ticketServiceImpl.create(UUID.randomUUID(), dto);
+        TicketTypeCreateResponseDTO response =  ticketServiceImpl.create(UUID.randomUUID(), dto);
         assertEquals(
                 response.getId(),
                 mock.getId()

@@ -27,8 +27,8 @@ import static com.tcc.api_ticket_sales.domain.utils.CheckDate.checkDateInitialGr
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name= "tickets")
-public class TicketEntity extends Auditable{
+@Table(name= "ticket_types")
+public class TicketTypeEntity extends Auditable{
 
     @Id
     @GeneratedValue(strategy= GenerationType.UUID)
@@ -54,16 +54,7 @@ public class TicketEntity extends Auditable{
     @Column(nullable = false)
     private LocalDateTime dateFinal;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "ticket_holder",
-            joinColumns = @JoinColumn(name = "ticket_id"),
-            inverseJoinColumns = @JoinColumn(name = "holder_id")
-    )
-    private List<HolderEntity> holderEntities = new ArrayList<>();
-
-
-    private TicketEntity(
+    private TicketTypeEntity(
             String name,
             String description,
             BigDecimal price,
@@ -107,14 +98,14 @@ public class TicketEntity extends Auditable{
         this.dateFinal = dateFinal;
     }
 
-    public static TicketEntity of(String name,
-                                  String description,
-                                  BigDecimal price,
-                                  EventEntity eventEntity,
-                                  int capacity,
-                                  LocalDateTime dateInitial,
-                                  LocalDateTime dateFinal){
-        return new  TicketEntity(name,
+    public static TicketTypeEntity of(String name,
+                                      String description,
+                                      BigDecimal price,
+                                      EventEntity eventEntity,
+                                      int capacity,
+                                      LocalDateTime dateInitial,
+                                      LocalDateTime dateFinal){
+        return new TicketTypeEntity(name,
                 description,
                 price,
                 eventEntity,

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWithId;
 import static org.junit.jupiter.api.Assertions.*;
 
-class TicketEntityTest {
+class TicketTypeEntityTest {
 
     @Test
     @Tag("unit")
@@ -21,7 +21,7 @@ class TicketEntityTest {
         EventEntity eventEntity = createEventEntityWithId();
 
         Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
+            TicketTypeEntity.of(
                     null,
                     "description test",
                     BigDecimal.valueOf(9),
@@ -42,7 +42,7 @@ class TicketEntityTest {
         EventEntity eventEntity = createEventEntityWithId();
 
         Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
+            TicketTypeEntity.of(
                     "",
                     "description test",
                     BigDecimal.valueOf(9),
@@ -62,7 +62,7 @@ class TicketEntityTest {
         EventEntity eventEntity = createEventEntityWithId();
 
         Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
+            TicketTypeEntity.of(
                     "Ticket test",
                     "description test",
                     BigDecimal.valueOf(9),
@@ -84,7 +84,7 @@ class TicketEntityTest {
         EventEntity eventEntity = createEventEntityWithId();
 
         Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
+            TicketTypeEntity.of(
                     "Ticket test",
                     "description test",
                     BigDecimal.valueOf(9),
@@ -105,7 +105,7 @@ class TicketEntityTest {
         EventEntity eventEntity = createEventEntityWithId();
 
         Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
+            TicketTypeEntity.of(
                     "Ticket test",
                     "description test",
                     BigDecimal.valueOf(9),
@@ -127,7 +127,7 @@ class TicketEntityTest {
         EventEntity eventEntity = createEventEntityWithId();
 
         Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
+            TicketTypeEntity.of(
                     "Ticket test",
                     "description test",
                     BigDecimal.valueOf(9),
@@ -149,7 +149,7 @@ class TicketEntityTest {
         EventEntity eventEntity = createEventEntityWithId();
 
         assertThrows(DateInitialGreaterThanDateFinalException.class, () -> {
-            TicketEntity.of(
+            TicketTypeEntity.of(
                     "Ticket test",
                     "description test",
                     BigDecimal.valueOf(9),
@@ -170,7 +170,7 @@ class TicketEntityTest {
         EventEntity eventEntity = createEventEntityWithId();
 
         Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
+            TicketTypeEntity.of(
                     "Tickt test",
                     "description test",
                     BigDecimal.valueOf(9),
@@ -192,7 +192,7 @@ class TicketEntityTest {
         EventEntity eventEntity = createEventEntityWithId();
 
         Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
+            TicketTypeEntity.of(
                     "Tickt test",
                     "description test",
                     BigDecimal.valueOf(9),
@@ -214,7 +214,7 @@ class TicketEntityTest {
         EventEntity eventEntity = createEventEntityWithId();
 
         Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
+            TicketTypeEntity.of(
                     "Ticket test",
                     "description test",
                     BigDecimal.valueOf(0),
@@ -236,7 +236,7 @@ class TicketEntityTest {
         EventEntity eventEntity = createEventEntityWithId();
 
         Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
+            TicketTypeEntity.of(
                     "Tickt test",
                     "description test",
                     BigDecimal.valueOf(-1),
@@ -258,7 +258,7 @@ class TicketEntityTest {
         EventEntity eventEntity = createEventEntityWithId();
 
         Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
+            TicketTypeEntity.of(
                     "Tickt test",
                     "description test",
                     null,
@@ -278,7 +278,7 @@ class TicketEntityTest {
         LocalDateTime end = LocalDateTime.now().plusDays(1);
 
         Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
+            TicketTypeEntity.of(
                     "Tickt test",
                     "description test",
                     BigDecimal.valueOf(9),

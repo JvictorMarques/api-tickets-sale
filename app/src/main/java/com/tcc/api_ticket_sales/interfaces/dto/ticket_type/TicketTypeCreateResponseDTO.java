@@ -1,7 +1,6 @@
-package com.tcc.api_ticket_sales.interfaces.dto.ticket;
+package com.tcc.api_ticket_sales.interfaces.dto.ticket_type;
 
 
-import com.tcc.api_ticket_sales.interfaces.dto.event.EventResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +12,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @Builder
-public class TicketCreateResponseDTO {
+public class TicketTypeCreateResponseDTO {
     private UUID id;
 
     private String name;
