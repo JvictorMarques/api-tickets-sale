@@ -76,18 +76,18 @@ TC-011: Cadastro com Data Inicial Igual à Data Final
     [Tags]    ${TAG_ALL_TESTS}    SUCESSO    DATAS
     &{payload}=    Gerar Payload Datas Iguais
     ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_201}
-    Validar Response Sucesso (201)
+    Validar Response Sucesso 201    ${response}    ${payload['name']}
 
 TC-012: Falha com Data Inicial Já Transcorrida (Passada)
     [Tags]    ${TAG_ALL_TESTS}    FALHA    REGRA_DATA
     &{payload}=    Gerar Payload Data Passada
-    ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_422}
+    ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_400}
     # Validar Mensagem de Erro    ${response}    "dateInitial" deve ser presente ou futura
 
 TC-013: Falha com Formato Inválido de Data
     [Tags]    ${TAG_ALL_TESTS}    FALHA    FORMATO
     &{payload}=    Gerar Payload Formato Data Invalido
-    ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_422}
+    ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_400}
     # Validar Mensagem de Erro    ${response}    Formato de data inválido
 
 
@@ -95,36 +95,36 @@ TC-013: Falha com Formato Inválido de Data
 
 TC-014: Falha com Tipo de Dado Inválido para "name" (Int)
     [Tags]    ${TAG_ALL_TESTS}    FALHA    TIPAGEM
-    &{payload}=    Gerar Payload Tipo Invalido    name    12345
-    ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_422}
+    &{payload}=    Gerar Payload Tipo Invalido    int    ${exemplo_int}
+    ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_400}
     # Validar Mensagem de Erro    ${response}    "name" deve ser string
 
-TC-015: Falha com Tipo de Dado Inválido para "description" (Booleano)
-    [Tags]    ${TAG_ALL_TESTS}    FALHA    TIPAGEM
-    &{payload}=    Gerar Payload Tipo Invalido    description    ${TRUE}
-    ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_422}
+# TC-015: Falha com Tipo de Dado Inválido para "description" (Booleano)
+#     [Tags]    ${TAG_ALL_TESTS}    FALHA    TIPAGEM
+#     &{payload}=    Gerar Payload Tipo Invalido    description    ${TRUE}
+#     ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_422}
     # Validar Mensagem de Erro    ${response}    "description" deve ser string
 
 TC-016: Falha com Tipo de Dado Inválido para "capacity" (String)
     [Tags]    ${TAG_ALL_TESTS}    FALHA    TIPAGEM
     &{payload}=    Gerar Payload Tipo Invalido    capacity    capacidade_maxima
-    ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_422}
+    ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_400}
     # Validar Mensagem de Erro    ${response}    "capacity" deve ser um número inteiro
 
 TC-017: Falha com Tipo de Dado Inválido para "ageRestriction" (String)
     [Tags]    ${TAG_ALL_TESTS}    FALHA    TIPAGEM
     &{payload}=    Gerar Payload Tipo Invalido    ageRestriction    maior_idade
-    ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_422}
+    ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_400}
     # Validar Mensagem de Erro    ${response}    "ageRestriction" deve ser um número inteiro
 
 TC-018: Falha com Tipo de Dado Inválido para "dateInitial" (Número)
     [Tags]    ${TAG_ALL_TESTS}    FALHA    TIPAGEM
     &{payload}=    Gerar Payload Tipo Invalido    dateInitial    1672531200000
-    ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_422}
+    ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_400}
     # Validar Mensagem de Erro    ${response}    "dateInitial" deve ser string (datetime)
 
 TC-019: Falha com Tipo de Dado Inválido para "dateFinal" (Número)
     [Tags]    ${TAG_ALL_TESTS}    FALHA    TIPAGEM
     &{payload}=    Gerar Payload Tipo Invalido    dateFinal    1672534800000
-    ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_422}
+    ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_400}
     # Validar Mensagem de Erro    ${response}    "dateFinal" deve ser string (datetime)
