@@ -16,6 +16,7 @@ import com.tcc.api_ticket_sales.domain.exception.BusinessException;
 import com.tcc.api_ticket_sales.domain.interfaces.PaymentGateway;
 import com.tcc.api_ticket_sales.infrastructure.repository.PaymentStatusRepository;
 import com.tcc.api_ticket_sales.infrastructure.repository.holder.HolderRepository;
+import com.tcc.api_ticket_sales.infrastructure.repository.holder.HolderSpecification;
 import com.tcc.api_ticket_sales.infrastructure.repository.order.OrderRepository;
 import com.tcc.api_ticket_sales.infrastructure.repository.ticket.TicketRepository;
 import com.tcc.api_ticket_sales.infrastructure.repository.ticket_type.TicketTypeRepository;
@@ -35,7 +36,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 
 @Service
@@ -63,8 +67,10 @@ public class BuyTicketServiceImpl implements BuyTicketService{
 
 
     @Transactional
-    public BuyTicketResponseDTO buyTicket(BuyTicketRequestDTO buyTicketRequestDTO){
+    public BuyTicketResponseDTO buyTickets(BuyTicketRequestDTO buyTicketRequestDTO){
         List<TicketRequest> ticketRequests = new ArrayList<>();
+
+        Map<UUID, Integer> quantityByTicket = new HashMap<>();
 
         // validações
         buyTicketRequestDTO.getTickets().forEach(ticketRequestDTO -> {
@@ -72,7 +78,12 @@ public class BuyTicketServiceImpl implements BuyTicketService{
                     () -> new EntityNotFoundException("Ingresso não encontrado para compra")
             );
 
+            if(ticketType.getDeletedAt() != null){
+                throw new EntityNotFoundException("Ingresso não encontrado para compra");
+            }
+
             EventEntity eventEntity = ticketType.getEventEntity();
+            int quantityHolders = ticketRequestDTO.getHolders().size();
 
             if(eventEntity.isClosed()){
                 throw new EventClosedException();
@@ -83,26 +94,26 @@ public class BuyTicketServiceImpl implements BuyTicketService{
             }
 
             if(!ticketType.getTicketEntities().isEmpty()) {
-                long countTicketsBuy = ticketType.getTicketEntities().stream().filter(
-                        ticket -> ticket.getPaymentStatusEntity().getDescription().equals("approved")
-                ).count();
-
-                if ((countTicketsBuy + ticketRequestDTO.getQuantity()) > ticketType.getCapacity()) {
-                    throw new BusinessException("A quantidade de ingressos da compra excede a quantidade disponível.");
+                if(quantityByTicket.containsKey(ticketRequestDTO.getId())){
+                    quantityByTicket.put(
+                            ticketRequestDTO.getId(),
+                            quantityByTicket.get(ticketRequestDTO.getId()) + quantityHolders
+                    );
+                }else{
+                    quantityByTicket.put(ticketRequestDTO.getId(), quantityHolders);
                 }
+
+                checkCapacityEvent(ticketType, quantityByTicket.get(ticketRequestDTO.getId()));
+                checkHolderExists(ticketRequestDTO.getHolders(), ticketType);
             }
 
             if(eventEntity.getAgeRestriction() > 0){
-                HolderCreateRequestDTO holderCreateRequestDTO = ticketRequestDTO.getHolder();
-                long ageHolder = ChronoUnit.YEARS.between(LocalDate.now(), holderCreateRequestDTO.getBirthDate());
-
-                if(ageHolder > eventEntity.getAgeRestriction()){
-                    throw new BusinessException("O titular do ingresso não possue a idade necessária para o evento.");
-                }
+                checkHolderAgeRestriction(ticketRequestDTO.getHolders(), eventEntity.getAgeRestriction());
             }
 
+
             TicketRequest ticketRequest = ticketTypeMapper.fromTicketTypeEntityToTicketRequest(ticketType);
-            ticketRequest.setQuantity(ticketRequestDTO.getQuantity());
+            ticketRequest.setQuantity(quantityHolders);
             ticketRequests.add(ticketRequest);
         });
 
@@ -127,25 +138,68 @@ public class BuyTicketServiceImpl implements BuyTicketService{
                     () -> new EntityNotFoundException("Ingresso não encontrado para compra")
             );
 
-            HolderEntity holderEntity = holderMapper.fromHolderCreateRequestDTOToHolderEntity(ticketRequestDTO.getHolder());
-            holderRepository.save(holderEntity);
+            ticketRequestDTO.getHolders().forEach(holderDTO -> {
+                HolderEntity holderEntity = holderMapper.fromHolderCreateRequestDTOToHolderEntity(holderDTO);
+                holderRepository.save(holderEntity);
 
 
-            PaymentStatusEntity paymentStatus = paymentStatusRepository.findByDescription(PaymentStatusEnum.APPROVED.getName());
+                PaymentStatusEntity paymentStatus = paymentStatusRepository.findByDescription(PaymentStatusEnum.APPROVED.getName());
 
-            TicketEntity ticketEntity = TicketEntity.builder()
-                    .ticketTypeEntity(ticketType)
-                    .paymentStatusEntity(paymentStatus)
-                    .orderEntity(orderEntity)
-                    .holderEntity(holderEntity)
-                    .build();
+                TicketEntity ticketEntity = TicketEntity.builder()
+                        .ticketTypeEntity(ticketType)
+                        .paymentStatusEntity(paymentStatus)
+                        .orderEntity(orderEntity)
+                        .holderEntity(holderEntity)
+                        .build();
 
-            ticketRepository.save(ticketEntity);
+                ticketRepository.save(ticketEntity);
+            });
         });
 
         return BuyTicketResponseDTO.builder()
-                .id(response.getId())
+                .orderId(orderEntity.getId().toString())
                 .redirectUrl(response.getRedirectUrl())
                 .build();
     }
+
+
+    private void checkHolderExists(List<HolderCreateRequestDTO> holders, TicketTypeEntity ticketTypeEntity) {
+
+        Map<String, String> holderExists = new HashMap<>();
+        holders.forEach(holder -> {
+            String holderName = holder.getName();
+            String holderEmail = holder.getEmail();
+
+            if(!holderRepository.findAll(HolderSpecification.byTicketType(ticketTypeEntity.getId())).isEmpty()){
+                throw new BusinessException("O titular já possui ingresso para o evento.");
+            }
+
+            if(holderExists.containsKey(holderName) && holderExists.get(holderName).equals(holderEmail)){
+                throw new BusinessException("Não é possível comprar mais de um ingresso para o mesmo titular.");
+            }else{
+                holderExists.put(holderName, holderEmail);
+            }
+        });
+    }
+
+    private void checkHolderAgeRestriction(List<HolderCreateRequestDTO> holders, int ageRestriction) {
+        holders.forEach(holder -> {
+            long ageHolder = ChronoUnit.YEARS.between(LocalDate.now(), holder.getBirthDate());
+
+            if(ageHolder > ageRestriction){
+                throw new BusinessException("O titular do ingresso não possue a idade necessária para o evento.");
+            }
+        });
+    }
+
+    private void checkCapacityEvent (TicketTypeEntity ticketTypeEntity, int countHolders){
+        long countTicketsBuy = ticketTypeEntity.getTicketEntities().stream().filter(
+                ticket -> ticket.getPaymentStatusEntity().getDescription().equals(PaymentStatusEnum.APPROVED.getName())
+        ).count();
+
+        if ((countTicketsBuy + countHolders) > ticketTypeEntity.getCapacity()) {
+            throw new BusinessException("A quantidade de ingressos da compra excede a quantidade disponível.");
+        }
+    }
+
 }

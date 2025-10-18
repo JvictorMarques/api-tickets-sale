@@ -8,6 +8,6 @@ import lombok.Data;
 @Data
 @Builder
 public class BuyTicketResponseDTO {
-    private String id;
+    private String orderId;
     private String redirectUrl;
 }
