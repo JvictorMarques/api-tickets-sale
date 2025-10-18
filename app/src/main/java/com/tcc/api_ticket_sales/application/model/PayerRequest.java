@@ -1,14 +1,13 @@
-package com.tcc.api_ticket_sales.infrastructure.integration.mercadopago.dto;
-
+package com.tcc.api_ticket_sales.application.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class PreferencePayerCreateRequestDTO {
+public class PayerRequest {
     String name;
     String email;
 }

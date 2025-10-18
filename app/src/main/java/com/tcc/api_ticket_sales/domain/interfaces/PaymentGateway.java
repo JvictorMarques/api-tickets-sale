@@ -1,8 +1,8 @@
 package com.tcc.api_ticket_sales.domain.interfaces;
 
-import com.tcc.api_ticket_sales.interfaces.dto.ticket.BuyTicketRequestDTO;
-import com.tcc.api_ticket_sales.interfaces.dto.ticket.BuyTicketResponseDTO;
+import com.tcc.api_ticket_sales.application.model.BuyTicketRequest;
+import com.tcc.api_ticket_sales.application.model.BuyTicketResponse;
 
 public interface PaymentGateway {
-    BuyTicketResponseDTO createPayment (BuyTicketRequestDTO buyTicketRequestDTO);
+    BuyTicketResponse createPreference(BuyTicketRequest buyTicketRequest);
 }

@@ -1,4 +1,4 @@
-package com.tcc.api_ticket_sales.interfaces.dto.ticket;
+package com.tcc.api_ticket_sales.interfaces.dto.buy_ticket;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
