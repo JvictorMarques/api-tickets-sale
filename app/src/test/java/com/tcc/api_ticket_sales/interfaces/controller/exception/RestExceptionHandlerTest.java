@@ -1,25 +1,19 @@
 package com.tcc.api_ticket_sales.interfaces.controller.exception;
 
-import com.tcc.api_ticket_sales.application.exception.EventAlreadyExistsException;
-import com.tcc.api_ticket_sales.application.exception.EventUnavailableException;
-import com.tcc.api_ticket_sales.domain.exception.BusinessException;
-import com.tcc.api_ticket_sales.domain.exception.DateInitialGreaterThanDateFinalException;
-import com.tcc.api_ticket_sales.domain.exception.DateInvalidException;
+import com.tcc.api_ticket_sales.domain.exception.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.List;
-
-import static com.tcc.api_ticket_sales.application.exception.ErrorMessagesApplication.EVENT_ALREADY_EXISTS;
-import static com.tcc.api_ticket_sales.application.exception.ErrorMessagesApplication.EVENT_UNAVAILABLE;
-import static com.tcc.api_ticket_sales.domain.exception.ErrorMessagesDomain.DATE_INITIAL_GREATER_THAN_DATE_FINAL;
-import static com.tcc.api_ticket_sales.domain.exception.ErrorMessagesDomain.DATE_INVALID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -44,7 +38,7 @@ class RestExceptionHandlerTest {
         ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleMethodArgumentNotValidException(exception);
 
         // Assert
-        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatusCode().value());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
 
         RestExceptionMessage body = response.getBody();
         assertNotNull(body);
@@ -65,7 +59,7 @@ class RestExceptionHandlerTest {
         ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleEntityNotFoundException(exception);
 
         // Assert
-        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatusCode().value());
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatusCode().value());
 
         RestExceptionMessage body = response.getBody();
         assertNotNull(body);
@@ -76,26 +70,27 @@ class RestExceptionHandlerTest {
 
     @Test
     @Tag("unit")
-    void handleEventUnavailableException_shouldReturnRestExceptionMessage_whenEventUnavailableException() {
+    void handleBadRequestException_shouldReturnRestExceptionMessage_whenBadRequestException() {
         // Arrange
-        EventUnavailableException exception = new EventUnavailableException();
+        String messageTest = "Test Bad Request";
+        BadRequestException exception = new BadRequestException(messageTest);
 
         // Act
-        ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleEventUnavailableException(exception);
+        ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleBadRequestException(exception);
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
 
         RestExceptionMessage body = response.getBody();
         assertNotNull(body);
-        assertEquals(EVENT_UNAVAILABLE, body.getMessage());
+        assertEquals(messageTest, body.getMessage());
         assertNotNull(body.getTimeStamp());
-        assertEquals(List.of(EVENT_UNAVAILABLE), body.getErrors());
+        assertEquals(List.of(messageTest), body.getErrors());
     }
 
     @Test
     @Tag("unit")
-    void handleEventUnavailableException_shouldReturnRestExceptionMessage_whenException() {
+    void handleException_shouldReturnRestExceptionMessage_whenException() {
         // Arrange
         String message = "Error de servirdor";
         Exception exception = new Exception(message);
@@ -115,48 +110,29 @@ class RestExceptionHandlerTest {
 
     @Test
     @Tag("unit")
-    void handleEventUnavailableException_shouldReturnRestExceptionMessage_whenDateInvalidException() {
+    void handleConflictException_shouldReturnRestExceptionMessage_whenConflictException() {
         // Arrange
-        DateInvalidException exception = new DateInvalidException();
+        String messageTest = "Test Conflict";
+        ConflictException exception = new ConflictException(messageTest);
 
         // Act
-        ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleDateInvalidException(exception);
+        ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleConflictException(exception);
 
         // Assert
-        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatusCode().value());
+        assertEquals(HttpStatus.CONFLICT.value(), response.getStatusCode().value());
 
         RestExceptionMessage body = response.getBody();
         assertNotNull(body);
-        assertEquals(DATE_INVALID, body.getMessage());
+        assertEquals(messageTest, body.getMessage());
         assertNotNull(body.getTimeStamp());
-        assertEquals(List.of(DATE_INVALID), body.getErrors());
+        assertEquals(List.of(messageTest), body.getErrors());
     }
 
     @Test
     @Tag("unit")
-    void handleEventUnavailableException_shouldReturnRestExceptionMessage_whenDateInitialGreaterThanDateFinalException() {
-        // Arrange
-        DateInitialGreaterThanDateFinalException exception = new DateInitialGreaterThanDateFinalException();
-
-        // Act
-        ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleDateInitialGreaterThanDateFinalException(exception);
-
-        // Assert
-        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatusCode().value());
-
-        RestExceptionMessage body = response.getBody();
-        assertNotNull(body);
-        assertEquals(DATE_INITIAL_GREATER_THAN_DATE_FINAL, body.getMessage());
-        assertNotNull(body.getTimeStamp());
-        assertEquals(List.of(DATE_INITIAL_GREATER_THAN_DATE_FINAL), body.getErrors());
-    }
-
-    @Test
-    @Tag("unit")
-    void handleEventUnavailableException_shouldReturnRestExceptionMessage_whenBusinessException() {
-        // Arrange
-        String message = "Erro na regra de negócio";
-        BusinessException exception = new BusinessException(message);
+    void handleBusinessException_shouldReturnRestExceptionMessage_whenBusinessException() {
+        String messageTest = "Test Business";
+        BusinessException exception = new BusinessException(messageTest);
 
         // Act
         ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleBusinessException(exception);
@@ -166,33 +142,14 @@ class RestExceptionHandlerTest {
 
         RestExceptionMessage body = response.getBody();
         assertNotNull(body);
-        assertEquals(message, body.getMessage());
+        assertEquals(messageTest, body.getMessage());
         assertNotNull(body.getTimeStamp());
-        assertEquals(List.of(message), body.getErrors());
+        assertEquals(List.of(messageTest), body.getErrors());
     }
 
     @Test
     @Tag("unit")
-    void handleEventUnavailableException_shouldReturnRestExceptionMessage_whenEventAlreadyExistsException() {
-        // Arrange
-        EventAlreadyExistsException exception = new EventAlreadyExistsException();
-
-        // Act
-        ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleEventAlreadyExistsException(exception);
-
-        // Assert
-        assertEquals(HttpStatus.CONFLICT.value(), response.getStatusCode().value());
-
-        RestExceptionMessage body =  response.getBody();
-        assertNotNull(body);
-        assertEquals(EVENT_ALREADY_EXISTS, body.getMessage());
-        assertNotNull(body.getTimeStamp());
-        assertEquals(List.of(EVENT_ALREADY_EXISTS), body.getErrors());
-    }
-
-    @Test
-    @Tag("unit")
-    void handleHttpMessageNotReadableException_shouldReturnDateFormatMessage_whenContainsLocalDateTime() {
+    void handleHttpMessageNotReadableException_shouldReturnRestExceptionMessage_whenContainsLocalDateTime() {
         // Arrange
         String exceptionMessage = "Failed to deserialize java.time.LocalDateTime";
         HttpMessageNotReadableException exception = new HttpMessageNotReadableException(exceptionMessage);
@@ -228,5 +185,33 @@ class RestExceptionHandlerTest {
         assertEquals("Formato de JSON inválido ou campo malformado", body.getMessage());
         assertNotNull(body.getTimeStamp());
         assertEquals(List.of(exceptionMessage), body.getErrors());
+    }
+
+    @Test
+    @Tag("unit")
+    void handleMethodArgumentTypeMismatchException_shouldReturnRestExceptionMessage_whenMethodArgumentTypeMismatchException() {
+        // valor inválido
+        Object value = "abc";
+
+        // tipo esperado
+        Class<?> requiredType = Long.class;
+
+        // nome do parâmetro
+        String paramName = "eventId";
+
+        MethodParameter methodParam = Mockito.mock(MethodParameter.class);
+
+        MethodArgumentTypeMismatchException exception = new MethodArgumentTypeMismatchException(value, requiredType, paramName, methodParam, null);
+
+        // Act
+        ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleMethodArgumentTypeMismatchException(exception);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
+
+        RestExceptionMessage body = response.getBody();
+        assertNotNull(body);
+        assertTrue(body.getMessage().contains(paramName));
+        assertNotNull(body.getTimeStamp());
     }
 }

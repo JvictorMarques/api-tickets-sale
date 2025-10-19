@@ -1,7 +1,7 @@
 package com.tcc.api_ticket_sales.domain.exception;
 
-public class DateInvalidException extends RuntimeException {
+public class DateInvalidException extends BusinessException {
     public DateInvalidException() {
-      super(ErrorMessagesDomain.DATE_INVALID);
+      super("Data inválida.");
     }
 }

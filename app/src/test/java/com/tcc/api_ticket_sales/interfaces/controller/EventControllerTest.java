@@ -3,9 +3,12 @@ package com.tcc.api_ticket_sales.interfaces.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.tcc.api_ticket_sales.application.service.event.EventService;
+import com.tcc.api_ticket_sales.application.service.ticket.TicketService;
 import com.tcc.api_ticket_sales.interfaces.controller.exception.RestExceptionHandler;
 import com.tcc.api_ticket_sales.interfaces.dto.event.EventCreateDTO;
 import com.tcc.api_ticket_sales.interfaces.dto.event.EventResponseDTO;
+import com.tcc.api_ticket_sales.interfaces.dto.ticket.TicketCreateRequestDTO;
+import com.tcc.api_ticket_sales.interfaces.dto.ticket.TicketCreateResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -17,7 +20,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.UUID;
+
 import static com.tcc.api_ticket_sales.factory.EventFactory.*;
+import static com.tcc.api_ticket_sales.factory.TicketFactory.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -28,6 +34,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class EventControllerTest {
     @Mock
     private EventService eventService;
+
+    @Mock
+    private TicketService ticketService;
 
     @InjectMocks
     private EventController eventController;
@@ -85,11 +94,61 @@ class EventControllerTest {
     @Tag("unit")
     void createEvent_shouldReturnStatusUnprocessableEntity_whenDataInvalid() throws Exception {
         EventCreateDTO eventCreateDTO = createEventCreateDTOInvalid();
-        System.out.println(eventCreateDTO.toString());
         mockMvc.perform(
                 post("/event")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(eventCreateDTO))
-        ).andExpect(status().isUnprocessableEntity());
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Tag("unit")
+    void createTicket_shouldReturnStatusBadRequest_whenDateInvalid() throws Exception {
+        UUID uuid = UUID.randomUUID();
+        String invalidJson = """
+            {
+                "dateInitial": "2025-10-10 20:00",
+                "dateFinal": "2025-10-10"
+            }
+        """;
+        mockMvc.perform(
+                post(String.format("/event/%s/ticket", uuid))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidJson)
+        ).andDo(print()).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Tag("unit")
+    void createTicket_shouldReturnStatusUnprocessableEntity_whenDataInvalid() throws Exception {
+        UUID uuid = UUID.randomUUID();
+        TicketCreateRequestDTO ticketCreateDTO = createTicketCreateRequestDTOInvalid();
+
+        mockMvc.perform(
+                post(String.format("/event/%s/ticket", uuid))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(ticketCreateDTO))
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Tag("unit")
+    void createTicket_shouldReturnStatusCreated_whenTicketIsCreated () throws Exception {
+        UUID uuid = UUID.randomUUID();
+        TicketCreateRequestDTO dtoRequest = createTicketCreateRequestDTOValid();
+        TicketCreateResponseDTO dtoResponse = createTicketCreateResponseDTODefault();
+
+        when(ticketService.create(any(), any())).thenReturn(dtoResponse);
+
+        mockMvc.perform(
+                        post(String.format("/event/%s/ticket", uuid))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(dtoRequest))
+                ).andExpect(status().isCreated())
+                .andExpect(
+                        header().string("Location", "/ticket/"+ dtoResponse.getId())
+                )
+                .andExpect(jsonPath("$.id").value(String.valueOf(dtoResponse.getId())))
+                .andExpect(jsonPath("$.name").value(dtoResponse.getName()));
     }
 }

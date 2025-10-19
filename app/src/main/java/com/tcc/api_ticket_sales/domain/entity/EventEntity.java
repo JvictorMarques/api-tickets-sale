@@ -106,4 +106,14 @@ public class EventEntity extends Auditable{
                 location
         );
     }
+
+    public static EventEntity reference(UUID id) {
+        EventEntity e = new EventEntity();
+        e.id = id;
+        return e;
+    }
+
+    public boolean isClosed(){
+        return (this.getDeletedAt() != null || this.dateFinal.isBefore(LocalDateTime.now()));
+    }
 }
