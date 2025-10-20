@@ -25,7 +25,7 @@ public class DataInitializer implements CommandLineRunner {
             paymentMethodRepository.saveAll(List.of(
                     new PaymentMethodEntity("pix"),
                     new PaymentMethodEntity("card"),
-                    new PaymentMethodEntity("boleto")
+                    new PaymentMethodEntity("ticket")
             ));
         }
 

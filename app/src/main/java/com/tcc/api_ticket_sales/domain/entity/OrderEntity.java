@@ -28,9 +28,6 @@ public class OrderEntity extends Auditable{
     @Column(precision = 10, scale = 2, nullable = false)
     private BigDecimal totalPrice;
 
-    @Column(nullable = false)
-    private String preferenceId;
-
     @OneToMany(mappedBy = "orderEntity")
     private List<PaymentEntity> paymentEntities;
 
@@ -38,25 +35,19 @@ public class OrderEntity extends Auditable{
     private List<TicketEntity>  ticketEntities;
 
     private OrderEntity (
-            String preferenceId,
             BigDecimal totalPrice
     ){
-        if(preferenceId.isBlank()){
-            throw new BusinessException("Preferência do pedido inválida.");
-        }
         if(totalPrice == null || totalPrice.compareTo(BigDecimal.ZERO) <= 0){
             throw new BusinessException("O valor total do pedido inválido.");
         }
 
-        this.preferenceId = preferenceId;
         this.totalPrice = totalPrice;
     }
 
 
     public static OrderEntity of(
-            String preferenceId,
             BigDecimal totalPrice
     ){
-        return new OrderEntity(preferenceId, totalPrice);
+        return new OrderEntity(totalPrice);
     }
 }

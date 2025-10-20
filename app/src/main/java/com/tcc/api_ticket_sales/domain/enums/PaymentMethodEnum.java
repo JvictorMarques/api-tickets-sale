@@ -1,15 +1,14 @@
 package com.tcc.api_ticket_sales.domain.enums;
 
-public enum PaymentStatusEnum {
-    APPROVED("approved"),
-    PENDING("pending"),
-    REJECTED("rejected"),
-    CANCELLED("cancelled");
+public enum PaymentMethodEnum {
+    PIX("pix"),
+    CARD("card"),
+    TICKET("ticket");
 
 
     private final String name;
 
-    PaymentStatusEnum(String name) {
+    PaymentMethodEnum(String name) {
         this.name = name;
     }
 

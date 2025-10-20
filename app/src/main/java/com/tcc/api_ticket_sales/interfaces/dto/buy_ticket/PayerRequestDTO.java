@@ -12,9 +12,9 @@ import lombok.Data;
 @Builder
 public class PayerRequestDTO {
     @NotBlank(message = "Nome do pagador é obrigatório")
-    String name;
+    private String name;
 
     @NotBlank(message = "Email do pagador é obrigatório")
     @Email(message = "Email inválido")
-    String email;
+    private String email;
 }

@@ -39,6 +39,7 @@ public class MercadoPagoMapper {
         return PreferenceRequest.builder()
                 .items(items)
                 .payer(payer)
+                .externalReference(buyTicketRequest.getOrderId())
                 .notificationUrl(this.notificationUrl)
                 .build();
     }

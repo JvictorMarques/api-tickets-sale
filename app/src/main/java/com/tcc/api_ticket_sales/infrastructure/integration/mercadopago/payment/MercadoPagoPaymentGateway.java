@@ -1,4 +1,4 @@
-package com.tcc.api_ticket_sales.infrastructure.integration.mercadopago;
+package com.tcc.api_ticket_sales.infrastructure.integration.mercadopago.payment;
 
 import com.mercadopago.client.preference.PreferenceRequest;
 import com.mercadopago.resources.preference.Preference;
@@ -6,6 +6,8 @@ import com.tcc.api_ticket_sales.application.model.BuyTicketRequest;
 import com.tcc.api_ticket_sales.application.model.BuyTicketResponse;
 import com.tcc.api_ticket_sales.domain.exception.BusinessException;
 import com.tcc.api_ticket_sales.domain.interfaces.PaymentGateway;
+import com.tcc.api_ticket_sales.infrastructure.integration.mercadopago.MercadoPagoClient;
+import com.tcc.api_ticket_sales.infrastructure.integration.mercadopago.MercadoPagoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

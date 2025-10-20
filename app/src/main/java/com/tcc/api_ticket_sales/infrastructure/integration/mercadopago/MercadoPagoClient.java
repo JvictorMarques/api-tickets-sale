@@ -1,10 +1,14 @@
 package com.tcc.api_ticket_sales.infrastructure.integration.mercadopago;
 
 import com.mercadopago.MercadoPagoConfig;
+import com.mercadopago.client.order.OrderClient;
+import com.mercadopago.client.payment.PaymentClient;
 import com.mercadopago.client.preference.PreferenceClient;
 import com.mercadopago.client.preference.PreferenceRequest;
 import com.mercadopago.exceptions.MPApiException;
 import com.mercadopago.exceptions.MPException;
+import com.mercadopago.resources.order.Order;
+import com.mercadopago.resources.payment.Payment;
 import com.mercadopago.resources.preference.Preference;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,5 +33,16 @@ public class MercadoPagoClient {
         PreferenceClient preferenceClient = new PreferenceClient();
 
         return preferenceClient.create(preferenceRequest);
+    }
+
+    public Payment getPayment(Long paymentId) throws MPException, MPApiException {
+        PaymentClient paymentClient = new PaymentClient();
+        return paymentClient.get(paymentId);
+    }
+
+    public Order getOrder(String orderId) throws MPException, MPApiException {
+        OrderClient orderClient = new OrderClient();
+
+        return orderClient.get(orderId);
     }
 }

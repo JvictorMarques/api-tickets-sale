@@ -1,5 +1,6 @@
 package com.tcc.api_ticket_sales.application.service.buy_ticket;
 
+import com.mercadopago.resources.preference.PreferenceItem;
 import com.tcc.api_ticket_sales.application.exception.EventClosedException;
 import com.tcc.api_ticket_sales.application.model.BuyTicketRequest;
 import com.tcc.api_ticket_sales.application.model.BuyTicketResponse;
@@ -32,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -117,21 +119,22 @@ public class BuyTicketServiceImpl implements BuyTicketService{
             ticketRequests.add(ticketRequest);
         });
 
+        // prepara dados para enviar o payment
         PayerRequest payerRequest = payerMapper.fromPayerRequestDTOToPayerRequest(buyTicketRequestDTO.getPayer());
+        BigDecimal totalPrice = ticketRequests.stream().map(TicketRequest::getUnitPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        OrderEntity orderEntity = OrderEntity.of(
+                totalPrice
+        );
+        orderRepository.save(orderEntity);
 
         BuyTicketRequest buyTicketRequest = new BuyTicketRequest();
+        buyTicketRequest.setOrderId(orderEntity.getId().toString());
         buyTicketRequest.setTickets(ticketRequests);
         buyTicketRequest.setPayer(payerRequest);
 
         // envia os dados para o mercado pago
         BuyTicketResponse response = paymentGateway.createPreference(buyTicketRequest);
-
-        // salvando dados no bdd
-        OrderEntity orderEntity = OrderEntity.of(
-                response.getId(),
-                response.getTotalPrice()
-        );
-        orderRepository.save(orderEntity);
 
         buyTicketRequestDTO.getTickets().forEach(ticketRequestDTO -> {
             TicketTypeEntity ticketType = ticketTypeRepository.findById(ticketRequestDTO.getId()).orElseThrow(
@@ -143,7 +146,11 @@ public class BuyTicketServiceImpl implements BuyTicketService{
                 holderRepository.save(holderEntity);
 
 
-                PaymentStatusEntity paymentStatus = paymentStatusRepository.findByDescription(PaymentStatusEnum.APPROVED.getName());
+                PaymentStatusEntity paymentStatus = paymentStatusRepository.findByDescription(
+                        PaymentStatusEnum.PENDING.getName()
+                ).orElseThrow(
+                        () -> new EntityNotFoundException("Status do pagamento não encontrado")
+                );
 
                 TicketEntity ticketEntity = TicketEntity.builder()
                         .ticketTypeEntity(ticketType)
