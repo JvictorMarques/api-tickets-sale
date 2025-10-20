@@ -29,7 +29,7 @@
 	<properties>
 		<java.version>25</java.version>
 		<sonar.organization>jvictormarques</sonar.organization>
-        <swagger-api.version>2.2.36</swagger-api.version>
+        <swagger-api.version>2.2.39</swagger-api.version>
         <swagger-ui.version>5.28.1</swagger-ui.version>
 	</properties>
 	<dependencies>
