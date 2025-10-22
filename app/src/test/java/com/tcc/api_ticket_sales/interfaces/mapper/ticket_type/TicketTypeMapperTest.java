@@ -1,10 +1,11 @@
 package com.tcc.api_ticket_sales.interfaces.mapper.ticket_type;
 
+import com.tcc.api_ticket_sales.application.mapper.ticket_type.TicketTypeMapper;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
 import com.tcc.api_ticket_sales.factory.EventFactory;
-import com.tcc.api_ticket_sales.interfaces.dto.ticket_type.TicketTypeCreateRequestDTO;
-import com.tcc.api_ticket_sales.interfaces.dto.ticket_type.TicketTypeCreateResponseDTO;
+import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateRequestDTO;
+import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateResponseDTO;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 

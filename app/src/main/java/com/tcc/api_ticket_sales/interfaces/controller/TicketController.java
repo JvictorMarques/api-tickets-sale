@@ -1,8 +1,8 @@
 package com.tcc.api_ticket_sales.interfaces.controller;
 
 import com.tcc.api_ticket_sales.application.service.buy_ticket.BuyTicketService;
-import com.tcc.api_ticket_sales.interfaces.dto.buy_ticket.BuyTicketRequestDTO;
-import com.tcc.api_ticket_sales.interfaces.dto.buy_ticket.BuyTicketResponseDTO;
+import com.tcc.api_ticket_sales.application.dto.buy_ticket.BuyTicketRequestDTO;
+import com.tcc.api_ticket_sales.application.dto.buy_ticket.BuyTicketResponseDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

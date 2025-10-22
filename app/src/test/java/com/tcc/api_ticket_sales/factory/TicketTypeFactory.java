@@ -2,8 +2,8 @@ package com.tcc.api_ticket_sales.factory;
 
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
-import com.tcc.api_ticket_sales.interfaces.dto.ticket_type.TicketTypeCreateRequestDTO;
-import com.tcc.api_ticket_sales.interfaces.dto.ticket_type.TicketTypeCreateResponseDTO;
+import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateRequestDTO;
+import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateResponseDTO;
 import org.instancio.Instancio;
 
 import java.math.BigDecimal;

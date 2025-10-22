@@ -1,7 +1,7 @@
 package com.tcc.api_ticket_sales.application.service.ticket_type;
 
-import com.tcc.api_ticket_sales.interfaces.dto.ticket_type.TicketTypeCreateRequestDTO;
-import com.tcc.api_ticket_sales.interfaces.dto.ticket_type.TicketTypeCreateResponseDTO;
+import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateRequestDTO;
+import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateResponseDTO;
 
 import java.util.UUID;
 

@@ -1,7 +1,7 @@
 package com.tcc.api_ticket_sales.interfaces.controller;
 
-import com.tcc.api_ticket_sales.application.service.mercadopago_webhook.MercadoPagoWebhookService;
-import com.tcc.api_ticket_sales.interfaces.dto.webhook.mercadopago.MercadoPagoWebhoookRequestDTO;
+import com.tcc.api_ticket_sales.application.service.webhook.MercadoPagoWebhookService;
+import com.tcc.api_ticket_sales.application.dto.webhook.mercadopago.MercadoPagoWebhoookRequestDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
