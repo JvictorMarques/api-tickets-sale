@@ -46,11 +46,23 @@ Gerar Nome Evento Aleatorio
     ${event_name}=    Set Variable    Evento ${random_name} ${timestamp}
     RETURN    ${event_name}
 
-Gerar Payload Sucesso Completo
+Gerar Payload Sucesso Completo Aleatório
     [Documentation]    Gera um payload com todos os campos válidos.
     ${event_name}=    Gerar Nome Evento Aleatorio
     &{payload}=    Create Dictionary
     ...    name=${event_name}
+    ...    description=Descrição completa do evento.
+    ...    location=${SUCCESS_LOCATION}
+    ...    capacity=${SUCCESS_CAPACITY}
+    ...    ageRestriction=18
+    ...    dateInitial=${FUTURE_DATE_INITIAL}
+    ...    dateFinal=${FUTURE_DATE_FINAL}
+    RETURN    ${payload}
+
+Gerar Payload Sucesso Completo 
+    [Documentation]    Gera um payload com todos os campos válidos.
+    &{payload}=    Create Dictionary
+    ...    name=teste
     ...    description=Descrição completa do evento.
     ...    location=${SUCCESS_LOCATION}
     ...    capacity=${SUCCESS_CAPACITY}
