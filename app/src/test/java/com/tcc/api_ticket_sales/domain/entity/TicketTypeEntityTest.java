@@ -78,28 +78,6 @@ class TicketTypeEntityTest {
 
     @Test
     @Tag("unit")
-    void of_shouldThrowBusinessException_WhenDateInitialIsBeforeNow(){
-        LocalDateTime start = LocalDateTime.now();
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-        EventEntity eventEntity = createEventEntityWithId();
-
-        Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketTypeEntity.of(
-                    "Ticket test",
-                    "description test",
-                    BigDecimal.valueOf(9),
-                    eventEntity,
-                    100,
-                    start,
-                    end
-            );
-        });
-
-        assertEquals("Data inicial do ingresso inválida", exception.getMessage());
-    }
-
-    @Test
-    @Tag("unit")
     void of_shouldThrowBusinessException_WhenDateFinalNull(){
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         EventEntity eventEntity = createEventEntityWithId();
@@ -113,28 +91,6 @@ class TicketTypeEntityTest {
                     100,
                     start,
                     null
-            );
-        });
-
-        assertEquals("Data final do ingresso inválida", exception.getMessage());
-    }
-
-    @Test
-    @Tag("unit")
-    void of_shouldThrowBusinessException_WhenDateFinalIsBeforeNow(){
-        LocalDateTime start = LocalDateTime.now().plusDays(1);
-        LocalDateTime end = LocalDateTime.now();
-        EventEntity eventEntity = createEventEntityWithId();
-
-        Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketTypeEntity.of(
-                    "Ticket test",
-                    "description test",
-                    BigDecimal.valueOf(9),
-                    eventEntity,
-                    100,
-                    start,
-                    end
             );
         });
 

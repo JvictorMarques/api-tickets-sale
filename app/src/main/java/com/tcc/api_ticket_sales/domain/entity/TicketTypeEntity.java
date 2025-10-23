@@ -68,11 +68,11 @@ public class TicketTypeEntity extends Auditable{
             throw new BusinessException("Nome do ingresso inválido");
         }
 
-        if(dateInitial == null || dateInitial.isBefore(LocalDateTime.now())){
+        if(dateInitial == null){
             throw new BusinessException("Data inicial do ingresso inválida");
         }
 
-        if(dateFinal == null || dateFinal.isBefore(LocalDateTime.now())){
+        if(dateFinal == null){
             throw new BusinessException("Data final do ingresso inválida");
         }
 

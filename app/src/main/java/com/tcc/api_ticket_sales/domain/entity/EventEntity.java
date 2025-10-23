@@ -66,11 +66,11 @@ public class EventEntity extends Auditable{
             throw new BusinessException("Local do evento inválido");
         }
 
-        if(dateInitial == null || dateInitial.isBefore(LocalDateTime.now())){
+        if(dateInitial == null){
             throw new BusinessException("Data inicial do evento inválida");
         }
 
-        if(dateFinal == null || dateFinal.isBefore(LocalDateTime.now())){
+        if(dateFinal == null){
             throw new BusinessException("Data final do evento inválida");
         }
 
