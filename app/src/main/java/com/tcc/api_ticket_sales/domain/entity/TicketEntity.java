@@ -61,5 +61,10 @@ public class TicketEntity extends Auditable{
         if(paymentStatusEntity == null){
             throw new BusinessException("O status de pagamento do ingresso não pode ser nulo");
         }
+
+        this.ticketTypeEntity = ticketTypeEntity;
+        this.holderEntity = holderEntity;
+        this.orderEntity = orderEntity;
+        this.paymentStatusEntity = paymentStatusEntity;
     }
 }

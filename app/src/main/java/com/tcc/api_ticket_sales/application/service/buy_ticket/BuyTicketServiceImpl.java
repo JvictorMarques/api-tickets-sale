@@ -1,5 +1,7 @@
 package com.tcc.api_ticket_sales.application.service.buy_ticket;
 
+import com.tcc.api_ticket_sales.application.exception.BuyTicketHolderDuplicateRequestException;
+import com.tcc.api_ticket_sales.application.exception.TicketTypeNotFoundException;
 import com.tcc.api_ticket_sales.domain.entity.HolderEntity;
 import com.tcc.api_ticket_sales.domain.entity.OrderEntity;
 import com.tcc.api_ticket_sales.domain.entity.PaymentStatusEntity;
@@ -88,25 +90,24 @@ public class BuyTicketServiceImpl implements BuyTicketService{
             checkDuplicateHolder(ticketRequestDTO.getHolders());
 
             TicketTypeEntity ticketType = ticketTypeRepository.findById(ticketRequestDTO.getId()).orElseThrow(
-                    () -> new EntityNotFoundException("Ingresso não encontrado para compra")
+                    () -> new TicketTypeNotFoundException(ticketRequestDTO.getId().toString())
             );
 
             ticketTypeDomainService.validateTicketTypeSale(ticketType);
 
             int quantityHolders = ticketRequestDTO.getHolders().size();
 
-            if(!ticketType.getTicketEntities().isEmpty()) {
-                if(quantityByTicket.containsKey(ticketRequestDTO.getId())){
-                    quantityByTicket.put(
-                            ticketRequestDTO.getId(),
-                            quantityByTicket.get(ticketRequestDTO.getId()) + quantityHolders
-                    );
-                }else{
-                    quantityByTicket.put(ticketRequestDTO.getId(), quantityHolders);
-                }
 
-                ticketTypeDomainService.validateCapacity(ticketType, quantityByTicket.get(ticketRequestDTO.getId()));
+            if(quantityByTicket.containsKey(ticketRequestDTO.getId())){
+                quantityByTicket.put(
+                        ticketRequestDTO.getId(),
+                        quantityByTicket.get(ticketRequestDTO.getId()) + quantityHolders
+                );
+            }else{
+                quantityByTicket.put(ticketRequestDTO.getId(), quantityHolders);
             }
+
+            ticketTypeDomainService.validateCapacity(ticketType, quantityByTicket.get(ticketRequestDTO.getId()));
 
             ticketRequestDTO.getHolders().forEach((holderDTO) -> {
                 List<HolderEntity> holderEntitiesFind = holderRepository.findByNameAndEmail(holderDTO.getName(), holderDTO.getEmail());
@@ -166,7 +167,7 @@ public class BuyTicketServiceImpl implements BuyTicketService{
             String holderEmail = holder.getEmail();
 
             if(holderExists.containsKey(holderName) && holderExists.get(holderName).equals(holderEmail)){
-                throw new BusinessException("Não é possível comprar mais de um ingresso para o mesmo titular.");
+                throw new BuyTicketHolderDuplicateRequestException(holderName);
             }else{
                 holderExists.put(holderName, holderEmail);
             }
@@ -176,15 +177,15 @@ public class BuyTicketServiceImpl implements BuyTicketService{
 
     private BigDecimal getTotalPriceOrder(BuyTicketRequestDTO buyTicketRequestDTO){
         BigDecimal totalPrice = BigDecimal.ZERO;
-        buyTicketRequestDTO.getTickets().forEach(ticketRequestDTO -> {
-            TicketTypeEntity ticketType = ticketTypeRepository.findById(ticketRequestDTO.getId()).orElseThrow(
-                    () -> new EntityNotFoundException("Ingresso não encontrado para compra")
-            );
+        for (var ticketRequestDTO : buyTicketRequestDTO.getTickets()) {
+            TicketTypeEntity ticketType = ticketTypeRepository.findById(ticketRequestDTO.getId())
+                    .orElseThrow(() -> new TicketTypeNotFoundException(ticketRequestDTO.getId().toString()));
 
-            ticketType.getPrice().multiply(new BigDecimal(ticketRequestDTO.getHolders().size())).add(
-                    totalPrice
-            );
-        });
+            BigDecimal subtotal = ticketType.getPrice()
+                    .multiply(BigDecimal.valueOf(ticketRequestDTO.getHolders().size()));
+
+            totalPrice = totalPrice.add(subtotal);
+        }
 
         return totalPrice;
     }

@@ -1,6 +1,5 @@
 package com.tcc.api_ticket_sales.application.mapper.ticket_type;
 
-import com.tcc.api_ticket_sales.application.model.TicketRequest;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateRequestDTO;
@@ -46,11 +45,11 @@ public class TicketTypeMapper {
                 .build();
     }
 
-    public TicketRequest fromTicketTypeEntityToTicketRequest(TicketTypeEntity entity) {
-        return TicketRequest.builder()
-                .id(entity.getId().toString())
-                .title(entity.getName())
-                .unitPrice(entity.getPrice())
-                .build();
-    }
+//    public TicketRequest fromTicketTypeEntityToTicketRequest(TicketTypeEntity entity) {
+//        return TicketRequest.builder()
+//                .id(entity.getId().toString())
+//                .title(entity.getName())
+//                .unitPrice(entity.getPrice())
+//                .build();
+//    }
 }

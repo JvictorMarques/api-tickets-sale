@@ -12,7 +12,7 @@ import java.util.Optional;
 public class HolderDomainService {
 
     public HolderEntity creatOrReturnExistsHolderEntity(HolderEntity holderEntity, List<HolderEntity> holderEntityFindList) {
-        Optional<HolderEntity> first = holderEntityFindList.stream().filter(holder -> holder.getDeletedAt() != null).findFirst();
+        Optional<HolderEntity> first = holderEntityFindList.stream().filter(holder -> holder.getDeletedAt() == null).findFirst();
 
         return first.orElseGet(() -> creatHolderEntity(holderEntity));
     }

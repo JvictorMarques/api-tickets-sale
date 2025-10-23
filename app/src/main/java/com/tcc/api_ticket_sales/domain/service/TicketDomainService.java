@@ -6,7 +6,7 @@ import com.tcc.api_ticket_sales.domain.entity.PaymentStatusEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
 import com.tcc.api_ticket_sales.domain.enums.PaymentStatusEnum;
-import com.tcc.api_ticket_sales.domain.exception.HolderAlreadyHasTicketTypeException;
+import com.tcc.api_ticket_sales.domain.exception.HolderAlreadyHasTicketException;
 import com.tcc.api_ticket_sales.domain.exception.InvalidAgeForEventException;
 import org.springframework.stereotype.Component;
 
@@ -32,12 +32,14 @@ public class TicketDomainService {
             }
         }
 
-        if(!holderEntity.getTicketEntities().isEmpty()){
-            List<TicketEntity> holderHasTypeTicket = holderEntity.getTicketEntities().stream().filter((ticket) -> ticket.getPaymentStatusEntity().getDescription().equals(PaymentStatusEnum.APPROVED.getName())
-                    && ticket.getTicketTypeEntity().equals(ticketTypeEntity)).toList();
+        if(holderEntity.getTicketEntities() != null && !holderEntity.getTicketEntities().isEmpty()){
+            List<TicketEntity> holderHasTypeTicket = holderEntity.getTicketEntities().stream().filter(
+                    (ticket) -> ticket.getPaymentStatusEntity().getDescription().equals(PaymentStatusEnum.APPROVED.getName())
+                    && ticket.getTicketTypeEntity().getEventEntity().equals(ticketTypeEntity.getEventEntity())
+            ).toList();
 
             if(!holderHasTypeTicket.isEmpty()){
-                throw new HolderAlreadyHasTicketTypeException(holderEntity.getName(), ticketTypeEntity.getId().toString());
+                throw new HolderAlreadyHasTicketException(holderEntity.getName(), ticketTypeEntity.getId().toString());
             }
         }
 

@@ -1,5 +1,6 @@
 package com.tcc.api_ticket_sales.application.service.ticket_type;
 
+import com.tcc.api_ticket_sales.application.exception.EventNotFoundException;
 import com.tcc.api_ticket_sales.application.exception.TicketTypeAlreadyExistsException;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
@@ -9,7 +10,6 @@ import com.tcc.api_ticket_sales.infrastructure.repository.ticket_type.TicketType
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateResponseDTO;
 import com.tcc.api_ticket_sales.application.mapper.ticket_type.TicketTypeMapper;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,7 @@ public class TicketTypeServiceImpl implements TicketTypeService {
     @Override
     @Transactional
     public TicketTypeCreateResponseDTO create(UUID eventId, TicketTypeCreateRequestDTO dto){
-        EventEntity eventEntity = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Evento não encontrado."));
+        EventEntity eventEntity = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId.toString()));
 
         if(!ticketTypeRepository.findByEventEntityIdAndNameIgnoreCase(eventId, dto.getName()).isEmpty()){
             throw new TicketTypeAlreadyExistsException();
