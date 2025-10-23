@@ -51,6 +51,10 @@ public class HolderEntity extends Auditable {
                 throw new BusinessException("Email do titular inválido");
             }
 
+            if(birthDate == null){
+                throw new BusinessException("Data de nascimento do titular inválida");
+            }
+
             this.name= name;
             this.email = email;
             this.birthDate = birthDate;
