@@ -11,7 +11,7 @@ Setup Suite Para Tickets
 
 *** Test Cases ***
 event-ticket-001 - Validar cadastro de novo evento com cadastro de novo tipo de ingresso para o mesmo
-    [Tags]          TICKET_CRUD    SUCESSO    INICIAL
+    [Tags]          ${TAG_ALL_TESTS}    SUCESSO    INICIAL
     [Documentation]    Cadastra evento e primeiro ingresso (capacidade 30)
     
     # 1. Cria evento base e captura ID
@@ -32,7 +32,7 @@ event-ticket-001 - Validar cadastro de novo evento com cadastro de novo tipo de 
 
 
 event-ticket-002 - Validar cadastro de novo tipo ingresso para o evento anterior com capacidade complementar
-    [Tags]          TICKET_CRUD    SUCESSO    COMPLEMENTAR
+    [Tags]          ${TAG_ALL_TESTS}    SUCESSO    COMPLEMENTAR
     [Documentation]    Cadastra segundo ingresso (capacidade 20) - Total: 50/100
     
     # 1. Usa evento criado no cenário 001
@@ -52,7 +52,7 @@ event-ticket-002 - Validar cadastro de novo tipo ingresso para o evento anterior
 
 
 event-ticket-003 - Validar impossibilidade de cadastro de novo tipo de ingresso com capacidade superior
-    [Tags]          TICKET_CRUD    FALHA    CAPACIDADE_EXCEDIDA
+    [Tags]          ${TAG_ALL_TESTS}    FALHA    CAPACIDADE_EXCEDIDA
     [Documentation]    Tenta cadastrar 60 ingressos - Limite: 50/100 - Excede: 10
     
     ${event_id}=    Set Variable    ${GLOBAL_EVENT_ID}
@@ -67,7 +67,7 @@ event-ticket-003 - Validar impossibilidade de cadastro de novo tipo de ingresso 
 
 
 event-ticket-004 - Validar impossibilidade de cadastro com data de início superior à do evento
-    [Tags]          TICKET_CRUD    FALHA    DATA_INVALIDA
+    [Tags]          ${TAG_ALL_TESTS}    FALHA    DATA_INVALIDA
     [Documentation]    Tenta cadastrar com data inicial após término do evento
     
     ${event_id}=    Set Variable    ${GLOBAL_EVENT_ID}
@@ -83,7 +83,7 @@ event-ticket-004 - Validar impossibilidade de cadastro com data de início super
 
 
 event-ticket-005 - Validar impossibilidade de cadastro com nome de tipo de ingresso duplicado
-    [Tags]          TICKET_CRUD    FALHA    NOME_DUPLICADO
+    [Tags]          ${TAG_ALL_TESTS}    FALHA    NOME_DUPLICADO
     [Documentation]    Tenta cadastrar com nome já existente (do cenário 001)
     
     ${event_id}=    Set Variable    ${GLOBAL_EVENT_ID}
@@ -98,7 +98,7 @@ event-ticket-005 - Validar impossibilidade de cadastro com nome de tipo de ingre
 
 
 event-ticket-006 - Validar impossibilidade de cadastro para evento inexistente
-    [Tags]          TICKET_CRUD    FALHA    EVENTO_INEXISTENTE
+    [Tags]          ${TAG_ALL_TESTS}    FALHA    EVENTO_INEXISTENTE
     [Documentation]    Tenta cadastrar para UUID que não existe
     
     # 1. ID inexistente e payload
@@ -111,7 +111,7 @@ event-ticket-006 - Validar impossibilidade de cadastro para evento inexistente
 
 
 event-ticket-007 - Validar cadastro com capacidade complementar e data de início no dia do evento
-    [Tags]          TICKET_CRUD    SUCESSO    DATA_EVENTO
+    [Tags]          ${TAG_ALL_TESTS}    SUCESSO    DATA_EVENTO
     [Documentation]    Cadastra último lote (50) com data inicial igual à do evento
     
     ${event_id}=    Set Variable    ${GLOBAL_EVENT_ID}
