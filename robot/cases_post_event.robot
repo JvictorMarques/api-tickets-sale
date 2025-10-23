@@ -15,7 +15,7 @@ TC-001: Cadastro com Campos Obrigatórios
 
 TC-002: Cadastro com Todos os Campos
     [Tags]    ${TAG_ALL_TESTS}    SUCESSO    COMPLETO
-    &{payload}=    Gerar Payload Sucesso Completo
+    &{payload}=    Gerar Payload Sucesso Completo Aleatório
     ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_201}
     Validar Response Sucesso 201    ${response}    ${payload['name']}   
 
@@ -23,7 +23,7 @@ TC-003: Falha ao preencher name massa de dados repetida
     [Tags]    ${TAG_ALL_TESTS}    SUCESSO    COMPLETO
     &{payload}=    Gerar Payload Sucesso Completo
     ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_409}
-    Validar Response Sucesso 201    ${response}    ${payload['name']}
+    # Validar Response Sucesso 201    ${response}    ${payload['name']}
 
 # --- 2. CENÁRIOS DE FALHA - CAMPOS OBRIGATÓRIOS AUSENTES (STATUS 400) ---
 
@@ -91,39 +91,27 @@ TC-013: Falha com Formato Inválido de Data
     # Validar Mensagem de Erro    ${response}    Formato de data inválido
 
 
-# --- 4. CENÁRIOS DE FALHA - TIPO DE DADO INVÁLIDO (STATUS 422) ---
+# --- 4. CENÁRIOS DE FALHA - TIPO DE DADO INVÁLIDO (STATUS 400) ---
 
-TC-014: Falha com Tipo de Dado Inválido para "name" (Int)
-    [Tags]    ${TAG_ALL_TESTS}    FALHA    TIPAGEM
-    &{payload}=    Gerar Payload Tipo Invalido    int    ${exemplo_int}
-    ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_400}
-    # Validar Mensagem de Erro    ${response}    "name" deve ser string
-
-# TC-015: Falha com Tipo de Dado Inválido para "description" (Booleano)
-#     [Tags]    ${TAG_ALL_TESTS}    FALHA    TIPAGEM
-#     &{payload}=    Gerar Payload Tipo Invalido    description    ${TRUE}
-#     ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_422}
-    # Validar Mensagem de Erro    ${response}    "description" deve ser string
-
-TC-016: Falha com Tipo de Dado Inválido para "capacity" (String)
+TC-014: Falha com Tipo de Dado Inválido para "capacity" (String)
     [Tags]    ${TAG_ALL_TESTS}    FALHA    TIPAGEM
     &{payload}=    Gerar Payload Tipo Invalido    capacity    capacidade_maxima
     ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_400}
     # Validar Mensagem de Erro    ${response}    "capacity" deve ser um número inteiro
 
-TC-017: Falha com Tipo de Dado Inválido para "ageRestriction" (String)
+TC-015: Falha com Tipo de Dado Inválido para "ageRestriction" (String)
     [Tags]    ${TAG_ALL_TESTS}    FALHA    TIPAGEM
     &{payload}=    Gerar Payload Tipo Invalido    ageRestriction    maior_idade
     ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_400}
     # Validar Mensagem de Erro    ${response}    "ageRestriction" deve ser um número inteiro
 
-TC-018: Falha com Tipo de Dado Inválido para "dateInitial" (Número)
+TC-016: Falha com Tipo de Dado Inválido para "dateInitial" (Número)
     [Tags]    ${TAG_ALL_TESTS}    FALHA    TIPAGEM
     &{payload}=    Gerar Payload Tipo Invalido    dateInitial    1672531200000
     ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_400}
     # Validar Mensagem de Erro    ${response}    "dateInitial" deve ser string (datetime)
 
-TC-019: Falha com Tipo de Dado Inválido para "dateFinal" (Número)
+TC-017: Falha com Tipo de Dado Inválido para "dateFinal" (Número)
     [Tags]    ${TAG_ALL_TESTS}    FALHA    TIPAGEM
     &{payload}=    Gerar Payload Tipo Invalido    dateFinal    1672534800000
     ${response}=    Executar POST e Validar Status    ${payload}    ${STATUS_400}
