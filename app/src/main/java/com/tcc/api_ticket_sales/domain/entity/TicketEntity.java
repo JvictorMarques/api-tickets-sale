@@ -1,125 +1,70 @@
 package com.tcc.api_ticket_sales.domain.entity;
 
-
 import com.tcc.api_ticket_sales.domain.exception.BusinessException;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
-import static com.tcc.api_ticket_sales.domain.utils.CheckDate.checkDateInitialGreaterThanDateFinal;
-
-
 @Data
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name= "tickets")
+@NoArgsConstructor
+@Table(name="tickets")
 public class TicketEntity extends Auditable{
 
     @Id
-    @GeneratedValue(strategy= GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String name;
-
-    private String description;
-
-    @Column(precision = 10, scale = 2, nullable = false)
-    private BigDecimal price;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ticket_type_id")
+    private TicketTypeEntity ticketTypeEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id")
-    private EventEntity eventEntity;
+    @JoinColumn(name = "holder_id")
+    private HolderEntity holderEntity;
 
-    @Column(nullable = false)
-    private int capacity;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private OrderEntity orderEntity;
 
-    @Column(nullable = false)
-    private LocalDateTime dateInitial;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_status_id")
+    private PaymentStatusEntity paymentStatusEntity;
 
-    @Column(nullable = false)
-    private LocalDateTime dateFinal;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "ticket_holder",
-            joinColumns = @JoinColumn(name = "ticket_id"),
-            inverseJoinColumns = @JoinColumn(name = "holder_id")
-    )
-    private List<HolderEntity> holderEntities = new ArrayList<>();
-
-
-    private TicketEntity(
-            String name,
-            String description,
-            BigDecimal price,
-            EventEntity eventEntity,
-            int capacity,
-            LocalDateTime dateInitial,
-            LocalDateTime dateFinal
-    ) {
-        if(name == null || name.isBlank()){
-            throw new BusinessException("Nome do ingresso inválido");
+    public TicketEntity(
+            TicketTypeEntity ticketTypeEntity,
+            HolderEntity holderEntity,
+            OrderEntity orderEntity,
+            PaymentStatusEntity paymentStatusEntity
+    ){
+        if(ticketTypeEntity == null){
+            throw new BusinessException("O tipo do ingresso não pode ser nulo");
         }
 
-        if(dateInitial == null || dateInitial.isBefore(LocalDateTime.now())){
-            throw new BusinessException("Data inicial do ingresso inválida");
+        if(holderEntity == null){
+            throw new BusinessException("O titular do ingresso não pode ser nulo");
         }
 
-        if(dateFinal == null || dateFinal.isBefore(LocalDateTime.now())){
-            throw new BusinessException("Data final do ingresso inválida");
+        if(orderEntity == null){
+            throw new BusinessException("A ordem do ingresso não pode ser nula");
         }
 
-        if(capacity <= 0){
-            throw new BusinessException("Capacidade do ingresso inválida");
+        if(paymentStatusEntity == null){
+            throw new BusinessException("O status de pagamento do ingresso não pode ser nulo");
         }
 
-        if(price == null || price.compareTo(BigDecimal.ZERO) <= 0){
-            throw new BusinessException("Preço do ingresso inválido");
-        }
-
-        if(eventEntity == null){
-            throw new BusinessException("Evento inválido para vincular o ingresso");
-        }
-
-        checkDateInitialGreaterThanDateFinal(dateInitial, dateFinal);
-
-        this.name= name;
-        this.description = description;
-        this.price = price;
-        this.eventEntity = eventEntity;
-        this.capacity = capacity;
-        this.dateInitial = dateInitial;
-        this.dateFinal = dateFinal;
-    }
-
-    public static TicketEntity of(String name,
-                                  String description,
-                                  BigDecimal price,
-                                  EventEntity eventEntity,
-                                  int capacity,
-                                  LocalDateTime dateInitial,
-                                  LocalDateTime dateFinal){
-        return new  TicketEntity(name,
-                description,
-                price,
-                eventEntity,
-                capacity,
-                dateInitial,
-                dateFinal);
+        this.ticketTypeEntity = ticketTypeEntity;
+        this.holderEntity = holderEntity;
+        this.orderEntity = orderEntity;
+        this.paymentStatusEntity = paymentStatusEntity;
     }
 }

@@ -1,0 +1,16 @@
+package com.tcc.api_ticket_sales.application.dto.webhook.mercadopago;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class MercadoPagoWebhookDataRequestDTO {
+    @NotBlank
+    private String id;
+}

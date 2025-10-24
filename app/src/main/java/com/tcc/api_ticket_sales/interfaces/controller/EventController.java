@@ -1,12 +1,12 @@
 package com.tcc.api_ticket_sales.interfaces.controller;
 
 import com.tcc.api_ticket_sales.application.service.event.EventService;
-import com.tcc.api_ticket_sales.application.service.ticket.TicketService;
+import com.tcc.api_ticket_sales.application.service.ticket_type.TicketTypeService;
 import com.tcc.api_ticket_sales.interfaces.controller.exception.RestExceptionMessage;
-import com.tcc.api_ticket_sales.interfaces.dto.event.EventCreateDTO;
-import com.tcc.api_ticket_sales.interfaces.dto.event.EventResponseDTO;
-import com.tcc.api_ticket_sales.interfaces.dto.ticket.TicketCreateRequestDTO;
-import com.tcc.api_ticket_sales.interfaces.dto.ticket.TicketCreateResponseDTO;
+import com.tcc.api_ticket_sales.application.dto.event.EventCreateDTO;
+import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
+import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateRequestDTO;
+import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -29,7 +29,7 @@ import java.util.UUID;
 public class EventController {
 
     private final EventService eventService;
-    private final TicketService ticketService;
+    private final TicketTypeService ticketTypeService;
 
     @Operation(
             summary = "Cadastrar Evento"
@@ -126,7 +126,7 @@ public class EventController {
             summary = "Cadastrar ingresso a um evento"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Ingresso cadastrado com sucesso"),
+            @ApiResponse(responseCode = "201", description = "Tipo de ingresso cadastrado com sucesso"),
             @ApiResponse(
                     responseCode = "400",
                     description = "Formato de requisição inválido e validações dos campos",
@@ -197,7 +197,7 @@ public class EventController {
                                             summary = "Evento encerrado",
                                             value = """
                                             {
-                                                "message": "Operação inválida.",
+                                                "message": "Evento encerrado.",
                                                 "status": 409,
                                                 "timeStamp": "2025-10-13T18:00:00",
                                                 "errors": [
@@ -207,22 +207,22 @@ public class EventController {
                                             """
                                     ),
                                     @ExampleObject(
-                                            name="Evento não possui vagas suficientes para novos ingressos",
-                                            summary = "Evento não possui vagas suficientes para novos ingressos",
+                                            name="Evento não possui vagas suficientes para novos tipos de ingressos",
+                                            summary = "Evento não possui vagas suficientes para novos tipos de ingressos",
                                             value = """
                                             {
-                                                "message": "Capacidade insuficiente: apenas 3 vagas restantes no evento para novos ingressos.",
+                                                "message": "Capacidade insuficiente: apenas 3 vagas restantes no evento para novos tipos de ingressos.",
                                                 "status": 409,
                                                 "timeStamp": "2025-10-13T18:00:00",
                                                 "errors": [
-                                                    "Capacidade insuficiente: apenas 3 vagas restantes no evento para novos ingressos."
+                                                    "Capacidade insuficiente: apenas 3 vagas restantes no evento para novos tipos de ingressos."
                                                 ]
                                             }
                                             """
                                     ),
                                     @ExampleObject(
-                                            name = "A data de venda do ingresso não pode ocorrer após a data do evento",
-                                            summary = "A data de venda do ingresso não pode ocorrer após a data do evento",
+                                            name = "A data de venda do tipo de ingresso não pode ocorrer após a data do evento",
+                                            summary = "A data de venda do tipo de ingresso não pode ocorrer após a data do evento",
                                             value = """
                                             {
                                                 "message": "A data de venda dos ingressos não pode ser após o evento.",
@@ -235,15 +235,15 @@ public class EventController {
                                             """
                                     ),
                                     @ExampleObject(
-                                            name = "O evento já possui um ingresso com as mesmas características",
-                                            summary = "O evento já possui um ingresso com as mesmas características",
+                                            name = "O evento já possui um tipo de ingresso com as mesmas características",
+                                            summary = "O evento já possui um tipo de ingresso com as mesmas características",
                                             value = """
                                             {
-                                                "message": "Ingresso duplicado: este evento já possui o ingresso informado.",
+                                                "message": "Tipo de ingresso duplicado: este evento já possui o tipo de ingresso informado.",
                                                 "status": 409,
                                                 "timeStamp": "2025-10-13T18:00:00",
                                                 "errors": [
-                                                    "Ingresso duplicado: este evento já possui o ingresso informado."
+                                                    "Tipo de ingresso duplicado: este evento já possui o tipo de ingresso informado."
                                                 ]
                                             }
                                             """
@@ -273,11 +273,11 @@ public class EventController {
                     )
             ),
     })
-    @PostMapping("/{eventId}/ticket")
-    public ResponseEntity<TicketCreateResponseDTO> createTicket(@RequestBody @Valid TicketCreateRequestDTO dto, @PathVariable UUID eventId){
-        TicketCreateResponseDTO ticket = ticketService.create(eventId, dto);
+    @PostMapping("/{eventId}/ticket-type")
+    public ResponseEntity<TicketTypeCreateResponseDTO> createTicketType(@RequestBody @Valid TicketTypeCreateRequestDTO dto, @PathVariable UUID eventId){
+        TicketTypeCreateResponseDTO ticket = ticketTypeService.create(eventId, dto);
 
-        URI location = URI.create("/ticket/" + ticket.getId());
+        URI location = URI.create("/ticket-type/" + ticket.getId());
         return ResponseEntity.created(location).body(ticket);
     }
 }
