@@ -20,7 +20,7 @@ public class MercadoPagoNotificationGateway {
             Payment payment = mercadoPagoClient.getPayment(paymentId);
 
             if(payment == null){
-                throw new BusinessException("Payment not found");
+                throw new BusinessException("Pagamento do mercado pago não encontrado");
             }
 
             String paymentStatus = payment.getStatus();

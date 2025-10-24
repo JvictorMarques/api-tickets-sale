@@ -25,9 +25,9 @@ public class TicketDomainService {
     ){
         int ageRestriction = ticketTypeEntity.getEventEntity().getAgeRestriction();
         if(ageRestriction > 0){
-            long ageHolder = ChronoUnit.YEARS.between(LocalDate.now(), holderEntity.getBirthDate());
+            long ageHolder = ChronoUnit.YEARS.between(holderEntity.getBirthDate(), LocalDate.now());
 
-            if(ageHolder > ageRestriction){
+            if(ageHolder < ageRestriction){
                 throw new InvalidAgeForEventException(holderEntity.getName());
             }
         }

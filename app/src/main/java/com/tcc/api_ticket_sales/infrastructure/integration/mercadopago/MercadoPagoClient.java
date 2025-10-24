@@ -39,10 +39,4 @@ public class MercadoPagoClient {
         PaymentClient paymentClient = new PaymentClient();
         return paymentClient.get(paymentId);
     }
-
-    public Order getOrder(String orderId) throws MPException, MPApiException {
-        OrderClient orderClient = new OrderClient();
-
-        return orderClient.get(orderId);
-    }
 }

@@ -40,5 +40,5 @@ public class MercadoPagoWebhoookRequestDTO {
 
     @NotNull
     @Valid
-    private MercadoPagoWebhoookDataRequestDTO data;
+    private MercadoPagoWebhookDataRequestDTO data;
 }

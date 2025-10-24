@@ -18,7 +18,7 @@ public class HolderDomainService {
     }
 
     public HolderEntity creatHolderEntity(HolderEntity holderEntity){
-        if(holderEntity.getBirthDate() == null || holderEntity.getBirthDate().isAfter(LocalDate.now())){
+        if(holderEntity.getBirthDate().isAfter(LocalDate.now())){
             throw new BusinessException("Data de nascimento do titular inválida");
         }
 

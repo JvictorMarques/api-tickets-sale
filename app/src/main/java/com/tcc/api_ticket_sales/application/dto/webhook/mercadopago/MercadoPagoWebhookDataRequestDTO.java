@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MercadoPagoWebhoookDataRequestDTO {
+public class MercadoPagoWebhookDataRequestDTO {
     @NotBlank
     private String id;
 }
