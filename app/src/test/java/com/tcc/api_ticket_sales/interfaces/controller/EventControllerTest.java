@@ -112,7 +112,7 @@ class EventControllerTest {
             }
         """;
         mockMvc.perform(
-                post(String.format("/event/%s/ticket", uuid))
+                post(String.format("/event/%s/ticket-type", uuid))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(invalidJson)
         ).andDo(print()).andExpect(status().isBadRequest());
@@ -125,7 +125,7 @@ class EventControllerTest {
         TicketTypeCreateRequestDTO ticketCreateDTO = createTicketTypeCreateRequestDTOInvalid();
 
         mockMvc.perform(
-                post(String.format("/event/%s/ticket", uuid))
+                post(String.format("/event/%s/ticket-type", uuid))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(ticketCreateDTO))
         ).andExpect(status().isBadRequest());
@@ -141,12 +141,12 @@ class EventControllerTest {
         when(ticketTypeService.create(any(), any())).thenReturn(dtoResponse);
 
         mockMvc.perform(
-                        post(String.format("/event/%s/ticket", uuid))
+                        post(String.format("/event/%s/ticket-type", uuid))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(dtoRequest))
                 ).andExpect(status().isCreated())
                 .andExpect(
-                        header().string("Location", "/ticket/"+ dtoResponse.getId())
+                        header().string("Location", "/ticket-type/"+ dtoResponse.getId())
                 )
                 .andExpect(jsonPath("$.id").value(String.valueOf(dtoResponse.getId())))
                 .andExpect(jsonPath("$.name").value(dtoResponse.getName()));
