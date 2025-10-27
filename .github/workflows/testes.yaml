@@ -31,7 +31,7 @@ jobs:
         working-directory: ./app
         run: mvn test jacoco:report -Dgroups=unit
       - name: Upload da pasta target (artifact)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ env.TARGET }}
           path: ./app/target
