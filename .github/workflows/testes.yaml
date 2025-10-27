@@ -86,7 +86,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: Download da pasta target (artifact)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: ${{ env.TARGET }}
           path: ./app/target
