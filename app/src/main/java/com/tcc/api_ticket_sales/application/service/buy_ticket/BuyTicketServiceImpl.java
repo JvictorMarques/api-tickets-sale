@@ -1,6 +1,7 @@
 package com.tcc.api_ticket_sales.application.service.buy_ticket;
 
 import com.tcc.api_ticket_sales.application.exception.BuyTicketHolderDuplicateRequestException;
+import com.tcc.api_ticket_sales.application.exception.PaymentStatusNotFoundException;
 import com.tcc.api_ticket_sales.application.exception.TicketTypeNotFoundException;
 import com.tcc.api_ticket_sales.domain.entity.HolderEntity;
 import com.tcc.api_ticket_sales.domain.entity.OrderEntity;
@@ -75,7 +76,7 @@ public class BuyTicketServiceImpl implements BuyTicketService{
         PaymentStatusEntity paymentStatusPending = paymentStatusRepository.findByDescription(
                 PaymentStatusEnum.PENDING.getName()
         ).orElseThrow(
-                () -> new EntityNotFoundException("Status do pagamento não encontrado")
+                PaymentStatusNotFoundException::new
         );
 
         List<ItemPaymentRequestDTO> itemPaymentRequestDTOS = new ArrayList<>();
