@@ -8,8 +8,10 @@ import com.tcc.api_ticket_sales.domain.exception.TicketTypeClosedException;
 import com.tcc.api_ticket_sales.domain.exception.TicketTypeDatesExceedsEventDateException;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
+import com.tcc.api_ticket_sales.domain.model.TicketBuyModel;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -69,4 +71,10 @@ public class TicketTypeDomainService {
         }
     }
 
+    public BigDecimal calculateTotalPrice(List<TicketBuyModel> tickets){
+        return tickets.stream().map(
+                ticketBuyModel -> ticketBuyModel.getTicketTypeEntity().getPrice()
+                        .multiply(BigDecimal.valueOf(ticketBuyModel.getQuantity()))
+        ).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }
