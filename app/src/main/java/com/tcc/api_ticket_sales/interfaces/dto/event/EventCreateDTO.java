@@ -4,6 +4,7 @@ import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class EventCreateDTO {
     @Positive(message = "Capacidade do evento precisa ser maior que 0")
     private int capacity;
 
+    @PositiveOrZero(message = "A idade de restrição não pode ser negativa")
     private int ageRestriction;
 
     @NotNull(message = "Data/hora inicial é obrigatório")
