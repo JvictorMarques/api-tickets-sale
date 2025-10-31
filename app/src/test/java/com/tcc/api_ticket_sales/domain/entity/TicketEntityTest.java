@@ -1,293 +1,88 @@
 package com.tcc.api_ticket_sales.domain.entity;
 
 import com.tcc.api_ticket_sales.domain.exception.BusinessException;
-import com.tcc.api_ticket_sales.domain.exception.DateInitialGreaterThanDateFinalException;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import static com.tcc.api_ticket_sales.factory.HolderFactory.createHolderEntityWithId;
+import static com.tcc.api_ticket_sales.factory.OrderFactory.createOrderEntityWithId;
+import static com.tcc.api_ticket_sales.factory.PaymentStatusFactory.createPaymentStatusEntity;
+import static com.tcc.api_ticket_sales.factory.TicketTypeFactory.createTicketTypeEntityWithId;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWithId;
-import static org.junit.jupiter.api.Assertions.*;
 
 class TicketEntityTest {
 
     @Test
     @Tag("unit")
-    void of_shouldThrowBusinessException_WhenNameIsNull(){
-        LocalDateTime start = LocalDateTime.now().plusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(2);
-        EventEntity eventEntity = createEventEntityWithId();
+    public void of_ShouldThrowBusinessException_WhenTypeTicketEntityIsNull(){
+        OrderEntity orderEntity = createOrderEntityWithId();
+        HolderEntity holderEntity = createHolderEntityWithId();
+        PaymentStatusEntity paymentStatusEntity = createPaymentStatusEntity();
 
         Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
+            new TicketEntity(
                     null,
-                    "description test",
-                    BigDecimal.valueOf(9),
-                    eventEntity,
-                    100,
-                    start,
-                    end
+                    holderEntity,
+                    orderEntity,
+                    paymentStatusEntity
             );
         });
-        assertEquals("Nome do ingresso inválido", exception.getMessage());
+        assertEquals("O tipo do ingresso não pode ser nulo", exception.getMessage());
     }
 
     @Test
     @Tag("unit")
-    void of_shouldThrowBusinessException_WhenNameIsEmpty(){
-        LocalDateTime start = LocalDateTime.now().plusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(2);
-        EventEntity eventEntity = createEventEntityWithId();
+    public void of_ShouldThrowBusinessException_WhenHolderEntityIsNull(){
+        TicketTypeEntity ticketTypeEntity = createTicketTypeEntityWithId();
+        OrderEntity orderEntity = createOrderEntityWithId();
+        PaymentStatusEntity paymentStatusEntity = createPaymentStatusEntity();
 
         Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
-                    "",
-                    "description test",
-                    BigDecimal.valueOf(9),
-                    eventEntity,
-                    100,
-                    start,
-                    end
-            );
-        });
-        assertEquals("Nome do ingresso inválido", exception.getMessage());
-    }
-
-    @Test
-    @Tag("unit")
-    void of_shouldThrowBusinessException_WhenDateInitialNull(){
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-        EventEntity eventEntity = createEventEntityWithId();
-
-        Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
-                    "Ticket test",
-                    "description test",
-                    BigDecimal.valueOf(9),
-                    eventEntity,
-                    100,
+            new TicketEntity(
+                    ticketTypeEntity,
                     null,
-                    end
+                    orderEntity,
+                    paymentStatusEntity
             );
         });
-
-        assertEquals("Data inicial do ingresso inválida", exception.getMessage());
+        assertEquals("O titular do ingresso não pode ser nulo", exception.getMessage());
     }
 
     @Test
     @Tag("unit")
-    void of_shouldThrowBusinessException_WhenDateInitialIsBeforeNow(){
-        LocalDateTime start = LocalDateTime.now();
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-        EventEntity eventEntity = createEventEntityWithId();
+    public void of_ShouldThrowBusinessException_WhenOrderEntityIsNull(){
+        TicketTypeEntity ticketTypeEntity = createTicketTypeEntityWithId();
+        HolderEntity holderEntity = createHolderEntityWithId();
+        PaymentStatusEntity paymentStatusEntity = createPaymentStatusEntity();
 
         Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
-                    "Ticket test",
-                    "description test",
-                    BigDecimal.valueOf(9),
-                    eventEntity,
-                    100,
-                    start,
-                    end
+            new TicketEntity(
+                    ticketTypeEntity,
+                    holderEntity,
+                    null,
+                    paymentStatusEntity
             );
         });
-
-        assertEquals("Data inicial do ingresso inválida", exception.getMessage());
+        assertEquals("A ordem do ingresso não pode ser nula", exception.getMessage());
     }
 
     @Test
     @Tag("unit")
-    void of_shouldThrowBusinessException_WhenDateFinalNull(){
-        LocalDateTime start = LocalDateTime.now().plusDays(1);
-        EventEntity eventEntity = createEventEntityWithId();
+    public void of_ShouldThrowBusinessException_WhenPaymentStatusEntityIsNull(){
+        TicketTypeEntity ticketTypeEntity = createTicketTypeEntityWithId();
+        OrderEntity orderEntity = createOrderEntityWithId();
+        HolderEntity holderEntity = createHolderEntityWithId();
 
         Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
-                    "Ticket test",
-                    "description test",
-                    BigDecimal.valueOf(9),
-                    eventEntity,
-                    100,
-                    start,
+            new TicketEntity(
+                    ticketTypeEntity,
+                    holderEntity,
+                    orderEntity,
                     null
             );
         });
-
-        assertEquals("Data final do ingresso inválida", exception.getMessage());
-    }
-
-    @Test
-    @Tag("unit")
-    void of_shouldThrowBusinessException_WhenDateFinalIsBeforeNow(){
-        LocalDateTime start = LocalDateTime.now().plusDays(1);
-        LocalDateTime end = LocalDateTime.now();
-        EventEntity eventEntity = createEventEntityWithId();
-
-        Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
-                    "Ticket test",
-                    "description test",
-                    BigDecimal.valueOf(9),
-                    eventEntity,
-                    100,
-                    start,
-                    end
-            );
-        });
-
-        assertEquals("Data final do ingresso inválida", exception.getMessage());
-    }
-
-    @Test
-    @Tag("unit")
-    void of_shouldThrowDateInitialGreaterThanDateFinalException_WhenDateInitialGreaterThanDateFinal(){
-        LocalDateTime start = LocalDateTime.now().plusDays(2);
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-        EventEntity eventEntity = createEventEntityWithId();
-
-        assertThrows(DateInitialGreaterThanDateFinalException.class, () -> {
-            TicketEntity.of(
-                    "Ticket test",
-                    "description test",
-                    BigDecimal.valueOf(9),
-                    eventEntity,
-                    100,
-                    start,
-                    end
-            );
-        });
-    }
-
-    @Test
-    @Tag("unit")
-    void of_shouldThrowBusinessException_WhenCapacityEqual0(){
-        LocalDateTime start = LocalDateTime.now().plusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-
-        EventEntity eventEntity = createEventEntityWithId();
-
-        Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
-                    "Tickt test",
-                    "description test",
-                    BigDecimal.valueOf(9),
-                    eventEntity,
-                    0,
-                    start,
-                    end
-            );
-        });
-        assertEquals("Capacidade do ingresso inválida", exception.getMessage());
-    }
-
-    @Test
-    @Tag("unit")
-    void of_shouldThrowBusinessException_WhenCapacityLessThan0(){
-        LocalDateTime start = LocalDateTime.now().plusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-
-        EventEntity eventEntity = createEventEntityWithId();
-
-        Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
-                    "Tickt test",
-                    "description test",
-                    BigDecimal.valueOf(9),
-                    eventEntity,
-                    -2,
-                    start,
-                    end
-            );
-        });
-        assertEquals("Capacidade do ingresso inválida", exception.getMessage());
-    }
-
-    @Test
-    @Tag("unit")
-    void of_shouldThrowBusinessException_WhenPriceEqual0(){
-        LocalDateTime start = LocalDateTime.now().plusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-
-        EventEntity eventEntity = createEventEntityWithId();
-
-        Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
-                    "Ticket test",
-                    "description test",
-                    BigDecimal.valueOf(0),
-                    eventEntity,
-                    10,
-                    start,
-                    end
-            );
-        });
-        assertEquals("Preço do ingresso inválido", exception.getMessage());
-    }
-
-    @Test
-    @Tag("unit")
-    void of_shouldThrowBusinessException_WhenPriceLessThan0(){
-        LocalDateTime start = LocalDateTime.now().plusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-
-        EventEntity eventEntity = createEventEntityWithId();
-
-        Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
-                    "Tickt test",
-                    "description test",
-                    BigDecimal.valueOf(-1),
-                    eventEntity,
-                    10,
-                    start,
-                    end
-            );
-        });
-        assertEquals("Preço do ingresso inválido", exception.getMessage());
-    }
-
-    @Test
-    @Tag("unit")
-    void of_shouldThrowBusinessException_WhenPriceIsNull(){
-        LocalDateTime start = LocalDateTime.now().plusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-
-        EventEntity eventEntity = createEventEntityWithId();
-
-        Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
-                    "Tickt test",
-                    "description test",
-                    null,
-                    eventEntity,
-                    10,
-                    start,
-                    end
-            );
-        });
-        assertEquals("Preço do ingresso inválido", exception.getMessage());
-    }
-
-    @Test
-    @Tag("unit")
-    void of_shouldThrowBusinessException_WhenEventEntityNull(){
-        LocalDateTime start = LocalDateTime.now().plusDays(1);
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-
-        Exception exception = assertThrows(BusinessException.class, () -> {
-            TicketEntity.of(
-                    "Tickt test",
-                    "description test",
-                    BigDecimal.valueOf(9),
-                    null,
-                    10,
-                    start,
-                    end
-            );
-        });
-        assertEquals("Evento inválido para vincular o ingresso", exception.getMessage());
+        assertEquals("O status de pagamento do ingresso não pode ser nulo", exception.getMessage());
     }
 }

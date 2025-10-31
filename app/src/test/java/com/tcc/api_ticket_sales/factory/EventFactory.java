@@ -1,8 +1,8 @@
 package com.tcc.api_ticket_sales.factory;
 
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
-import com.tcc.api_ticket_sales.interfaces.dto.event.EventCreateDTO;
-import com.tcc.api_ticket_sales.interfaces.dto.event.EventResponseDTO;
+import com.tcc.api_ticket_sales.application.dto.event.EventCreateDTO;
+import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
 import org.instancio.Instancio;
 
 import java.time.LocalDateTime;

@@ -1,5 +1,5 @@
 package com.tcc.api_ticket_sales.infrastructure.repository.event;
-import com.tcc.api_ticket_sales.interfaces.dto.event.EventCreateDTO;
+import com.tcc.api_ticket_sales.application.dto.event.EventCreateDTO;
 
 public interface EventRepositoryCustom {
 
