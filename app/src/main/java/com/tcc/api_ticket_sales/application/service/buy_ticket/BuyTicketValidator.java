@@ -53,6 +53,7 @@ public class BuyTicketValidator {
             int quantityHolders = ticketRequest.getHolders().size();
             quantityByTicket.merge(ticketRequest.getId(), quantityHolders, Integer::sum);
 
+            ticketTypeDomainService.validateTicketTypeSale(ticketType);
             ticketTypeDomainService.validateCapacity(ticketType, quantityByTicket.get(ticketRequest.getId()));
         }
     }
