@@ -44,12 +44,4 @@ public class TicketTypeMapper {
                 .updatedAt(entity.getUpdatedAt())
                 .build();
     }
-
-//    public TicketRequest fromTicketTypeEntityToTicketRequest(TicketTypeEntity entity) {
-//        return TicketRequest.builder()
-//                .id(entity.getId().toString())
-//                .title(entity.getName())
-//                .unitPrice(entity.getPrice())
-//                .build();
-//    }
 }

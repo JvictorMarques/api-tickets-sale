@@ -1,6 +1,5 @@
-package com.tcc.api_ticket_sales.interfaces.mapper.ticket_type;
+package com.tcc.api_ticket_sales.application.mapper.ticket_type;
 
-import com.tcc.api_ticket_sales.application.mapper.ticket_type.TicketTypeMapper;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
 import com.tcc.api_ticket_sales.factory.EventFactory;

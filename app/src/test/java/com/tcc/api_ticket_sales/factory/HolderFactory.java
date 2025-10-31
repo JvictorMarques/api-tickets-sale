@@ -1,6 +1,8 @@
 package com.tcc.api_ticket_sales.factory;
 
+import com.tcc.api_ticket_sales.application.dto.holder.HolderCreateRequestDTO;
 import com.tcc.api_ticket_sales.domain.entity.HolderEntity;
+import org.instancio.Instancio;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -28,5 +30,9 @@ public class HolderFactory {
                 "Descrição Teste",
                 LocalDate.now()
         );
+    }
+
+    public static HolderCreateRequestDTO createHolderCreateRequestDTO(){
+        return Instancio.create(HolderCreateRequestDTO.class);
     }
 }

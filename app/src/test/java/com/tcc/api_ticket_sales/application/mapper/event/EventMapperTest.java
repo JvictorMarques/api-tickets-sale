@@ -1,6 +1,5 @@
-package com.tcc.api_ticket_sales.interfaces.mapper.event;
+package com.tcc.api_ticket_sales.application.mapper.event;
 
-import com.tcc.api_ticket_sales.application.mapper.event.EventMapper;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.application.dto.event.EventCreateDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
