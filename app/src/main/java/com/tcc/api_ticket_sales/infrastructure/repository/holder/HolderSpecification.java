@@ -17,8 +17,9 @@ public class HolderSpecification {
 
             return cb.and(
                     cb.equal(joinTicket.get("ticketTypeEntity").get("id"), ticketTypeId),
+                    cb.isNull(joinTicket.get("deletedAt")),
                     cb.equal(joinTicket.get("paymentStatusEntity").get("description"), PaymentStatusEnum.APPROVED.getName()),
-                    cb.isNotNull(root.get("deletedAt"))
+                    cb.isNull(root.get("deletedAt"))
                     );
         };
     }

@@ -51,6 +51,21 @@ public class TicketTypeFactory {
         return ticket;
     }
 
+    public static TicketTypeEntity createTicketTypeEntityWithoutId(EventEntity eventEntity){
+        String randomName = "Ticket " + ThreadLocalRandom.current().nextInt(100, 999);
+        int randomCapacity = ThreadLocalRandom.current().nextInt(50, 201);
+
+        return TicketTypeEntity.of(
+                randomName,
+                "Descricao Teste",
+                BigDecimal.valueOf(30),
+                eventEntity,
+                randomCapacity,
+                LocalDateTime.now().plusDays(1),
+                LocalDateTime.now().plusDays(2)
+        );
+    }
+
     public static TicketTypeCreateResponseDTO createTicketTypeCreateResponseDTODefault(){
         return Instancio.create(TicketTypeCreateResponseDTO.class);
     }

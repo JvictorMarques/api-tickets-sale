@@ -9,4 +9,8 @@ public class TicketFactory {
     public static List<TicketEntity> createListTicketEntity(){
         return Instancio.ofList(TicketEntity.class).size(2).create();
     }
+
+    public static TicketEntity createTicketEntity(){
+        return Instancio.create(TicketEntity.class);
+    }
 }

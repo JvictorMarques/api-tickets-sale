@@ -19,4 +19,14 @@ public class HolderFactory {
 
         return holder;
     }
+
+    public static HolderEntity createHolderEntityWithoutId(){
+        String randomName = "Holder " + ThreadLocalRandom.current().nextInt(100, 999);
+
+        return HolderEntity.of(
+                randomName,
+                "Descrição Teste",
+                LocalDate.now()
+        );
+    }
 }
