@@ -55,6 +55,7 @@ jobs:
         working-directory: ./app
         env:
           MERCADOPAGO_ACCESS_TOKEN: ${{ secrets.MERCADOPAGO_ACCESS_TOKEN }}
+          MERCADOPAGO_NOTIFICATION_URL: ${{ secrets.MERCADOPAGO_NOTIFICATION_URL }}
         run: mvn test -Dgroups=integration
 
   sonarqube:
