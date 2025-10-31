@@ -6,8 +6,7 @@ Library         FakerLibrary
 
 *** Variables ***
 # --- CONFIGURAÇÕES DE AMBIENTE (EXISTENTES) ---
-${BASE_URL}    ${BASE_URL}
-# ${BASE_URL}             https://api-ticket-sales-staging.up.railway.app/api
+${BASE_URL}    %{BASE_URL}
 ${ENDPOINT_EVENT}       /event
 ${ENDPOINT_TICKET}      /event/{eventId}/ticket
 
