@@ -6,7 +6,7 @@ import com.tcc.api_ticket_sales.interfaces.controller.exception.RestExceptionMes
 import com.tcc.api_ticket_sales.application.dto.event.EventCreateDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateRequestDTO;
-import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateResponseDTO;
+import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -274,8 +274,8 @@ public class EventController {
             ),
     })
     @PostMapping("/{eventId}/ticket-type")
-    public ResponseEntity<TicketTypeCreateResponseDTO> createTicketType(@RequestBody @Valid TicketTypeCreateRequestDTO dto, @PathVariable UUID eventId){
-        TicketTypeCreateResponseDTO ticket = ticketTypeService.create(eventId, dto);
+    public ResponseEntity<TicketTypeResponseDTO> createTicketType(@RequestBody @Valid TicketTypeCreateRequestDTO dto, @PathVariable UUID eventId){
+        TicketTypeResponseDTO ticket = ticketTypeService.create(eventId, dto);
 
         URI location = URI.create("/ticket-type/" + ticket.getId());
         return ResponseEntity.created(location).body(ticket);

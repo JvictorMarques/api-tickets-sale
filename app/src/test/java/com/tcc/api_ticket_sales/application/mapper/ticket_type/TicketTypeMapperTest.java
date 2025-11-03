@@ -4,7 +4,7 @@ import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
 import com.tcc.api_ticket_sales.factory.EventFactory;
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateRequestDTO;
-import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateResponseDTO;
+import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeResponseDTO;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -34,11 +34,11 @@ class TicketTypeMapperTest {
 
     @Test
     @Tag("unit")
-    void shouldMapTicketTypeEntityToTicketCreateResponseDTO(){
+    void shouldMapTicketTypeEntityToTicketResponseDTO(){
         TicketTypeEntity entity = createTicketTypeEntityWithId();
         TicketTypeMapper mapper= new TicketTypeMapper();
 
-        TicketTypeCreateResponseDTO dto = mapper.fromTicketTypeEntityToTicketTypeCreateResponseDTO(entity);
+        TicketTypeResponseDTO dto = mapper.fromTicketTypeEntityToTicketTypeResponseDTO(entity);
 
         assertNotNull(dto);
         assertEquals(dto.getId(), entity.getId());

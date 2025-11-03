@@ -12,7 +12,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @Builder
-public class TicketTypeCreateResponseDTO {
+public class TicketTypeResponseDTO {
     private UUID id;
 
     private String name;

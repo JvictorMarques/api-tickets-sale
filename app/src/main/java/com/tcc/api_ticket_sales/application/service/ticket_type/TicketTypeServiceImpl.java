@@ -1,14 +1,16 @@
 package com.tcc.api_ticket_sales.application.service.ticket_type;
 
+import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeUpdateRequestDTO;
 import com.tcc.api_ticket_sales.application.exception.EventNotFoundException;
 import com.tcc.api_ticket_sales.application.exception.TicketTypeAlreadyExistsException;
+import com.tcc.api_ticket_sales.application.exception.TicketTypeNotFoundException;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
 import com.tcc.api_ticket_sales.domain.service.TicketTypeDomainService;
 import com.tcc.api_ticket_sales.infrastructure.repository.event.EventRepository;
 import com.tcc.api_ticket_sales.infrastructure.repository.ticket_type.TicketTypeRepository;
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateRequestDTO;
-import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateResponseDTO;
+import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeResponseDTO;
 import com.tcc.api_ticket_sales.application.mapper.ticket_type.TicketTypeMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +33,7 @@ public class TicketTypeServiceImpl implements TicketTypeService {
 
     @Override
     @Transactional
-    public TicketTypeCreateResponseDTO create(UUID eventId, TicketTypeCreateRequestDTO dto){
+    public TicketTypeResponseDTO create(UUID eventId, TicketTypeCreateRequestDTO dto){
         EventEntity eventEntity = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId.toString()));
 
         if(!ticketTypeRepository.findByEventEntityIdAndNameIgnoreCase(eventId, dto.getName()).isEmpty()){
@@ -45,6 +47,25 @@ public class TicketTypeServiceImpl implements TicketTypeService {
         TicketTypeEntity ticketTypeEntity = ticketTypeDomainService.createTicketType(eventEntity, ticketTypesExists, ticketTypeEntityMapper);
         ticketTypeRepository.save(ticketTypeEntity);
 
-        return ticketTypeMapper.fromTicketTypeEntityToTicketTypeCreateResponseDTO(ticketTypeEntity);
+        return ticketTypeMapper.fromTicketTypeEntityToTicketTypeResponseDTO(ticketTypeEntity);
+    }
+
+    @Override
+    @Transactional
+    public TicketTypeResponseDTO update(UUID ticketId, TicketTypeUpdateRequestDTO dto){
+        TicketTypeEntity ticketTypeEntity = ticketTypeRepository.findById(ticketId).orElseThrow(() -> new TicketTypeNotFoundException(ticketId.toString()));
+
+        if(dto.getName() != null && !dto.getName().equalsIgnoreCase(ticketTypeEntity.getName())){
+            if(!ticketTypeRepository.findByEventEntityIdAndNameIgnoreCase(ticketTypeEntity.getEventEntity().getId(), dto.getName()).isEmpty()){
+                throw new TicketTypeAlreadyExistsException();
+            }
+        }
+
+        TicketTypeEntity ticketTypeEntityMapper = ticketTypeMapper.fromTicketTypeUpdateRequestDTOToTicketTypeEntity(dto, ticketTypeEntity);
+
+        TicketTypeEntity ticketTypeUpdated = ticketTypeDomainService.updateTicketType(ticketTypeEntityMapper);
+        ticketTypeRepository.save(ticketTypeUpdated);
+
+        return ticketTypeMapper.fromTicketTypeEntityToTicketTypeResponseDTO(ticketTypeUpdated);
     }
 }

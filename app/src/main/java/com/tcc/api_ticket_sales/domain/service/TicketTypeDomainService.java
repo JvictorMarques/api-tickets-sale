@@ -1,7 +1,9 @@
 package com.tcc.api_ticket_sales.domain.service;
 
+import com.tcc.api_ticket_sales.domain.entity.TicketEntity;
 import com.tcc.api_ticket_sales.domain.enums.PaymentStatusEnum;
 import com.tcc.api_ticket_sales.domain.exception.EventClosedException;
+import com.tcc.api_ticket_sales.domain.exception.TicketInvalidQuantityUpdateException;
 import com.tcc.api_ticket_sales.domain.exception.TicketTypeCapacityExceedException;
 import com.tcc.api_ticket_sales.domain.exception.TicketTypeCapacityExceedsEventLimitException;
 import com.tcc.api_ticket_sales.domain.exception.TicketTypeClosedException;
@@ -42,6 +44,44 @@ public class TicketTypeDomainService {
 
         if(ticketType.getDateFinal() == null){
             ticketType.setDateFinal(eventEntity.getDateFinal());
+        }
+
+        return ticketType;
+    }
+
+    public TicketTypeEntity updateTicketType(
+            TicketTypeEntity ticketType
+    ){
+        if(ticketType.getDeletedAt() != null){
+            throw new TicketTypeClosedException();
+        }
+
+        EventEntity eventEntity = ticketType.getEventEntity();
+        if(eventEntity.isClosed()){
+            throw new EventClosedException();
+        }
+
+        long ticketsPurchased = ticketType.getTicketEntities().stream().filter(
+                ticket -> ticket.getPaymentStatusEntity().getDescription().equals(PaymentStatusEnum.APPROVED.getName())
+        ).count();
+        if(ticketType.getCapacity() < ticketsPurchased){
+            throw new TicketInvalidQuantityUpdateException(ticketsPurchased);
+        }
+
+        List<TicketTypeEntity> ticketTypesExists = ticketType.getEventEntity().getTicketTypeEntities().stream()
+                .filter(ticketTypeEvent -> !ticketTypeEvent.getId().equals(ticketType.getId()))
+                .toList();
+
+        int sumCapacity = ticketTypesExists.stream().mapToInt(TicketTypeEntity::getCapacity).sum();
+        if((sumCapacity + ticketType.getCapacity()) > eventEntity.getCapacity()){
+            int availableCapacity = eventEntity.getCapacity() - sumCapacity;
+            throw new TicketTypeCapacityExceedsEventLimitException(availableCapacity);
+        }
+
+        if(ticketType.getDateInitial().isAfter(eventEntity.getDateFinal()) ||
+                (ticketType.getDateFinal() != null && ticketType.getDateFinal().isAfter(eventEntity.getDateFinal())
+                )){
+            throw new TicketTypeDatesExceedsEventDateException();
         }
 
         return ticketType;

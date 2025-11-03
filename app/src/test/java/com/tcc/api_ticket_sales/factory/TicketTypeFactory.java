@@ -3,7 +3,7 @@ package com.tcc.api_ticket_sales.factory;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateRequestDTO;
-import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateResponseDTO;
+import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeResponseDTO;
 import org.instancio.Instancio;
 
 import java.math.BigDecimal;
@@ -66,8 +66,8 @@ public class TicketTypeFactory {
         );
     }
 
-    public static TicketTypeCreateResponseDTO createTicketTypeCreateResponseDTODefault(){
-        return Instancio.create(TicketTypeCreateResponseDTO.class);
+    public static TicketTypeResponseDTO createTicketTypeCreateResponseDTODefault(){
+        return Instancio.create(TicketTypeResponseDTO.class);
     }
 
     public static TicketTypeCreateRequestDTO createTicketTypeCreateRequestDTOValid(){

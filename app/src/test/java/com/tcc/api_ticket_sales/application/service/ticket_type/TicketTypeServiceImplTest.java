@@ -7,7 +7,7 @@ import com.tcc.api_ticket_sales.domain.service.TicketTypeDomainService;
 import com.tcc.api_ticket_sales.infrastructure.repository.event.EventRepository;
 import com.tcc.api_ticket_sales.infrastructure.repository.ticket_type.TicketTypeRepository;
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateRequestDTO;
-import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateResponseDTO;
+import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeResponseDTO;
 import com.tcc.api_ticket_sales.application.mapper.ticket_type.TicketTypeMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Tag;
@@ -64,7 +64,7 @@ class TicketTypeServiceImplTest {
         EventEntity event = createEventEntityWithId();
         UUID eventId = event.getId();
         TicketTypeEntity ticketType = createTicketTypeEntityWithoutId();
-        TicketTypeCreateResponseDTO ticketTypeCreateResponseDTO = createTicketTypeCreateResponseDTODefault();
+        TicketTypeResponseDTO ticketTypeResponseDTO = createTicketTypeCreateResponseDTODefault();
         TicketTypeCreateRequestDTO ticketTypeCreateRequestDTO = createTicketTypeCreateRequestDTOValid();
 
         when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
@@ -72,12 +72,12 @@ class TicketTypeServiceImplTest {
         when(ticketTypeRepository.findByEventEntityId(any())).thenReturn(new ArrayList<>());
         when(ticketTypeMapper.fromTicketTypeCreateRequestDTOToTicketTypeEntity(any(), any())).thenReturn(ticketType);
         when(ticketTypeDomainService.createTicketType(any(), any(), any())).thenReturn(ticketType);
-        when(ticketTypeMapper.fromTicketTypeEntityToTicketTypeCreateResponseDTO(any())).thenReturn(ticketTypeCreateResponseDTO);
+        when(ticketTypeMapper.fromTicketTypeEntityToTicketTypeResponseDTO(any())).thenReturn(ticketTypeResponseDTO);
 
-        TicketTypeCreateResponseDTO result = ticketServiceImpl.create(eventId, ticketTypeCreateRequestDTO);
+        TicketTypeResponseDTO result = ticketServiceImpl.create(eventId, ticketTypeCreateRequestDTO);
 
         assertNotNull(result);
-        assertEquals(ticketTypeCreateResponseDTO.getName(), result.getName());
+        assertEquals(ticketTypeResponseDTO.getName(), result.getName());
     }
 
 
