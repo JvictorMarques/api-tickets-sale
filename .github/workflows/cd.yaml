@@ -44,7 +44,7 @@ jobs:
         working-directory: robot
         env:
           BASE_URL: ${{ vars.BASE_URL }}
-        run: robot cases_api_event.robot
+        run: robot .
 
       - name: Upload Robot Framework reports
         uses: actions/upload-artifact@v4
