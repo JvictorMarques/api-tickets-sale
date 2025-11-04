@@ -93,4 +93,14 @@ public class TicketTypeFactory {
     public static TicketTypeUpdateRequestDTO createTicketTypeUpdateRequestDTODefault(){
         return Instancio.create(TicketTypeUpdateRequestDTO.class);
     }
+
+    public static TicketTypeUpdateRequestDTO createTicketTypeUpdateRequestDTOInvalid(){
+        return Instancio.of(TicketTypeUpdateRequestDTO.class)
+                .set(field(TicketTypeUpdateRequestDTO::getName), "")
+                .set(field(TicketTypeUpdateRequestDTO::getPrice), BigDecimal.valueOf(9))
+                .set(field(TicketTypeUpdateRequestDTO::getCapacity), 0)
+                .set(field(TicketTypeUpdateRequestDTO::getDateInitial), LocalDateTime.now().minusDays(1))
+                .set(field(TicketTypeUpdateRequestDTO::getDateFinal), LocalDateTime.now().minusDays(1))
+                .create();
+    }
 }
