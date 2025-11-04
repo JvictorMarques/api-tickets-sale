@@ -11,4 +11,11 @@ public class PaymentStatusFactory {
 
         return paymentStatusEntity;
     }
+
+    public static PaymentStatusEntity createPaymentStatusEntityApproved(){
+        PaymentStatusEntity paymentStatusEntity = new PaymentStatusEntity("approved");
+        paymentStatusEntity.setId(UUID.randomUUID());
+
+        return paymentStatusEntity;
+    }
 }

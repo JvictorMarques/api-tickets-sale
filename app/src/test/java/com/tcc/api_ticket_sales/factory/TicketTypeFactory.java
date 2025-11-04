@@ -1,5 +1,6 @@
 package com.tcc.api_ticket_sales.factory;
 
+import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeUpdateRequestDTO;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateRequestDTO;
@@ -87,5 +88,9 @@ public class TicketTypeFactory {
                 .set(field(TicketTypeCreateRequestDTO::getDateInitial), LocalDateTime.now().minusDays(1))
                 .set(field(TicketTypeCreateRequestDTO::getDateFinal), LocalDateTime.now().minusDays(1))
                 .create();
+    }
+
+    public static TicketTypeUpdateRequestDTO createTicketTypeUpdateRequestDTODefault(){
+        return Instancio.create(TicketTypeUpdateRequestDTO.class);
     }
 }
