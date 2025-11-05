@@ -9,4 +9,5 @@ import java.util.UUID;
 public interface TicketTypeService {
     TicketTypeResponseDTO create(UUID eventId, TicketTypeCreateRequestDTO dto);
     TicketTypeResponseDTO update(UUID ticketId, TicketTypeUpdateRequestDTO dto);
+    void delete(UUID ticketId);
 }

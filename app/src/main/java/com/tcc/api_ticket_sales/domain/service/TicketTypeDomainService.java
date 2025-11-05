@@ -1,6 +1,5 @@
 package com.tcc.api_ticket_sales.domain.service;
 
-import com.tcc.api_ticket_sales.domain.entity.TicketEntity;
 import com.tcc.api_ticket_sales.domain.enums.PaymentStatusEnum;
 import com.tcc.api_ticket_sales.domain.exception.EventClosedException;
 import com.tcc.api_ticket_sales.domain.exception.TicketInvalidQuantityUpdateException;
@@ -10,6 +9,7 @@ import com.tcc.api_ticket_sales.domain.exception.TicketTypeClosedException;
 import com.tcc.api_ticket_sales.domain.exception.TicketTypeDatesExceedsEventDateException;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
+import com.tcc.api_ticket_sales.domain.exception.TicketTypeDeletionNotAllowedException;
 import com.tcc.api_ticket_sales.domain.model.TicketBuyModel;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +29,7 @@ public class TicketTypeDomainService {
             throw new EventClosedException();
         }
 
-        int sumCapacity = ticketTypesExists.stream().mapToInt(TicketTypeEntity::getCapacity).sum();
+        int sumCapacity = this.sumCapacityTicketTypeInEvent(ticketTypesExists);
         if((sumCapacity + ticketType.getCapacity()) > eventEntity.getCapacity()){
             int availableCapacity = eventEntity.getCapacity() - sumCapacity;
             throw new TicketTypeCapacityExceedsEventLimitException(availableCapacity);
@@ -61,18 +61,12 @@ public class TicketTypeDomainService {
             throw new EventClosedException();
         }
 
-        long ticketsPurchased = ticketType.getTicketEntities().stream().filter(
-                ticket -> ticket.getPaymentStatusEntity().getDescription().equals(PaymentStatusEnum.APPROVED.getName())
-        ).count();
+        long ticketsPurchased = this.countTicketsPurchased(ticketType);
         if(ticketType.getCapacity() < ticketsPurchased){
             throw new TicketInvalidQuantityUpdateException(ticketsPurchased);
         }
 
-        List<TicketTypeEntity> ticketTypesExists = ticketType.getEventEntity().getTicketTypeEntities().stream()
-                .filter(ticketTypeEvent -> !ticketTypeEvent.getId().equals(ticketType.getId()))
-                .toList();
-
-        int sumCapacity = ticketTypesExists.stream().mapToInt(TicketTypeEntity::getCapacity).sum();
+        int sumCapacity = sumCapacityTicketTypeInEvent(ticketType.getEventEntity().getTicketTypeEntities());
         if((sumCapacity + ticketType.getCapacity()) > eventEntity.getCapacity()){
             int availableCapacity = eventEntity.getCapacity() - sumCapacity;
             throw new TicketTypeCapacityExceedsEventLimitException(availableCapacity);
@@ -84,6 +78,17 @@ public class TicketTypeDomainService {
             throw new TicketTypeDatesExceedsEventDateException();
         }
 
+        return ticketType;
+    }
+
+    public TicketTypeEntity deleteTicketType(
+            TicketTypeEntity ticketType
+    ){
+        if(this.countTicketsPurchased(ticketType) > 0){
+            throw new TicketTypeDeletionNotAllowedException();
+        }
+
+        ticketType.setDeletedAt(LocalDateTime.now());
         return ticketType;
     }
 
@@ -102,9 +107,7 @@ public class TicketTypeDomainService {
     }
 
     public void validateCapacity (TicketTypeEntity ticketTypeEntity, int requestedQuantity){
-        long countTicketsBuy = ticketTypeEntity.getTicketEntities().stream().filter(
-                ticket -> ticket.getPaymentStatusEntity().getDescription().equals(PaymentStatusEnum.APPROVED.getName())
-        ).count();
+        long countTicketsBuy = this.countTicketsPurchased(ticketTypeEntity);
 
         if ((countTicketsBuy + requestedQuantity) > ticketTypeEntity.getCapacity()) {
             throw new TicketTypeCapacityExceedException();
@@ -116,5 +119,18 @@ public class TicketTypeDomainService {
                 ticketBuyModel -> ticketBuyModel.getTicketTypeEntity().getPrice()
                         .multiply(BigDecimal.valueOf(ticketBuyModel.getQuantity()))
         ).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private long countTicketsPurchased(TicketTypeEntity ticketTypeEntity){
+        return ticketTypeEntity.getTicketEntities().stream().filter(ticket ->
+                ticket.getPaymentStatusEntity().getDescription().equals(PaymentStatusEnum.APPROVED.getName())
+                && ticket.getDeletedAt() == null
+        ).count();
+    }
+
+    private int sumCapacityTicketTypeInEvent(List<TicketTypeEntity> ticketTypes){
+        return ticketTypes.stream()
+                .filter(ticketTypeEntity -> ticketTypeEntity.getDeletedAt() == null)
+                .mapToInt(TicketTypeEntity::getCapacity).sum();
     }
 }

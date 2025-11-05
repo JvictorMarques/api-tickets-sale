@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -178,5 +179,86 @@ public class TicketTypeController {
     public ResponseEntity<TicketTypeResponseDTO> update(@PathVariable UUID ticketTypeId, @Valid @RequestBody TicketTypeUpdateRequestDTO dto) {
         TicketTypeResponseDTO responseDTO = ticketTypeService.update(ticketTypeId, dto);
         return ResponseEntity.ok(responseDTO);
+    }
+
+
+    @Operation(
+            summary = "Excluir tipo de ingresso"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Tipo de ingresso editado com sucesso"),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Formato de requisição inválido e validações dos campos",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples= {
+                                    @ExampleObject(
+                                            summary = "Parâmetro inválido",
+                                            value = """
+                                            {
+                                                "message": "Parâmetro 'ticketTypeId' inválido: valor '853f85c3-8af1-4dda-9032-3d3a0538b0b898' não pôde ser convertido para o tipo UUID.",
+                                                "status": 400,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "capacity": "Parâmetro 'ticketTypeId' inválido: valor '853f85c3-8af1-4dda-9032-3d3a0538b0b898' não pôde ser convertido para o tipo UUID.",
+                                                ]
+                                            }
+                                            """
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Recursos não encontrados",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples = {
+                                    @ExampleObject(
+                                            summary = "Tipo de ingresso não encontrado",
+                                            value = """
+                                            {
+                                                "message": "Tipo de ingresso [id] não encontrado.",
+                                                "status": 404,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "Tipo de ingresso [id] não encontrado."
+                                                ]
+                                            }
+                                            """
+                                    ),
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "Conflitos",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name="Tipo de ingresso possui ingressos vendidos",
+                                            summary = "Tipo de ingresso possui ingressos vendidos",
+                                            value = """
+                                            {
+                                                "message": "Tipo de ingresso não pode ser deletado pois possui ingresso(s) vendido(s).",
+                                                "status": 409,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "Tipo de ingresso não pode ser deletado pois possui ingresso(s) vendido(s)."
+                                                ]
+                                            }
+                                            """
+                                    ),
+                            }
+
+                    )
+            ),
+    })
+    @DeleteMapping("/{ticketTypeId}")
+    public ResponseEntity<Void> delete(@PathVariable UUID ticketTypeId){
+        ticketTypeService.delete(ticketTypeId);
+        return ResponseEntity.noContent().build();
     }
 }
