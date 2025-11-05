@@ -16,6 +16,7 @@ public class TicketFactory {
     public static List<TicketEntity> createListTicketEntityPaymentApproved(){
         return Instancio.ofList(TicketEntity.class).size(3)
                 .set(Select.field(TicketEntity::getPaymentStatusEntity), createPaymentStatusEntityApproved())
+                .set(Select.field(TicketEntity::getDeletedAt), null)
                 .create();
     }
 

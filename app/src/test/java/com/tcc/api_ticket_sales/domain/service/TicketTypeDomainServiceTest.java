@@ -7,9 +7,12 @@ import com.tcc.api_ticket_sales.domain.exception.TicketInvalidQuantityUpdateExce
 import com.tcc.api_ticket_sales.domain.exception.TicketTypeCapacityExceedsEventLimitException;
 import com.tcc.api_ticket_sales.domain.exception.TicketTypeClosedException;
 import com.tcc.api_ticket_sales.domain.exception.TicketTypeDatesExceedsEventDateException;
+import com.tcc.api_ticket_sales.domain.exception.TicketTypeDeletionNotAllowedException;
+import com.tcc.api_ticket_sales.domain.model.TicketBuyModel;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -208,5 +211,66 @@ class TicketTypeDomainServiceTest {
 
         TicketTypeEntity response = service.updateTicketType(ticketType);
         assertEquals(response.getId(), ticketType.getId());
+    }
+
+    @Test
+    @Tag("unit")
+    void calculateTotalPrice_shouldReturnZero_whenListIsEmpty() {
+        BigDecimal result = service.calculateTotalPrice(List.of());
+        assertEquals(BigDecimal.ZERO, result);
+    }
+
+    @Test
+    @Tag("unit")
+    void calculateTotalPrice_shouldReturnCorrectTotal_whenListHasMultipleTickets() {
+        // Arrange
+        TicketTypeEntity type1 = createTicketTypeEntityWithoutId();
+        type1.setPrice(BigDecimal.valueOf(100));
+
+        TicketTypeEntity type2 = createTicketTypeEntityWithoutId();
+        type2.setPrice(BigDecimal.valueOf(50));
+
+        List<TicketBuyModel> tickets = List.of(
+                new TicketBuyModel(type1, 2),
+                new TicketBuyModel(type2, 3)
+        );
+
+        // Expected: (100 * 2) + (50 * 3) = 350
+        BigDecimal expected = BigDecimal.valueOf(350);
+
+        // Act
+        BigDecimal result = service.calculateTotalPrice(tickets);
+
+        // Assert
+        assertEquals(expected, result);
+    }
+
+    @Test
+    @Tag("unit")
+    void deleteTicketType_shouldThrowTicketTypeDeletionNotAllowedException_whenTicketHasPurchases() {
+        // Arrange
+        TicketTypeEntity ticketType = createTicketTypeEntityWithoutId();
+        ticketType.setTicketEntities(createListTicketEntityPaymentApproved());
+
+        // Act & Assert
+        assertThrows(TicketTypeDeletionNotAllowedException.class, () -> {
+            service.deleteTicketType(ticketType);
+        });
+    }
+
+    @Test
+    @Tag("unit")
+    void deleteTicketType_shouldSetDeletedAtAndReturn_whenNoTicketsPurchased() {
+        // Arrange
+        TicketTypeEntity ticketType = createTicketTypeEntityWithoutId();
+        ticketType.setTicketEntities(List.of());
+
+        // Act
+        TicketTypeEntity result = service.deleteTicketType(ticketType);
+
+        // Assert
+        assertNotNull(result.getDeletedAt());
+        assertTrue(result.getDeletedAt().isBefore(LocalDateTime.now()) ||
+                result.getDeletedAt().isEqual(LocalDateTime.now()));
     }
 }
