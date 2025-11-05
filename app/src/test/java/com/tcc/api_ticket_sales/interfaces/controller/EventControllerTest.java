@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.tcc.api_ticket_sales.application.service.event.EventService;
 import com.tcc.api_ticket_sales.application.service.ticket_type.TicketTypeService;
 import com.tcc.api_ticket_sales.interfaces.controller.exception.RestExceptionHandler;
-import com.tcc.api_ticket_sales.application.dto.event.EventCreateDTO;
+import com.tcc.api_ticket_sales.application.dto.event.EventCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeResponseDTO;
@@ -57,7 +57,7 @@ class EventControllerTest {
     @Test
     @Tag("unit")
     void createEvent_shouldReturnStatusCreated_whenEventIsCreated () throws Exception {
-        EventCreateDTO eventCreateDTO = createEventCreateDTOValid();
+        EventCreateRequestDTO eventCreateRequestDTO = createEventCreateDTOValid();
         EventResponseDTO eventResponseDTO = createEventResponseDTO();
 
         when(eventService.createEvent(any())).thenReturn(eventResponseDTO);
@@ -65,7 +65,7 @@ class EventControllerTest {
         mockMvc.perform(
                 post("/event")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(eventCreateDTO))
+                        .content(objectMapper.writeValueAsString(eventCreateRequestDTO))
         ).andExpect(status().isCreated())
         .andExpect(
                 header().string("Location", "/event/"+ eventResponseDTO.getId())
@@ -93,11 +93,11 @@ class EventControllerTest {
     @Test
     @Tag("unit")
     void createEvent_shouldReturnStatusUnprocessableEntity_whenDataInvalid() throws Exception {
-        EventCreateDTO eventCreateDTO = createEventCreateDTOInvalid();
+        EventCreateRequestDTO eventCreateRequestDTO = createEventCreateDTOInvalid();
         mockMvc.perform(
                 post("/event")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(eventCreateDTO))
+                        .content(objectMapper.writeValueAsString(eventCreateRequestDTO))
         ).andExpect(status().isBadRequest());
     }
 

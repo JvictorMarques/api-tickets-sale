@@ -1,7 +1,7 @@
 package com.tcc.api_ticket_sales.application.mapper.event;
 
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
-import com.tcc.api_ticket_sales.application.dto.event.EventCreateDTO;
+import com.tcc.api_ticket_sales.application.dto.event.EventCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class EventMapper {
 
-    public EventEntity fromEventCreateDTOToEventEntity (EventCreateDTO event){
+    public EventEntity fromEventCreateDTOToEventEntity (EventCreateRequestDTO event){
         return EventEntity.of(
                 event.getName(),
                 event.getDescription(),

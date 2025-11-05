@@ -3,7 +3,7 @@ package com.tcc.api_ticket_sales.application.service.event;
 import com.tcc.api_ticket_sales.application.exception.EventAlreadyExistsException;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.infrastructure.repository.event.EventRepository;
-import com.tcc.api_ticket_sales.application.dto.event.EventCreateDTO;
+import com.tcc.api_ticket_sales.application.dto.event.EventCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
 import com.tcc.api_ticket_sales.application.mapper.event.EventMapper;
 import jakarta.transaction.Transactional;
@@ -19,7 +19,7 @@ public class EventServiceImpl implements EventService {
     private final EventMapper eventMapper;
 
     @Transactional
-    public EventResponseDTO createEvent(EventCreateDTO dto){
+    public EventResponseDTO createEvent(EventCreateRequestDTO dto){
         if(eventRepository.checkExists(dto)){
             throw new EventAlreadyExistsException();
         }

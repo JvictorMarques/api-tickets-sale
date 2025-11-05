@@ -1,7 +1,7 @@
 package com.tcc.api_ticket_sales.application.mapper.event;
 
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
-import com.tcc.api_ticket_sales.application.dto.event.EventCreateDTO;
+import com.tcc.api_ticket_sales.application.dto.event.EventCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -22,7 +22,7 @@ class EventMapperTest {
     @Test
     @Tag("unit")
     void shouldMapEventCreateDTOToEventEntity(){
-        EventCreateDTO dto = createEventCreateDTOValid();
+        EventCreateRequestDTO dto = createEventCreateDTOValid();
 
         EventEntity entity = mapper.fromEventCreateDTOToEventEntity(dto);
 

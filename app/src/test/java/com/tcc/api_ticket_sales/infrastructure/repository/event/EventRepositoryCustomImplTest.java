@@ -2,7 +2,7 @@ package com.tcc.api_ticket_sales.infrastructure.repository.event;
 
 import com.tcc.api_ticket_sales.BaseIntegrationTest;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
-import com.tcc.api_ticket_sales.application.dto.event.EventCreateDTO;
+import com.tcc.api_ticket_sales.application.dto.event.EventCreateRequestDTO;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -26,13 +26,13 @@ class EventRepositoryCustomImplTest extends BaseIntegrationTest {
         EventEntity eventEntity = createEventEntityWithoutId();
         entityManager.persist(eventEntity);
 
-        EventCreateDTO eventCreateDTO = createEventCreateDTODefault();
-        eventCreateDTO.setName(eventEntity.getName());
-        eventCreateDTO.setLocation(eventEntity.getLocation());
-        eventCreateDTO.setDateInitial(eventEntity.getDateInitial().minusMinutes(20));
-        eventCreateDTO.setDateFinal(eventEntity.getDateFinal().minusMinutes(10));
+        EventCreateRequestDTO eventCreateRequestDTO = createEventCreateDTODefault();
+        eventCreateRequestDTO.setName(eventEntity.getName());
+        eventCreateRequestDTO.setLocation(eventEntity.getLocation());
+        eventCreateRequestDTO.setDateInitial(eventEntity.getDateInitial().minusMinutes(20));
+        eventCreateRequestDTO.setDateFinal(eventEntity.getDateFinal().minusMinutes(10));
 
-        assertTrue(repository.checkExists(eventCreateDTO));
+        assertTrue(repository.checkExists(eventCreateRequestDTO));
     }
 
     @Test
@@ -41,12 +41,12 @@ class EventRepositoryCustomImplTest extends BaseIntegrationTest {
         EventEntity eventEntity = createEventEntityWithoutId();
         entityManager.persist(eventEntity);
 
-        EventCreateDTO eventCreateDTO = createEventCreateDTODefault();
-        eventCreateDTO.setName(eventEntity.getName());
-        eventCreateDTO.setDateInitial(eventEntity.getDateInitial().minusMinutes(20));
-        eventCreateDTO.setDateFinal(eventEntity.getDateFinal().minusMinutes(10));
+        EventCreateRequestDTO eventCreateRequestDTO = createEventCreateDTODefault();
+        eventCreateRequestDTO.setName(eventEntity.getName());
+        eventCreateRequestDTO.setDateInitial(eventEntity.getDateInitial().minusMinutes(20));
+        eventCreateRequestDTO.setDateFinal(eventEntity.getDateFinal().minusMinutes(10));
 
-        assertFalse(repository.checkExists(eventCreateDTO));
+        assertFalse(repository.checkExists(eventCreateRequestDTO));
     }
 
     @Test
@@ -55,12 +55,12 @@ class EventRepositoryCustomImplTest extends BaseIntegrationTest {
         EventEntity eventEntity = createEventEntityWithoutId();
         entityManager.persist(eventEntity);
 
-        EventCreateDTO eventCreateDTO = createEventCreateDTODefault();
-        eventCreateDTO.setLocation(eventEntity.getLocation());
-        eventCreateDTO.setDateInitial(eventEntity.getDateInitial().minusMinutes(20));
-        eventCreateDTO.setDateFinal(eventEntity.getDateFinal().minusMinutes(10));
+        EventCreateRequestDTO eventCreateRequestDTO = createEventCreateDTODefault();
+        eventCreateRequestDTO.setLocation(eventEntity.getLocation());
+        eventCreateRequestDTO.setDateInitial(eventEntity.getDateInitial().minusMinutes(20));
+        eventCreateRequestDTO.setDateFinal(eventEntity.getDateFinal().minusMinutes(10));
 
-        assertFalse(repository.checkExists(eventCreateDTO));
+        assertFalse(repository.checkExists(eventCreateRequestDTO));
     }
 
     @Test
@@ -69,12 +69,12 @@ class EventRepositoryCustomImplTest extends BaseIntegrationTest {
         EventEntity eventEntity = createEventEntityWithoutId();
         entityManager.persist(eventEntity);
 
-        EventCreateDTO eventCreateDTO = createEventCreateDTODefault();
-        eventCreateDTO.setName(eventEntity.getName());
-        eventCreateDTO.setLocation(eventEntity.getLocation());
-        eventCreateDTO.setDateInitial(eventEntity.getDateInitial().plusDays(4));
-        eventCreateDTO.setDateFinal(eventEntity.getDateFinal().plusDays(5));
+        EventCreateRequestDTO eventCreateRequestDTO = createEventCreateDTODefault();
+        eventCreateRequestDTO.setName(eventEntity.getName());
+        eventCreateRequestDTO.setLocation(eventEntity.getLocation());
+        eventCreateRequestDTO.setDateInitial(eventEntity.getDateInitial().plusDays(4));
+        eventCreateRequestDTO.setDateFinal(eventEntity.getDateFinal().plusDays(5));
 
-        assertFalse(repository.checkExists(eventCreateDTO));
+        assertFalse(repository.checkExists(eventCreateRequestDTO));
     }
 }

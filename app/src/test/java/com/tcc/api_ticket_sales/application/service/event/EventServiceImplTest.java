@@ -3,7 +3,7 @@ package com.tcc.api_ticket_sales.application.service.event;
 import com.tcc.api_ticket_sales.application.exception.EventAlreadyExistsException;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.infrastructure.repository.event.EventRepository;
-import com.tcc.api_ticket_sales.application.dto.event.EventCreateDTO;
+import com.tcc.api_ticket_sales.application.dto.event.EventCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
 import com.tcc.api_ticket_sales.application.mapper.event.EventMapper;
 import org.junit.jupiter.api.Tag;
@@ -36,7 +36,7 @@ class EventServiceImplTest {
     void createEvent_shouldThrowException_whenEventExists() {
         // arrange
         when(eventRepository.checkExists(any())).thenReturn(true);
-        EventCreateDTO dto = new EventCreateDTO();
+        EventCreateRequestDTO dto = new EventCreateRequestDTO();
 
         // action e assert
         assertThrows(
@@ -58,7 +58,7 @@ class EventServiceImplTest {
         when(eventMapper.fromEventEntityToEventResponseDTO(any())).thenReturn(eventMock);
 
         // action
-        EventResponseDTO eventResponseDTO = eventServiceImpl.createEvent(new  EventCreateDTO());
+        EventResponseDTO eventResponseDTO = eventServiceImpl.createEvent(new EventCreateRequestDTO());
 
         // assert
         assertEquals(eventMock.getId(), eventResponseDTO.getId());

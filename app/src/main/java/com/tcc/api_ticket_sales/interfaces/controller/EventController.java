@@ -3,7 +3,7 @@ package com.tcc.api_ticket_sales.interfaces.controller;
 import com.tcc.api_ticket_sales.application.service.event.EventService;
 import com.tcc.api_ticket_sales.application.service.ticket_type.TicketTypeService;
 import com.tcc.api_ticket_sales.interfaces.controller.exception.RestExceptionMessage;
-import com.tcc.api_ticket_sales.application.dto.event.EventCreateDTO;
+import com.tcc.api_ticket_sales.application.dto.event.EventCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeResponseDTO;
@@ -115,7 +115,7 @@ public class EventController {
             ),
     })
     @PostMapping
-    public ResponseEntity<EventResponseDTO> createEvent (@RequestBody @Valid EventCreateDTO dto){
+    public ResponseEntity<EventResponseDTO> createEvent (@RequestBody @Valid EventCreateRequestDTO dto){
         EventResponseDTO event = eventService.createEvent(dto);
 
         URI location = URI.create("/event/" + event.getId());
