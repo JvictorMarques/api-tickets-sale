@@ -9,6 +9,7 @@ import com.tcc.api_ticket_sales.infrastructure.repository.event.EventRepository;
 import com.tcc.api_ticket_sales.application.dto.event.EventCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
 import com.tcc.api_ticket_sales.application.mapper.event.EventMapper;
+import com.tcc.api_ticket_sales.infrastructure.repository.event.EventSpecificationFactory;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,12 +27,16 @@ public class EventServiceImpl implements EventService {
 
     private final EventDomainService eventDomainService;
 
+    private final EventSpecificationFactory eventSpecificationFactory;
+
+
     @Transactional
     public EventResponseDTO create(EventCreateRequestDTO dto){
-        if(!eventRepository.checkExists(dto.getName(), dto.getLocation(), dto.getDateInitial(), dto.getDateFinal()).isEmpty()){
+        EventEntity entity = eventMapper.fromEventCreateRequestDTOToEventEntity(dto);
+        List<EventEntity> exists = eventRepository.findAll(eventSpecificationFactory.findConflictingEvents(entity));
+        if(!exists.isEmpty()){
             throw new EventAlreadyExistsException();
         }
-        EventEntity entity = eventMapper.fromEventCreateRequestDTOToEventEntity(dto);
 
         EventEntity entitySaved = eventRepository.save(entity);
         return eventMapper.fromEventEntityToEventResponseDTO(entitySaved);
@@ -42,12 +47,7 @@ public class EventServiceImpl implements EventService {
         EventEntity eventEntityOld= eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId.toString()));
         EventEntity eventEntityNew = eventMapper.fromEventUpdateRequestDTOToEventEntity(dto, eventEntityOld);
 
-        List<EventEntity> eventEntities = eventRepository.checkExists(
-                eventEntityNew.getName(),
-                eventEntityNew.getLocation(),
-                eventEntityNew.getDateInitial(),
-                eventEntityNew.getDateFinal()
-        ).stream().filter(event -> event.getId() != eventEntityOld.getId()).toList();
+        List<EventEntity> eventEntities = eventRepository.findAll(eventSpecificationFactory.findConflictingEvents(eventEntityNew));
 
         if(!eventEntities.isEmpty()){
             throw new EventAlreadyExistsException();

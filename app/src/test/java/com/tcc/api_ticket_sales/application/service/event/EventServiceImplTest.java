@@ -6,12 +6,15 @@ import com.tcc.api_ticket_sales.infrastructure.repository.event.EventRepository;
 import com.tcc.api_ticket_sales.application.dto.event.EventCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
 import com.tcc.api_ticket_sales.application.mapper.event.EventMapper;
+import com.tcc.api_ticket_sales.infrastructure.repository.event.EventSpecification;
+import com.tcc.api_ticket_sales.infrastructure.repository.event.EventSpecificationFactory;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 
@@ -19,6 +22,7 @@ import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWit
 import static com.tcc.api_ticket_sales.factory.EventFactory.createEventResponseDTO;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +34,9 @@ class EventServiceImplTest {
     @Mock
     private EventMapper eventMapper;
 
+    @Mock
+    private EventSpecificationFactory eventSpecificationFactory;
+
     @InjectMocks
     private EventServiceImpl eventServiceImpl;
 
@@ -38,8 +45,12 @@ class EventServiceImplTest {
     void createEvent_shouldThrowException_whenExists() {
         // arrange
         EventEntity eventEntity = createEventEntityWithoutId();
-        when(eventRepository.checkExists(any(), any(), any(), any())).thenReturn(List.of(eventEntity));
+        Specification<EventEntity> mockSpec = mock(Specification.class);
         EventCreateRequestDTO dto = new EventCreateRequestDTO();
+
+        when(eventMapper.fromEventCreateRequestDTOToEventEntity(any())).thenReturn(eventEntity);
+        when(eventSpecificationFactory.findConflictingEvents(eventEntity)).thenReturn(mockSpec);
+        when(eventRepository.findAll(mockSpec)).thenReturn(List.of(eventEntity));
 
         // action e assert
         assertThrows(
@@ -54,9 +65,11 @@ class EventServiceImplTest {
         // arrange
         EventResponseDTO eventMock = createEventResponseDTO();
         EventEntity eventEntity = createEventEntityWithoutId();
+        Specification<EventEntity> mockSpec = mock(Specification.class);
 
         when(eventMapper.fromEventCreateRequestDTOToEventEntity(any())).thenReturn(eventEntity);
-        when(eventRepository.checkExists(any(), any(), any(), any())).thenReturn(List.of());
+        when(eventSpecificationFactory.findConflictingEvents(eventEntity)).thenReturn(mockSpec);
+        when(eventRepository.findAll(mockSpec)).thenReturn(List.of());
         when(eventRepository.save(any())).thenReturn(eventEntity);
         when(eventMapper.fromEventEntityToEventResponseDTO(any())).thenReturn(eventMock);
 
