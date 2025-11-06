@@ -3,7 +3,7 @@ package com.tcc.api_ticket_sales.domain.service;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
 import com.tcc.api_ticket_sales.domain.exception.EventClosedException;
-import com.tcc.api_ticket_sales.domain.exception.TicketInvalidQuantityUpdateException;
+import com.tcc.api_ticket_sales.domain.exception.TicketTypeCapacityReductionNotAllowedException;
 import com.tcc.api_ticket_sales.domain.exception.TicketTypeCapacityExceedsEventLimitException;
 import com.tcc.api_ticket_sales.domain.exception.TicketTypeClosedException;
 import com.tcc.api_ticket_sales.domain.exception.TicketTypeDatesExceedsEventDateException;
@@ -150,7 +150,7 @@ class TicketTypeDomainServiceTest {
 
         ticketType.setTicketEntities(createListTicketEntityPaymentApproved());
 
-        assertThrows(TicketInvalidQuantityUpdateException.class, () -> {
+        assertThrows(TicketTypeCapacityReductionNotAllowedException.class, () -> {
             service.updateTicketType(ticketType);
         });
     }

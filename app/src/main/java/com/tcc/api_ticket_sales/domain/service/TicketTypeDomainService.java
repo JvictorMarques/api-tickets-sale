@@ -2,7 +2,7 @@ package com.tcc.api_ticket_sales.domain.service;
 
 import com.tcc.api_ticket_sales.domain.enums.PaymentStatusEnum;
 import com.tcc.api_ticket_sales.domain.exception.EventClosedException;
-import com.tcc.api_ticket_sales.domain.exception.TicketInvalidQuantityUpdateException;
+import com.tcc.api_ticket_sales.domain.exception.TicketTypeCapacityReductionNotAllowedException;
 import com.tcc.api_ticket_sales.domain.exception.TicketTypeCapacityExceedException;
 import com.tcc.api_ticket_sales.domain.exception.TicketTypeCapacityExceedsEventLimitException;
 import com.tcc.api_ticket_sales.domain.exception.TicketTypeClosedException;
@@ -63,7 +63,7 @@ public class TicketTypeDomainService {
 
         long ticketsPurchased = this.countTicketsPurchased(ticketType);
         if(ticketType.getCapacity() < ticketsPurchased){
-            throw new TicketInvalidQuantityUpdateException(ticketsPurchased);
+            throw new TicketTypeCapacityReductionNotAllowedException(ticketsPurchased);
         }
 
         int sumCapacity = sumCapacityTicketTypeInEvent(ticketType.getEventEntity().getTicketTypeEntities());
