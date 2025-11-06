@@ -24,7 +24,7 @@ class EventMapperTest {
     void shouldMapEventCreateDTOToEventEntity(){
         EventCreateRequestDTO dto = createEventCreateDTOValid();
 
-        EventEntity entity = mapper.fromEventCreateDTOToEventEntity(dto);
+        EventEntity entity = mapper.fromEventCreateRequestDTOToEventEntity(dto);
 
         assertNotNull(entity);
         assertEquals(dto.getName(), entity.getName());

@@ -1,5 +1,6 @@
 package com.tcc.api_ticket_sales.application.mapper.event;
 
+import com.tcc.api_ticket_sales.application.dto.event.EventUpdateRequestDTO;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.application.dto.event.EventCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class EventMapper {
 
-    public EventEntity fromEventCreateDTOToEventEntity (EventCreateRequestDTO event){
+    public EventEntity fromEventCreateRequestDTOToEventEntity(EventCreateRequestDTO event){
         return EventEntity.of(
                 event.getName(),
                 event.getDescription(),
@@ -23,6 +24,26 @@ public class EventMapper {
                 event.getLocation()
         );
 
+    }
+
+    public EventEntity fromEventUpdateRequestDTOToEventEntity(EventUpdateRequestDTO dto, EventEntity eventExists) {
+        EventEntity newEventEntity = EventEntity.reference(eventExists.getId());
+
+        newEventEntity.setName(dto.getName() != null ? dto.getName() : eventExists.getName());
+        newEventEntity.setDescription(dto.getDescription() != null ? dto.getDescription() : eventExists.getDescription());
+        newEventEntity.setDateInitial(dto.getDateInitial() != null ? dto.getDateInitial() : eventExists.getDateInitial());
+        newEventEntity.setDateFinal(dto.getDateFinal() != null ? dto.getDateFinal() : eventExists.getDateFinal());
+        newEventEntity.setCapacity((dto.getCapacity() != null && dto.getCapacity() > 0)
+                ? dto.getCapacity()
+                : eventExists.getCapacity()
+        );
+        newEventEntity.setAgeRestriction((dto.getAgeRestriction() != null && dto.getAgeRestriction() > 0)
+                ? dto.getAgeRestriction()
+                : eventExists.getAgeRestriction()
+        );
+        newEventEntity.setLocation(dto.getLocation() != null ? dto.getLocation() : eventExists.getLocation());
+
+        return newEventEntity;
     }
 
     public EventResponseDTO fromEventEntityToEventResponseDTO (EventEntity event){

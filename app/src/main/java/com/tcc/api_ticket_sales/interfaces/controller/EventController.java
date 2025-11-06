@@ -1,5 +1,6 @@
 package com.tcc.api_ticket_sales.interfaces.controller;
 
+import com.tcc.api_ticket_sales.application.dto.event.EventUpdateRequestDTO;
 import com.tcc.api_ticket_sales.application.service.event.EventService;
 import com.tcc.api_ticket_sales.application.service.ticket_type.TicketTypeService;
 import com.tcc.api_ticket_sales.interfaces.controller.exception.RestExceptionMessage;
@@ -120,6 +121,13 @@ public class EventController {
 
         URI location = URI.create("/event/" + event.getId());
         return ResponseEntity.created(location).body(event);
+    }
+
+    @PatchMapping("/{eventId}")
+    public ResponseEntity<EventResponseDTO> updateEvent(@RequestBody @Valid EventUpdateRequestDTO dto, @PathVariable UUID eventId){
+        EventResponseDTO response = eventService.update(eventId, dto);
+
+        return ResponseEntity.ok(response);
     }
 
     @Operation(
