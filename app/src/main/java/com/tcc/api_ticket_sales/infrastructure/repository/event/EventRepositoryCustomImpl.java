@@ -8,8 +8,10 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.event.service.spi.EventActionWithParameter;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,30 +22,30 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
     private final EntityManager entityManager;
 
     @Override
-    public boolean checkExists(EventCreateRequestDTO event) {
+    public List<EventEntity> checkExists(String name, String location, LocalDateTime dateInitial, LocalDateTime dateFinal) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
-        CriteriaQuery<Long> query = cb.createQuery(Long.class);
+        CriteriaQuery<EventEntity> query = cb.createQuery(EventEntity.class);
         Root<EventEntity> root = query.from(EventEntity.class);
 
         List<Predicate> predicates = new ArrayList<>();
-        predicates.add(cb.equal(cb.lower(root.get("name")), event.getName().toLowerCase()));
-        predicates.add(cb.equal(cb.lower(root.get("location")), event.getLocation().toLowerCase()));
+        predicates.add(cb.equal(cb.lower(root.get("name")), name.toLowerCase()));
+        predicates.add(cb.equal(cb.lower(root.get("location")), location.toLowerCase()));
+        predicates.add(cb.isNull(root.get("deletedAt")));
 
         predicates.add(cb.or(
-                cb.between(root.get("dateInitial"), event.getDateInitial(), event.getDateFinal()),
-                cb.between(root.get("dateFinal"), event.getDateInitial(), event.getDateFinal()),
+                cb.between(root.get("dateInitial"), dateInitial, dateFinal),
+                cb.between(root.get("dateFinal"), dateInitial, dateFinal),
                 cb.and(
-                        cb.lessThanOrEqualTo(root.get("dateInitial"), event.getDateInitial()),
-                        cb.greaterThanOrEqualTo(root.get("dateFinal"), event.getDateFinal())
+                        cb.lessThanOrEqualTo(root.get("dateInitial"), dateInitial),
+                        cb.greaterThanOrEqualTo(root.get("dateFinal"), dateFinal)
                 )
         ));
 
-        query.select(cb.count(root))
+        query.select(root)
                 .where(cb.and(predicates.toArray(new Predicate[0])));
 
-        Long count = entityManager.createQuery(query).getSingleResult();
-
-        return count > 0;
+        return entityManager.createQuery(query).getResultList();
     }
+
 }

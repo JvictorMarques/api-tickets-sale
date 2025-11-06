@@ -13,6 +13,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
 import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWithoutId;
 import static com.tcc.api_ticket_sales.factory.EventFactory.createEventResponseDTO;
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,7 +37,8 @@ class EventServiceImplTest {
     @Tag("unit")
     void createEvent_shouldThrowException_whenEventExists() {
         // arrange
-        when(eventRepository.checkExists(any())).thenReturn(true);
+        EventEntity eventEntity = createEventEntityWithoutId();
+        when(eventRepository.checkExists(any(), any(), any(), any())).thenReturn(List.of(eventEntity));
         EventCreateRequestDTO dto = new EventCreateRequestDTO();
 
         // action e assert
@@ -52,8 +55,8 @@ class EventServiceImplTest {
         EventResponseDTO eventMock = createEventResponseDTO();
         EventEntity eventEntity = createEventEntityWithoutId();
 
-        when(eventMapper.fromEventCreateDTOToEventEntity(any())).thenReturn(eventEntity);
-        when(eventRepository.checkExists(any())).thenReturn(false);
+        when(eventMapper.fromEventCreateRequestDTOToEventEntity(any())).thenReturn(eventEntity);
+        when(eventRepository.checkExists(any(), any(), any(), any())).thenReturn(List.of());
         when(eventRepository.save(any())).thenReturn(eventEntity);
         when(eventMapper.fromEventEntityToEventResponseDTO(any())).thenReturn(eventMock);
 
