@@ -60,7 +60,7 @@ class EventControllerTest {
         EventCreateRequestDTO eventCreateRequestDTO = createEventCreateDTOValid();
         EventResponseDTO eventResponseDTO = createEventResponseDTO();
 
-        when(eventService.createEvent(any())).thenReturn(eventResponseDTO);
+        when(eventService.create(any())).thenReturn(eventResponseDTO);
 
         mockMvc.perform(
                 post("/event")

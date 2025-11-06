@@ -27,7 +27,7 @@ public class EventServiceImpl implements EventService {
     private final EventDomainService eventDomainService;
 
     @Transactional
-    public EventResponseDTO createEvent(EventCreateRequestDTO dto){
+    public EventResponseDTO create(EventCreateRequestDTO dto){
         if(!eventRepository.checkExists(dto.getName(), dto.getLocation(), dto.getDateInitial(), dto.getDateFinal()).isEmpty()){
             throw new EventAlreadyExistsException();
         }

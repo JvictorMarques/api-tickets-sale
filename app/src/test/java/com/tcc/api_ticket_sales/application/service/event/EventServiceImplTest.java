@@ -35,7 +35,7 @@ class EventServiceImplTest {
 
     @Test
     @Tag("unit")
-    void createEvent_shouldThrowException_whenEventExists() {
+    void createEvent_shouldThrowException_whenExists() {
         // arrange
         EventEntity eventEntity = createEventEntityWithoutId();
         when(eventRepository.checkExists(any(), any(), any(), any())).thenReturn(List.of(eventEntity));
@@ -44,13 +44,13 @@ class EventServiceImplTest {
         // action e assert
         assertThrows(
                 EventAlreadyExistsException.class,
-                () -> eventServiceImpl.createEvent(dto)
+                () -> eventServiceImpl.create(dto)
         );
     }
 
     @Test
     @Tag("unit")
-    void createEvent_shouldReturnEventResponseDTO_whenEventNotExists() {
+    void createEvent_shouldReturnEventResponseDTO_whenNotExists() {
         // arrange
         EventResponseDTO eventMock = createEventResponseDTO();
         EventEntity eventEntity = createEventEntityWithoutId();
@@ -61,7 +61,7 @@ class EventServiceImplTest {
         when(eventMapper.fromEventEntityToEventResponseDTO(any())).thenReturn(eventMock);
 
         // action
-        EventResponseDTO eventResponseDTO = eventServiceImpl.createEvent(new EventCreateRequestDTO());
+        EventResponseDTO eventResponseDTO = eventServiceImpl.create(new EventCreateRequestDTO());
 
         // assert
         assertEquals(eventMock.getId(), eventResponseDTO.getId());

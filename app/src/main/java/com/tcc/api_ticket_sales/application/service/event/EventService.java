@@ -8,6 +8,6 @@ import java.util.UUID;
 
 public interface EventService {
 
-    EventResponseDTO createEvent(EventCreateRequestDTO event);
+    EventResponseDTO create(EventCreateRequestDTO event);
     EventResponseDTO update(UUID eventId, EventUpdateRequestDTO dto);
 }
