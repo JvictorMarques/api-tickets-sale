@@ -2,6 +2,7 @@ package com.tcc.api_ticket_sales.domain.service;
 
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
+import com.tcc.api_ticket_sales.domain.exception.DateInitialGreaterThanDateFinalException;
 import com.tcc.api_ticket_sales.domain.exception.EventAgeRestrictionIncreaseNotAllowedException;
 import com.tcc.api_ticket_sales.domain.exception.EventCapacityReductionNotAllowedException;
 import com.tcc.api_ticket_sales.domain.exception.EventClosedException;
@@ -36,6 +37,18 @@ class EventDomainServiceTest {
 
     @Tag("unit")
     @Test
+    void update_shouldThrowDateInitialGreaterThanDateFinalException_whenEventDateInitialGreaterThenDateFinal(){
+        EventEntity eventOld = createEventEntityWithoutId();
+        EventEntity eventNew = createEventEntityWithoutId();
+        eventNew.setDateInitial(eventNew.getDateFinal().plusDays(1));
+
+        assertThrows(DateInitialGreaterThanDateFinalException.class, () -> {
+            eventDomainService.updateEvent(eventOld, eventNew);
+        });
+    }
+
+    @Tag("unit")
+    @Test
     void update_shouldThrowEventClosedException_whenEventIsDeleted(){
         EventEntity eventOld = createEventEntityWithoutId();
         eventOld.setDeletedAt(LocalDateTime.now());
@@ -50,7 +63,7 @@ class EventDomainServiceTest {
     @Test
     void update_shouldThrowEventClosedException_whenEventEnd(){
         EventEntity eventOld = createEventEntityWithoutId();
-        eventOld.setDateFinal(LocalDateTime.now());
+        eventOld.setDateFinal(LocalDateTime.now().minusDays(2));
         EventEntity eventNew = createEventEntityWithoutId();
 
         assertThrows(EventClosedException.class, () -> {
