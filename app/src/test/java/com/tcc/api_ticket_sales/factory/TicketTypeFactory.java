@@ -68,7 +68,10 @@ public class TicketTypeFactory {
     }
 
     public static TicketTypeResponseDTO createTicketTypeCreateResponseDTODefault(){
-        return Instancio.create(TicketTypeResponseDTO.class);
+        return Instancio.of(TicketTypeResponseDTO.class)
+                .set(field(TicketTypeResponseDTO::getDateInitial), LocalDateTime.now().plusDays(1))
+                .set(field(TicketTypeResponseDTO::getDateFinal), LocalDateTime.now().plusDays(1).plusHours(3))
+                .create();
     }
 
     public static TicketTypeCreateRequestDTO createTicketTypeCreateRequestDTOValid(){
