@@ -13,11 +13,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class EventSpecificationFactoryTest extends BaseIntegrationTest {
 
-//     return EventSpecification.nameEquals(eventEntity.getName())
-//             .and(EventSpecification.locationEquals(eventEntity.getLocation()))
-//            .and(EventSpecification.dateBetween(eventEntity.getDateInitial(), eventEntity.getDateFinal()))
-//            .and(EventSpecification.idEquals(eventEntity.getId()));
-
     @Autowired
     private EventRepository repository;
 
@@ -52,11 +47,12 @@ class EventSpecificationFactoryTest extends BaseIntegrationTest {
 
     @Tag("integration")
     @Test
-    void findConflictingEvents_shouldReturnEmpty_whenEventIdAreDifferent(){
+    void findConflictingEvents_shouldReturnEmpty_whenEventIdAreEquals(){
         EventEntity eventEntity1 = createEventEntityWithoutId();
         EventEntity eventEntity2 = createEventEntityWithId();
         eventEntity2.setName(eventEntity1.getName());
         repository.save(eventEntity1);
+        eventEntity2.setId(eventEntity1.getId());
 
         Specification<EventEntity> specification = eventSpecificationFactory.findConflictingEvents(eventEntity2);
         assertTrue(repository.findAll(specification).isEmpty());
@@ -81,10 +77,21 @@ class EventSpecificationFactoryTest extends BaseIntegrationTest {
     @Test
     void findConflictingEvents_shouldReturnListEvents_whenExistsEventsEquals(){
         EventEntity eventEntity1 = createEventEntityWithoutId();
+        EventEntity eventEntity2 = createEventEntityWithId();
+        eventEntity2.setName(eventEntity1.getName());
+        repository.save(eventEntity1);
+
+        Specification<EventEntity> specification = eventSpecificationFactory.findConflictingEvents(eventEntity2);
+        assertEquals(1, repository.findAll(specification).size());
+    }
+
+    @Tag("integration")
+    @Test
+    void findConflictingEvents_shouldReturnListEvents_whenExistsEventsEqualsWithoutId(){
+        EventEntity eventEntity1 = createEventEntityWithoutId();
         EventEntity eventEntity2 = createEventEntityWithoutId();
         eventEntity2.setName(eventEntity1.getName());
         repository.save(eventEntity1);
-        eventEntity2.setId(eventEntity1.getId());
 
         Specification<EventEntity> specification = eventSpecificationFactory.findConflictingEvents(eventEntity2);
         assertEquals(1, repository.findAll(specification).size());

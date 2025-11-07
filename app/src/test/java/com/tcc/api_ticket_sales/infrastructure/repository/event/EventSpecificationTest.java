@@ -162,4 +162,34 @@ class EventSpecificationTest extends BaseIntegrationTest {
         assertFalse(eventEntities.isEmpty());
         assertEquals(1, eventEntities.size());
     }
+
+    @Tag("integration")
+    @Test
+    void idNotEquals_shouldReturnListIsEmpty_whenIdIsNull(){
+        Specification<EventEntity> specification = EventSpecification.idNotEquals(null);
+        assertTrue(repository.findAll(specification).isEmpty());
+    }
+
+    @Tag("integration")
+    @Test
+    void idNotEquals_shouldReturnListEventEntity_whenEventIdNotEqualsId(){
+        EventEntity eventEntity1 = createEventEntityWithoutId();
+        EventEntity eventEntity2 = createEventEntityWithId();
+        repository.save(eventEntity1);
+
+        Specification<EventEntity> specification = EventSpecification.idNotEquals(eventEntity2.getId());
+        assertTrue(repository.findAll(specification).size() == 1);
+    }
+
+    @Tag("integration")
+    @Test
+    void idNotEquals_shouldReturnListEmpty_whenEventsEqualsId(){
+        EventEntity eventEntity = createEventEntityWithoutId();
+        repository.save(eventEntity);
+        Specification<EventEntity> specification = EventSpecification.idNotEquals(eventEntity.getId());
+
+        List<EventEntity> eventEntities = repository.findAll(specification);
+
+        assertTrue(eventEntities.isEmpty());
+    }
 }
