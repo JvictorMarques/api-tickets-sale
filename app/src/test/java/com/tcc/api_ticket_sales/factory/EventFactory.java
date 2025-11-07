@@ -1,5 +1,6 @@
 package com.tcc.api_ticket_sales.factory;
 
+import com.tcc.api_ticket_sales.application.dto.event.EventUpdateRequestDTO;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.application.dto.event.EventCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
@@ -72,6 +73,20 @@ public class EventFactory {
                 .set(field(EventCreateRequestDTO::getCapacity), 0)
                 .set(field(EventCreateRequestDTO::getDateInitial), LocalDateTime.now().minusDays(1))
                 .set(field(EventCreateRequestDTO::getDateFinal), LocalDateTime.now().minusDays(1))
+                .create();
+    }
+
+    public static EventUpdateRequestDTO createEventUpdateRequestDTO(){
+        return Instancio.create(EventUpdateRequestDTO.class);
+    }
+
+    public static EventUpdateRequestDTO createEventUpdateRequestDTOInvalid(){
+        return Instancio.of(EventUpdateRequestDTO.class)
+                .set(field(EventUpdateRequestDTO::getName), "")
+                .set(field(EventUpdateRequestDTO::getLocation), "")
+                .set(field(EventUpdateRequestDTO::getCapacity), 0)
+                .set(field(EventUpdateRequestDTO::getDateInitial), LocalDateTime.now().minusDays(1))
+                .set(field(EventUpdateRequestDTO::getDateFinal), LocalDateTime.now().minusDays(1))
                 .create();
     }
 }

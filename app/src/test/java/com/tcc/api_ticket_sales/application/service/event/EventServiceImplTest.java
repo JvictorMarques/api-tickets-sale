@@ -1,7 +1,10 @@
 package com.tcc.api_ticket_sales.application.service.event;
 
+import com.tcc.api_ticket_sales.application.dto.event.EventUpdateRequestDTO;
 import com.tcc.api_ticket_sales.application.exception.EventAlreadyExistsException;
+import com.tcc.api_ticket_sales.application.exception.EventNotFoundException;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
+import com.tcc.api_ticket_sales.domain.service.EventDomainService;
 import com.tcc.api_ticket_sales.infrastructure.repository.event.EventRepository;
 import com.tcc.api_ticket_sales.application.dto.event.EventCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
@@ -17,11 +20,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWithoutId;
 import static com.tcc.api_ticket_sales.factory.EventFactory.createEventResponseDTO;
+import static com.tcc.api_ticket_sales.factory.EventFactory.createEventUpdateRequestDTO;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,12 +44,15 @@ class EventServiceImplTest {
     @Mock
     private EventSpecificationFactory eventSpecificationFactory;
 
+    @Mock
+    private EventDomainService eventDomainService;
+
     @InjectMocks
     private EventServiceImpl eventServiceImpl;
 
     @Test
     @Tag("unit")
-    void createEvent_shouldThrowException_whenExists() {
+    void create_shouldThrowException_whenExists() {
         // arrange
         EventEntity eventEntity = createEventEntityWithoutId();
         Specification<EventEntity> mockSpec = mock(Specification.class);
@@ -61,7 +71,7 @@ class EventServiceImplTest {
 
     @Test
     @Tag("unit")
-    void createEvent_shouldReturnEventResponseDTO_whenNotExists() {
+    void create_shouldReturnEventResponseDTO_whenNotExists() {
         // arrange
         EventResponseDTO eventMock = createEventResponseDTO();
         EventEntity eventEntity = createEventEntityWithoutId();
@@ -78,5 +88,54 @@ class EventServiceImplTest {
 
         // assert
         assertEquals(eventMock.getId(), eventResponseDTO.getId());
+    }
+
+    @Tag("unit")
+    @Test
+    void update_shouldThrowEventNotFoundException_whenEventNotExists(){
+        UUID eventId = UUID.randomUUID();
+        EventUpdateRequestDTO eventUpdateRequestDTO = createEventUpdateRequestDTO();
+        when(eventRepository.findById(any())).thenReturn(Optional.empty());
+
+        assertThrows(EventNotFoundException.class, () -> {
+            eventServiceImpl.update(eventId, eventUpdateRequestDTO);
+        });
+    }
+
+    @Tag("unit")
+    @Test
+    void update_shouldThrowEventAlreadyExistsException_whenEventAlreadyExists(){
+        EventEntity eventEntity = createEventEntityWithoutId();
+        EventUpdateRequestDTO eventUpdateRequestDTO = createEventUpdateRequestDTO();
+        Specification<EventEntity> mockSpec = mock(Specification.class);
+
+        when(eventRepository.findById(any())).thenReturn(Optional.of(eventEntity));
+        when(eventMapper.fromEventUpdateRequestDTOToEventEntity(any(), any())).thenReturn(eventEntity);
+        when(eventSpecificationFactory.findConflictingEvents(eventEntity)).thenReturn(mockSpec);
+        when(eventRepository.findAll(mockSpec)).thenReturn(List.of(eventEntity));
+
+        assertThrows(EventAlreadyExistsException.class, () -> {
+            eventServiceImpl.update(eventEntity.getId(), eventUpdateRequestDTO);
+        });
+    }
+
+    @Tag("unit")
+    @Test
+    void update_shouldReturnEventResponseDTO_whenUpdateEventSuccess(){
+        EventEntity eventEntity = createEventEntityWithoutId();
+        EventUpdateRequestDTO eventUpdateRequestDTO = createEventUpdateRequestDTO();
+        Specification<EventEntity> mockSpec = mock(Specification.class);
+        EventResponseDTO eventResponseDTO = createEventResponseDTO();
+
+        when(eventRepository.findById(any())).thenReturn(Optional.of(eventEntity));
+        when(eventMapper.fromEventUpdateRequestDTOToEventEntity(any(), any())).thenReturn(eventEntity);
+        when(eventSpecificationFactory.findConflictingEvents(eventEntity)).thenReturn(mockSpec);
+        when(eventRepository.findAll(mockSpec)).thenReturn(List.of());
+        doNothing().when(eventDomainService).updateEvent(any(), any());
+        when(eventRepository.save(any())).thenReturn(eventEntity);
+        when(eventMapper.fromEventEntityToEventResponseDTO(any())).thenReturn(eventResponseDTO);
+
+        EventResponseDTO response = eventServiceImpl.update(eventEntity.getId(), eventUpdateRequestDTO);
+        assertEquals(response.getId(), eventResponseDTO.getId());
     }
 }
