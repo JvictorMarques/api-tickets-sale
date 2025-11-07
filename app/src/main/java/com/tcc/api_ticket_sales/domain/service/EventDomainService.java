@@ -8,10 +8,14 @@ import com.tcc.api_ticket_sales.domain.exception.EventCapacityReductionNotAllowe
 import com.tcc.api_ticket_sales.domain.exception.EventClosedException;
 import org.springframework.stereotype.Component;
 
+import static com.tcc.api_ticket_sales.domain.utils.CheckDate.checkDateInitialGreaterThanDateFinal;
+
 @Component
 public class EventDomainService {
 
     public void updateEvent(EventEntity eventEntityOld, EventEntity eventEntity){
+        checkDateInitialGreaterThanDateFinal(eventEntity.getDateInitial(), eventEntity.getDateFinal());
+
         if(eventEntityOld.isClosed()) throw new EventClosedException();
 
         if(eventEntityOld.getTicketTypeEntities() == null || eventEntityOld.getTicketTypeEntities().isEmpty()) return;
