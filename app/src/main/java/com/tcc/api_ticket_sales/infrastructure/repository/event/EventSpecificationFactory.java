@@ -11,6 +11,6 @@ public class EventSpecificationFactory {
         return EventSpecification.nameEquals(eventEntity.getName())
                 .and(EventSpecification.locationEquals(eventEntity.getLocation()))
                 .and(EventSpecification.dateBetween(eventEntity.getDateInitial(), eventEntity.getDateFinal()))
-                .and(EventSpecification.idEquals(eventEntity.getId()));
+                .and(EventSpecification.idNotEquals(eventEntity.getId()));
     }
 }

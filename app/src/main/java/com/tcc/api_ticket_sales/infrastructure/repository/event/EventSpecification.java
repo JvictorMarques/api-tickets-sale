@@ -36,4 +36,9 @@ public class EventSpecification {
         return (root, query, cb) ->
                 id == null ? null : cb.equal(root.get("id"), id);
     }
+
+    public static Specification<EventEntity> idNotEquals(UUID id) {
+        return (root, query, cb) ->
+                id == null ? null : cb.notEqual(root.get("id"), id);
+    }
 }
