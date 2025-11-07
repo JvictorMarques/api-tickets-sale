@@ -5,12 +5,15 @@ import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
 import com.tcc.api_ticket_sales.domain.enums.PaymentStatusEnum;
 import com.tcc.api_ticket_sales.domain.exception.EventAgeRestrictionIncreaseNotAllowedException;
 import com.tcc.api_ticket_sales.domain.exception.EventCapacityReductionNotAllowedException;
+import com.tcc.api_ticket_sales.domain.exception.EventClosedException;
 import org.springframework.stereotype.Component;
 
 @Component
 public class EventDomainService {
 
     public void updateEvent(EventEntity eventEntityOld, EventEntity eventEntity){
+        if(eventEntityOld.isClosed()) throw new EventClosedException();
+
         if(eventEntityOld.getTicketTypeEntities() == null || eventEntityOld.getTicketTypeEntities().isEmpty()) return;
 
         int sumCapacityTicketsTypes = sumCapacityTicketsTypes(eventEntityOld);
@@ -29,12 +32,14 @@ public class EventDomainService {
     }
 
     private long countTicketsPurchased(EventEntity eventEntity){
-        return eventEntity.getTicketTypeEntities().stream().mapToLong(ticketTypeEntity ->
-            ticketTypeEntity.getTicketEntities().stream().filter(ticket ->
+        return eventEntity.getTicketTypeEntities().stream().mapToLong(ticketTypeEntity -> {
+            if(ticketTypeEntity.getTicketEntities() == null || ticketTypeEntity.getTicketEntities().isEmpty()) return 0;
+
+            return ticketTypeEntity.getTicketEntities().stream().filter(ticket ->
                     ticket.getPaymentStatusEntity().getDescription().equals(PaymentStatusEnum.APPROVED.getName())
                             && ticket.getDeletedAt() == null
-            ).count()
-        ).sum();
+            ).count();
+        }).sum();
     }
 
     private int sumCapacityTicketsTypes(EventEntity eventEntity){
