@@ -77,7 +77,10 @@ public class EventFactory {
     }
 
     public static EventUpdateRequestDTO createEventUpdateRequestDTO(){
-        return Instancio.create(EventUpdateRequestDTO.class);
+        return Instancio.of(EventUpdateRequestDTO.class)
+                .set(field(EventUpdateRequestDTO::getDateInitial), LocalDateTime.now().plusDays(1))
+                .set(field(EventUpdateRequestDTO::getDateFinal), LocalDateTime.now().plusDays(1).plusHours(3))
+                .create();
     }
 
     public static EventUpdateRequestDTO createEventUpdateRequestDTOInvalid(){
