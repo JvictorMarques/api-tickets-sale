@@ -193,6 +193,7 @@ public class EventController {
                                             """
                                     ),
                                     @ExampleObject(
+                                            name = "Evento existente",
                                             summary = "Evento existente",
                                             value = """
                                             {
@@ -200,12 +201,13 @@ public class EventController {
                                                 "status": 409,
                                                 "timeStamp": "2025-10-13T18:00:00",
                                                 "errors": [
-                                                    "Evento existente.a"
+                                                    "Evento existente."
                                                 ]
                                             }
                                             """
                                     ),
                                     @ExampleObject(
+                                            name = "Capacidade menor que capacidade dos tipos de ingresso",
                                             summary = "Capacidade menor que capacidade dos tipos de ingresso",
                                             value = """
                                             {
@@ -219,6 +221,7 @@ public class EventController {
                                             """
                                     ),
                                     @ExampleObject(
+                                            name = "Restrição de idade não pode ser aumentada",
                                             summary = "Restrição de idade não pode ser aumentada",
                                             value = """
                                             {
@@ -262,6 +265,84 @@ public class EventController {
         EventResponseDTO response = eventService.update(eventId, dto);
 
         return ResponseEntity.ok(response);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Evento excluído com sucesso"),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Formato de requisição inválido e validações dos campos",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples= {
+                                    @ExampleObject(
+                                            summary = "Parâmetro inválido",
+                                            value = """
+                                            {
+                                                "message": "Parâmetro 'EventId' inválido: valor '853f85c3-8af1-4dda-9032-3d3a0538b0b898' não pôde ser convertido para o tipo UUID.",
+                                                "status": 400,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "capacity": "Parâmetro 'EventId' inválido: valor '853f85c3-8af1-4dda-9032-3d3a0538b0b898' não pôde ser convertido para o tipo UUID.",
+                                                ]
+                                            }
+                                            """
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Recursos não encontrados",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples = {
+                                    @ExampleObject(
+                                            summary = "Evento não encontrado",
+                                            value = """
+                                            {
+                                                "message": "Evento [id] não encontrado.",
+                                                "status": 404,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "Evento [id] não encontrado."
+                                                ]
+                                            }
+                                            """
+                                    ),
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "Conflitos",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name="Evento possui ingressos vendidos",
+                                            summary = "Evento possui ingressos vendidos",
+                                            value = """
+                                            {
+                                                "message": "O evento não pode ser deletado pois possui ingresso(s) vendido(s).",
+                                                "status": 409,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "O evento não pode ser deletado pois possui ingresso(s) vendido(s)."
+                                                ]
+                                            }
+                                            """
+                                    ),
+                            }
+
+                    )
+            ),
+    })
+    @DeleteMapping("/{eventId}")
+    public ResponseEntity<Void> deleteEvent(@PathVariable UUID eventId){
+        eventService.delete(eventId);
+
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(

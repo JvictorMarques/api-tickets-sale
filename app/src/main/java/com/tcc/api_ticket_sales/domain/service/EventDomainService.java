@@ -6,7 +6,11 @@ import com.tcc.api_ticket_sales.domain.enums.PaymentStatusEnum;
 import com.tcc.api_ticket_sales.domain.exception.EventAgeRestrictionIncreaseNotAllowedException;
 import com.tcc.api_ticket_sales.domain.exception.EventCapacityReductionNotAllowedException;
 import com.tcc.api_ticket_sales.domain.exception.EventClosedException;
+import com.tcc.api_ticket_sales.domain.exception.EventDeletionNotAllowedException;
+
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 import static com.tcc.api_ticket_sales.domain.utils.CheckDate.checkDateInitialGreaterThanDateFinal;
 
@@ -33,6 +37,24 @@ public class EventDomainService {
         eventEntityOld.getTicketTypeEntities().forEach(ticketTypeEntity -> {
             if(ticketTypeEntity.getDateFinal().isAfter(eventEntity.getDateFinal())) ticketTypeEntity.setDateFinal(eventEntity.getDateFinal());
         });
+    }
+
+    public EventEntity deletedEvent(EventEntity eventEntity){
+        if(eventEntity.getTicketTypeEntities() == null || eventEntity.getTicketTypeEntities().isEmpty()){
+            eventEntity.setDeletedAt(LocalDateTime.now());
+            return eventEntity;
+        }
+
+        if(countTicketsPurchased(eventEntity) > 0){
+            throw new EventDeletionNotAllowedException();
+        }
+
+        eventEntity.setDeletedAt(LocalDateTime.now());
+        eventEntity.getTicketTypeEntities().forEach(ticketTypeEntity -> {
+            ticketTypeEntity.setDeletedAt(LocalDateTime.now());
+        });
+
+        return eventEntity;
     }
 
     private long countTicketsPurchased(EventEntity eventEntity){

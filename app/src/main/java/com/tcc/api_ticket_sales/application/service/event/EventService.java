@@ -10,4 +10,5 @@ public interface EventService {
 
     EventResponseDTO create(EventCreateRequestDTO event);
     EventResponseDTO update(UUID eventId, EventUpdateRequestDTO dto);
+    void delete(UUID eventId);
 }
