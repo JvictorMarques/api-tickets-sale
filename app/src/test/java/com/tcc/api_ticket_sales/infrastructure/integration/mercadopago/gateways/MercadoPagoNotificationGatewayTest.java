@@ -6,6 +6,7 @@ import com.mercadopago.resources.payment.Payment;
 import com.tcc.api_ticket_sales.application.dto.webhook.mercadopago.MercadoPagoWebhookDataRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.webhook.mercadopago.MercadoPagoWebhookPaymentDTO;
 import com.tcc.api_ticket_sales.application.dto.webhook.mercadopago.MercadoPagoWebhoookRequestDTO;
+import com.tcc.api_ticket_sales.domain.exception.BadGatewayException;
 import com.tcc.api_ticket_sales.domain.exception.BusinessException;
 import com.tcc.api_ticket_sales.infrastructure.integration.mercadopago.MercadoPagoClient;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,27 +75,27 @@ class MercadoPagoNotificationGatewayTest {
 
     @Test
     @Tag("unit")
-    void whenPaymentNotFound_thenThrowBusinessException() throws MPException, MPApiException {
+    void whenPaymentNotFound_thenThrowBadGatewayException() throws MPException, MPApiException {
         // Arrange
         when(mercadoPagoClient.getPayment(any())).thenReturn(null);
 
         // Act & Assert
         assertThrows(
-                BusinessException.class,
+                BadGatewayException.class,
                 () -> mercadoPagoNotificationGateway.processNotificationPayment(requestDTO)
         );
     }
 
     @Test
     @Tag("unit")
-    void whenClientThrowsException_thenThrowBusinessException() throws MPException, MPApiException {
+    void whenClientThrowsException_thenThrowBadGatewayException() throws MPException, MPApiException {
         // Arrange
         when(mercadoPagoClient.getPayment(any()))
                 .thenThrow(new RuntimeException("MP Error"));
 
         // Act & Assert
         assertThrows(
-                BusinessException.class,
+                BadGatewayException.class,
                 () -> mercadoPagoNotificationGateway.processNotificationPayment(requestDTO)
         );
     }
