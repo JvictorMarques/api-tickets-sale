@@ -39,10 +39,10 @@ public class EventDomainService {
         });
     }
 
-    public EventEntity deletedEvent(EventEntity eventEntity){
+    public void deletedEvent(EventEntity eventEntity){
         if(eventEntity.getTicketTypeEntities() == null || eventEntity.getTicketTypeEntities().isEmpty()){
             eventEntity.setDeletedAt(LocalDateTime.now());
-            return eventEntity;
+            return;
         }
 
         if(countTicketsPurchased(eventEntity) > 0){
@@ -53,8 +53,6 @@ public class EventDomainService {
         eventEntity.getTicketTypeEntities().forEach(ticketTypeEntity -> {
             ticketTypeEntity.setDeletedAt(LocalDateTime.now());
         });
-
-        return eventEntity;
     }
 
     private long countTicketsPurchased(EventEntity eventEntity){

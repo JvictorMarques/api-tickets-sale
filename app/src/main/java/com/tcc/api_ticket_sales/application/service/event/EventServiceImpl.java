@@ -66,6 +66,7 @@ public class EventServiceImpl implements EventService {
             throw new EventNotFoundException(eventId.toString());
         }
 
-        eventRepository.save(eventDomainService.deletedEvent(event));
+        eventDomainService.deletedEvent(event);
+        eventRepository.save(event);
     }
 }

@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -137,5 +139,46 @@ class EventServiceImplTest {
 
         EventResponseDTO response = eventServiceImpl.update(eventEntity.getId(), eventUpdateRequestDTO);
         assertEquals(response.getId(), eventResponseDTO.getId());
+    }
+
+    @Tag("unit")
+    @Test
+    void delete_shouldThrowEventNotFoundException_whenEventNotExists(){
+        UUID eventId = UUID.randomUUID();
+        when(eventRepository.findById(any())).thenReturn(Optional.empty());
+
+        assertThrows(EventNotFoundException.class, () -> {
+            eventServiceImpl.delete(eventId);
+        });
+    }
+
+    @Tag("unit")
+    @Test
+    void delete_shouldThrowEventNotFoundException_whenEventIsDeleted(){
+        UUID eventId = UUID.randomUUID();
+        EventEntity eventEntity = createEventEntityWithoutId();
+        eventEntity.setDeletedAt(LocalDateTime.now());
+        when(eventRepository.findById(any())).thenReturn(Optional.of(eventEntity));
+
+        assertThrows(EventNotFoundException.class, () -> {
+            eventServiceImpl.delete(eventId);
+        });
+    }
+
+    @Tag("unit")
+    @Test
+    void delete_shouldReturnVoid_whenSuccess(){
+        UUID eventId = UUID.randomUUID();
+        EventEntity eventEntity = createEventEntityWithoutId();
+        when(eventRepository.findById(any())).thenReturn(Optional.of(eventEntity));
+        doNothing().when(eventDomainService).deletedEvent(eventEntity);
+        when(eventRepository.save(any())).thenReturn(eventEntity);
+
+        assertDoesNotThrow(() -> {
+            eventServiceImpl.delete(eventId);
+        });
+
+        verify(eventRepository).save(eventEntity);
+        verify(eventDomainService).deletedEvent(eventEntity);
     }
 }
