@@ -2,10 +2,7 @@ package com.tcc.api_ticket_sales.infrastructure.integration.mercadopago.gateways
 
 import com.mercadopago.client.payment.PaymentCreateRequest;
 import com.mercadopago.resources.payment.Payment;
-import com.mercadopago.resources.preference.Preference;
 import com.tcc.api_ticket_sales.domain.exception.BadGatewayException;
-import com.tcc.api_ticket_sales.domain.exception.BadRequestException;
-import com.tcc.api_ticket_sales.domain.exception.BusinessException;
 import com.tcc.api_ticket_sales.domain.interfaces.PaymentGateway;
 import com.tcc.api_ticket_sales.infrastructure.integration.mercadopago.MercadoPagoClient;
 import com.tcc.api_ticket_sales.infrastructure.integration.mercadopago.MercadoPagoMapper;

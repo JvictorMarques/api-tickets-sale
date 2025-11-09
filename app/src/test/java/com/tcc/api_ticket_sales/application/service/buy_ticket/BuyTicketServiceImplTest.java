@@ -78,9 +78,7 @@ class BuyTicketServiceImplTest {
 
         when(paymentStatusRepository.findByDescription(any())).thenReturn(Optional.empty());
 
-        assertThrows(PaymentStatusNotFoundException.class, () -> {
-            buyTicketServiceImpl.buyTickets(buyTicketRequestDTO);
-        });
+        assertThrows(PaymentStatusNotFoundException.class, () -> buyTicketServiceImpl.buyTickets(buyTicketRequestDTO));
     }
 
 
@@ -95,9 +93,7 @@ class BuyTicketServiceImplTest {
         when(paymentStatusRepository.findByDescription(any())).thenReturn(Optional.of(paymentStatusEntity));
 
 
-        assertThrows(TicketTypeNotFoundException.class, () -> {
-            buyTicketServiceImpl.buyTickets(buyTicketRequestDTO);
-        });
+        assertThrows(TicketTypeNotFoundException.class, () -> buyTicketServiceImpl.buyTickets(buyTicketRequestDTO));
     }
 
     @Tag("unit")

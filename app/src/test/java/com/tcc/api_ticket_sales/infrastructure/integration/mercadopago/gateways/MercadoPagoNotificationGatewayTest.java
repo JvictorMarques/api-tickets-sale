@@ -7,7 +7,6 @@ import com.tcc.api_ticket_sales.application.dto.webhook.mercadopago.MercadoPagoW
 import com.tcc.api_ticket_sales.application.dto.webhook.mercadopago.MercadoPagoWebhookPaymentDTO;
 import com.tcc.api_ticket_sales.application.dto.webhook.mercadopago.MercadoPagoWebhoookRequestDTO;
 import com.tcc.api_ticket_sales.domain.exception.BadGatewayException;
-import com.tcc.api_ticket_sales.domain.exception.BusinessException;
 import com.tcc.api_ticket_sales.infrastructure.integration.mercadopago.MercadoPagoClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
