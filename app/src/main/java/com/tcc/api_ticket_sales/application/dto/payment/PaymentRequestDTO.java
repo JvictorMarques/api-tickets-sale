@@ -15,4 +15,5 @@ public class PaymentRequestDTO {
     private List<ItemPaymentRequestDTO> itemPaymentRequestDTOList;
     private PayerPaymentRequestDTO payerPaymentRequestDTO;
     private String orderId;
+    private String token;
 }
