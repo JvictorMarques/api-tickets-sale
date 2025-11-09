@@ -2,6 +2,11 @@ package com.tcc.api_ticket_sales.infrastructure.repository.event;
 
 import com.tcc.api_ticket_sales.BaseIntegrationTest;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
+import com.tcc.api_ticket_sales.domain.entity.TicketEntity;
+import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
+import com.tcc.api_ticket_sales.infrastructure.repository.PaymentStatusRepository;
+import com.tcc.api_ticket_sales.infrastructure.repository.holder.HolderRepository;
+import com.tcc.api_ticket_sales.infrastructure.repository.order.OrderRepository;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +17,24 @@ import java.util.List;
 
 import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWithId;
 import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWithoutId;
+import static com.tcc.api_ticket_sales.factory.TicketFactory.createTicketEntityPaymentApproved;
+import static com.tcc.api_ticket_sales.factory.TicketTypeFactory.createTicketTypeEntityWithoutId;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EventSpecificationTest extends BaseIntegrationTest {
 
     @Autowired
     private EventRepository repository;
+
+    @Autowired
+    private HolderRepository holderRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private PaymentStatusRepository paymentStatusRepository;
+
 
     @Tag("integration")
     @Test
@@ -43,6 +60,37 @@ class EventSpecificationTest extends BaseIntegrationTest {
         EventEntity eventEntity = createEventEntityWithoutId();
         repository.save(eventEntity);
         Specification<EventEntity> specification = EventSpecification.nameEquals(eventEntity.getName());
+
+        List<EventEntity> eventEntities = repository.findAll(specification);
+
+        assertFalse(eventEntities.isEmpty());
+        assertEquals(1, eventEntities.size());
+    }
+
+    @Tag("integration")
+    @Test
+    void nameContains_shouldReturnListIsEmpty_whenNameIsNull(){
+        Specification<EventEntity> specification = EventSpecification.nameContains(null);
+        assertTrue(repository.findAll(specification).isEmpty());
+    }
+
+    @Tag("integration")
+    @Test
+    void nameContains_shouldReturnListIsEmpty_whenEventNameNotEqualsName(){
+        EventEntity eventEntity1 = createEventEntityWithoutId();
+        EventEntity eventEntity2 = createEventEntityWithoutId();
+        repository.save(eventEntity1);
+
+        Specification<EventEntity> specification = EventSpecification.nameContains(eventEntity2.getName());
+        assertTrue(repository.findAll(specification).isEmpty());
+    }
+
+    @Tag("integration")
+    @Test
+    void nameContains_shouldReturnListEventEntity_whenEventsNameContainsName(){
+        EventEntity eventEntity = createEventEntityWithoutId();
+        repository.save(eventEntity);
+        Specification<EventEntity> specification = EventSpecification.nameContains(eventEntity.getName().substring(0, 3));
 
         List<EventEntity> eventEntities = repository.findAll(specification);
 
@@ -76,6 +124,38 @@ class EventSpecificationTest extends BaseIntegrationTest {
         EventEntity eventEntity = createEventEntityWithoutId();
         repository.save(eventEntity);
         Specification<EventEntity> specification = EventSpecification.locationEquals(eventEntity.getLocation());
+
+        List<EventEntity> eventEntities = repository.findAll(specification);
+
+        assertFalse(eventEntities.isEmpty());
+        assertEquals(1, eventEntities.size());
+    }
+
+    @Tag("integration")
+    @Test
+    void locationContains_shouldReturnListIsEmpty_whenLocationIsNull(){
+        Specification<EventEntity> specification = EventSpecification.locationContains(null);
+        assertTrue(repository.findAll(specification).isEmpty());
+    }
+
+    @Tag("integration")
+    @Test
+    void locationContains_shouldReturnListIsEmpty_whenEventsLocationNotContainsLocation(){
+        EventEntity eventEntity1 = createEventEntityWithoutId();
+        EventEntity eventEntity2 = createEventEntityWithoutId();
+        eventEntity2.setLocation("Teste Location");
+        repository.save(eventEntity1);
+
+        Specification<EventEntity> specification = EventSpecification.locationContains(eventEntity2.getLocation());
+        assertTrue(repository.findAll(specification).isEmpty());
+    }
+
+    @Tag("integration")
+    @Test
+    void locationContains_shouldReturnListEventEntity_whenEventsLocationEqualsLocation(){
+        EventEntity eventEntity = createEventEntityWithoutId();
+        repository.save(eventEntity);
+        Specification<EventEntity> specification = EventSpecification.locationContains(eventEntity.getLocation().substring(0 , 3));
 
         List<EventEntity> eventEntities = repository.findAll(specification);
 
@@ -178,7 +258,7 @@ class EventSpecificationTest extends BaseIntegrationTest {
         repository.save(eventEntity1);
 
         Specification<EventEntity> specification = EventSpecification.idNotEquals(eventEntity2.getId());
-        assertTrue(repository.findAll(specification).size() == 1);
+        assertEquals(1, repository.findAll(specification).size());
     }
 
     @Tag("integration")
@@ -191,5 +271,109 @@ class EventSpecificationTest extends BaseIntegrationTest {
         List<EventEntity> eventEntities = repository.findAll(specification);
 
         assertTrue(eventEntities.isEmpty());
+    }
+
+    @Tag("integration")
+    @Test
+    void capacityGreatThanTicketPurchased_shouldReturnListEventEntity_whenNoTicketsExist(){
+        EventEntity event = createEventEntityWithoutId();
+        TicketTypeEntity ticketTypeEntity = createTicketTypeEntityWithoutId();
+        event.setTicketTypeEntities(List.of(ticketTypeEntity));
+        ticketTypeEntity.setEventEntity(event);
+
+        repository.save(event);
+
+        Specification<EventEntity> specification = EventSpecification.capacityGreatThanTicketPurchased();
+
+        List<EventEntity> eventEntities = repository.findAll(specification);
+
+        assertEquals(1, eventEntities.size());
+    }
+
+    @Tag("integration")
+    @Test
+    void capacityGreatThanTicketPurchased_shouldReturnListEventEntity_whenNoTicketTypesExist(){
+        EventEntity event = createEventEntityWithoutId();
+        repository.save(event);
+
+        Specification<EventEntity> specification = EventSpecification.capacityGreatThanTicketPurchased();
+
+        List<EventEntity> eventEntities = repository.findAll(specification);
+
+        assertEquals(1, eventEntities.size());
+    }
+
+    @Tag("integration")
+    @Test
+    void capacityGreatThanTicketPurchased_shouldReturnListEventEntity_whenTicketsHaveDeletedTicketTypes(){
+        EventEntity event = createEventEntityWithoutId();
+        TicketTypeEntity ticketTypeEntity = createTicketTypeEntityWithoutId();
+        TicketEntity ticketEntity = createTicketEntityPaymentApproved();
+
+        holderRepository.save(ticketEntity.getHolderEntity());
+        orderRepository.save(ticketEntity.getOrderEntity());
+        paymentStatusRepository.save(ticketEntity.getPaymentStatusEntity());
+
+        ticketEntity.setTicketTypeEntity(ticketTypeEntity);
+        ticketTypeEntity.setTicketEntities(List.of(ticketEntity));
+        ticketTypeEntity.setEventEntity(event);
+        ticketTypeEntity.setDeletedAt(LocalDateTime.now());
+        event.setCapacity(1);
+        event.setTicketTypeEntities(List.of(ticketTypeEntity));
+
+        repository.save(event);
+
+        Specification<EventEntity> specification = EventSpecification.capacityGreatThanTicketPurchased();
+
+        List<EventEntity> eventEntities = repository.findAll(specification);
+
+        assertEquals(1, eventEntities.size());
+    }
+
+    @Tag("integration")
+    @Test
+    void capacityGreatThanTicketPurchased_shouldReturnListEmpty_whenApprovedTicketsExceedEventCapacity(){
+        EventEntity event = createEventEntityWithoutId();
+        TicketTypeEntity ticketTypeEntity = createTicketTypeEntityWithoutId();
+        TicketEntity ticketEntity = createTicketEntityPaymentApproved();
+
+        holderRepository.save(ticketEntity.getHolderEntity());
+        orderRepository.save(ticketEntity.getOrderEntity());
+        paymentStatusRepository.save(ticketEntity.getPaymentStatusEntity());
+
+        ticketEntity.setTicketTypeEntity(ticketTypeEntity);
+        ticketTypeEntity.setTicketEntities(List.of(ticketEntity));
+        ticketTypeEntity.setEventEntity(event);
+        event.setCapacity(1);
+        event.setTicketTypeEntities(List.of(ticketTypeEntity));
+
+        repository.save(event);
+
+        Specification<EventEntity> specification = EventSpecification.capacityGreatThanTicketPurchased();
+        assertTrue(repository.findAll(specification).isEmpty());
+    }
+
+    @Tag("integration")
+    @Test
+    void capacityGreatThanTicketPurchased_shouldReturnListEmpty_whenApprovedTicketsDoNotExceedEventCapacity(){
+        EventEntity event = createEventEntityWithoutId();
+        TicketTypeEntity ticketTypeEntity = createTicketTypeEntityWithoutId();
+        TicketEntity ticketEntity = createTicketEntityPaymentApproved();
+
+        holderRepository.save(ticketEntity.getHolderEntity());
+        orderRepository.save(ticketEntity.getOrderEntity());
+        paymentStatusRepository.save(ticketEntity.getPaymentStatusEntity());
+
+        ticketEntity.setTicketTypeEntity(ticketTypeEntity);
+        ticketTypeEntity.setTicketEntities(List.of(ticketEntity));
+        ticketTypeEntity.setEventEntity(event);
+        event.setCapacity(2);
+        event.setTicketTypeEntities(List.of(ticketTypeEntity));
+
+        repository.save(event);
+
+        Specification<EventEntity> specification = EventSpecification.capacityGreatThanTicketPurchased();
+        List<EventEntity> eventEntities = repository.findAll(specification);
+        assertEquals(1, eventEntities.size());
     }
 }

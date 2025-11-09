@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.List;
 import java.util.UUID;
 
 import static com.tcc.api_ticket_sales.factory.EventFactory.*;
@@ -29,6 +30,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -224,5 +226,26 @@ class EventControllerTest {
                 delete(String.format("/event/%s", uuid))
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNoContent());
+    }
+
+    @Test
+    @Tag("unit")
+    void getEvents_shouldReturnStatusBadRequest_whenParamUrlInvalid() throws Exception {
+        mockMvc.perform(
+                get("/event")
+                        .param("dateInitial", "2025-10-10 20:00")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Tag("unit")
+    void getEvents_shouldReturnStatusNoContent_whenEventIsDeleted () throws Exception {
+        when(eventService.getByParams(any())).thenReturn(List.of());
+
+        mockMvc.perform(
+                get("/event")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk());
     }
 }
