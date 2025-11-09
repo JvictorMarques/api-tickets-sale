@@ -121,14 +121,14 @@ class BuyTicketServiceImplTest {
 
         when(buyTicketHandler.processTickets(any(), any(), any())).thenReturn(List.of());
 
-        when(paymentGateway.createPreference(any())).thenReturn(paymentResponseDTO);
+        when(paymentGateway.createPayment(any())).thenReturn(paymentResponseDTO);
 
         when(payerMapper.fromPayerRequestDTOToPayerPaymentRequestDTO(any())).thenReturn(null);
 
 
         BuyTicketResponseDTO buyTicketResponseDTO= buyTicketServiceImpl.buyTickets(buyTicketRequestDTO);
 
-        assertEquals(buyTicketResponseDTO.getOrderId(), paymentResponseDTO.getOrderId());
-        assertEquals(buyTicketResponseDTO.getRedirectUrl(), paymentResponseDTO.getRedirectUrl());
+        assertEquals(buyTicketResponseDTO.getOrderId(), orderEntity.getId());
+        assertEquals(buyTicketResponseDTO.getStatus(), paymentResponseDTO.getStatus());
     }
 }

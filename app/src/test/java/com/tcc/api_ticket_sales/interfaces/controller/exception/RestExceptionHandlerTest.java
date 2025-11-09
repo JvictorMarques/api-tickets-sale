@@ -214,4 +214,24 @@ class RestExceptionHandlerTest {
         assertTrue(body.getMessage().contains(paramName));
         assertNotNull(body.getTimeStamp());
     }
+
+    @Test
+    @Tag("unit")
+    void handleBadGatewayException_shouldReturnRestExceptionMessage_whenBadGatewayException() {
+        // Arrange
+        String messageTest = "Test Bad Gateway";
+        BadGatewayException exception = new BadGatewayException(messageTest);
+
+        // Act
+        ResponseEntity<RestExceptionMessage> response = restExceptionHandler.handleBadGatewayException(exception);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_GATEWAY.value(), response.getStatusCode().value());
+
+        RestExceptionMessage body = response.getBody();
+        assertNotNull(body);
+        assertEquals(messageTest, body.getMessage());
+        assertNotNull(body.getTimeStamp());
+        assertEquals(List.of(messageTest), body.getErrors());
+    }
 }
