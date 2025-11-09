@@ -1,6 +1,7 @@
 package com.tcc.api_ticket_sales.domain.entity;
 
 import com.tcc.api_ticket_sales.domain.exception.BusinessException;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -46,7 +47,7 @@ public class EventEntity extends Auditable{
 
     private String location;
 
-    @OneToMany(mappedBy = "eventEntity")
+    @OneToMany(mappedBy = "eventEntity", cascade = CascadeType.ALL)
     private List<TicketTypeEntity> ticketTypeEntities;
 
 

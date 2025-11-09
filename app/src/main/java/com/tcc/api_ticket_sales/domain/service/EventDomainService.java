@@ -1,5 +1,6 @@
 package com.tcc.api_ticket_sales.domain.service;
 
+import com.tcc.api_ticket_sales.application.exception.EventNotFoundException;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
 import com.tcc.api_ticket_sales.domain.enums.PaymentStatusEnum;
@@ -19,6 +20,7 @@ public class EventDomainService {
 
     public void updateEvent(EventEntity eventEntityOld, EventEntity eventEntity){
         checkDateInitialGreaterThanDateFinal(eventEntity.getDateInitial(), eventEntity.getDateFinal());
+        checkIsDeleted(eventEntityOld);
 
         if(eventEntityOld.isClosed()) throw new EventClosedException();
 
@@ -40,6 +42,8 @@ public class EventDomainService {
     }
 
     public void deletedEvent(EventEntity eventEntity){
+        checkIsDeleted(eventEntity);
+
         if(eventEntity.getTicketTypeEntities() == null || eventEntity.getTicketTypeEntities().isEmpty()){
             eventEntity.setDeletedAt(LocalDateTime.now());
             return;
@@ -68,5 +72,11 @@ public class EventDomainService {
 
     private int sumCapacityTicketsTypes(EventEntity eventEntity){
         return eventEntity.getTicketTypeEntities().stream().mapToInt(TicketTypeEntity::getCapacity).sum();
+    }
+
+    public void checkIsDeleted(EventEntity event) {
+        if (event.getDeletedAt() != null) {
+            throw new EventNotFoundException(event.getId().toString());
+        }
     }
 }

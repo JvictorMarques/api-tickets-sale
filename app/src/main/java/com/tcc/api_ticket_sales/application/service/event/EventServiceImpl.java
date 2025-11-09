@@ -1,5 +1,6 @@
 package com.tcc.api_ticket_sales.application.service.event;
 
+import com.tcc.api_ticket_sales.application.dto.event.EventFilterRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventUpdateRequestDTO;
 import com.tcc.api_ticket_sales.application.exception.EventAlreadyExistsException;
 import com.tcc.api_ticket_sales.application.exception.EventNotFoundException;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+
+import static com.tcc.api_ticket_sales.domain.utils.CheckDate.checkDateInitialGreaterThanDateFinal;
 
 @RequiredArgsConstructor
 @Service
@@ -62,11 +65,18 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public void delete(UUID eventId){
         EventEntity event= eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId.toString()));
-        if(event.getDeletedAt() != null){
-            throw new EventNotFoundException(eventId.toString());
-        }
 
         eventDomainService.deletedEvent(event);
         eventRepository.save(event);
+    }
+
+    public List<EventResponseDTO> getByParams(EventFilterRequestDTO filter){
+        if(filter.getDateInitial() != null || filter.getDateFinal() != null){
+            checkDateInitialGreaterThanDateFinal(filter.getDateInitial(), filter.getDateFinal());
+        }
+
+        List<EventEntity> eventEntities = eventRepository.findAll(eventSpecificationFactory.findFilter(filter));
+
+        return eventEntities.stream().map(eventMapper::fromEventEntityToEventResponseDTO).toList();
     }
 }

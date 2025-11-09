@@ -1,8 +1,10 @@
 package com.tcc.api_ticket_sales.interfaces.controller;
 
+import com.tcc.api_ticket_sales.application.dto.event.EventFilterRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventUpdateRequestDTO;
 import com.tcc.api_ticket_sales.application.service.event.EventService;
 import com.tcc.api_ticket_sales.application.service.ticket_type.TicketTypeService;
+import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.interfaces.controller.exception.RestExceptionMessage;
 import com.tcc.api_ticket_sales.application.dto.event.EventCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
@@ -16,11 +18,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -343,6 +348,13 @@ public class EventController {
         eventService.delete(eventId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<EventResponseDTO>> getEvents(EventFilterRequestDTO filter){
+        List<EventResponseDTO> response = eventService.getByParams(filter);
+
+        return ResponseEntity.ok().body(response);
     }
 
     @Operation(

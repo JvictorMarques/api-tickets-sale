@@ -2,6 +2,7 @@ package com.tcc.api_ticket_sales.domain.entity;
 
 
 import com.tcc.api_ticket_sales.domain.exception.BusinessException;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -53,7 +54,7 @@ public class TicketTypeEntity extends Auditable{
     @Column(nullable = false)
     private LocalDateTime dateFinal;
 
-    @OneToMany(mappedBy = "ticketTypeEntity")
+    @OneToMany(mappedBy = "ticketTypeEntity", cascade = CascadeType.ALL)
     private List<TicketEntity> ticketEntities;
 
     private TicketTypeEntity(
