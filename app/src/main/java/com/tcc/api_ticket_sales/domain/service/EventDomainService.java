@@ -20,7 +20,6 @@ public class EventDomainService {
 
     public void updateEvent(EventEntity eventEntityOld, EventEntity eventEntity){
         checkDateInitialGreaterThanDateFinal(eventEntity.getDateInitial(), eventEntity.getDateFinal());
-        checkIsDeleted(eventEntityOld);
 
         if(eventEntityOld.isClosed()) throw new EventClosedException();
 

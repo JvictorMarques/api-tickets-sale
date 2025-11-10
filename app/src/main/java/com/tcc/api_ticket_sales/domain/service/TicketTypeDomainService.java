@@ -57,8 +57,6 @@ public class TicketTypeDomainService {
             TicketTypeEntity ticketType
     ){
         checkDateInitialGreaterThanDateFinal(ticketType.getDateInitial(), ticketType.getDateFinal());
-        checkIsDeleted(ticketType);
-
         if(ticketType.getDeletedAt() != null){
             throw new TicketTypeClosedException();
         }
@@ -91,7 +89,10 @@ public class TicketTypeDomainService {
     public TicketTypeEntity deleteTicketType(
             TicketTypeEntity ticketType
     ){
-        checkIsDeleted(ticketType);
+        if(ticketType.getDeletedAt() != null){
+            throw new TicketTypeClosedException();
+        }
+
         if(this.countTicketsPurchased(ticketType) > 0){
             throw new TicketTypeDeletionNotAllowedException();
         }
@@ -140,11 +141,5 @@ public class TicketTypeDomainService {
         return ticketTypes.stream()
                 .filter(ticketTypeEntity -> ticketTypeEntity.getDeletedAt() == null)
                 .mapToInt(TicketTypeEntity::getCapacity).sum();
-    }
-
-    public void checkIsDeleted(TicketTypeEntity ticketType) {
-        if (ticketType.getDeletedAt() != null) {
-            throw new TicketTypeNotFoundException(ticketType.getId().toString());
-        }
     }
 }
