@@ -2,7 +2,6 @@
 Library         RequestsLibrary
 Library         Collections
 Library         DateTime
-Library         Browser
 Library         FakerLibrary
 Library         String
 Library         OperatingSystem
@@ -546,8 +545,6 @@ Criar Payload Compra Ticket Com Menor Idade
     
     RETURN    ${payload}
 
-
-
 # --- KEYWORDS ADICIONAIS PARA CENÁRIOS ESPECÍFICOS ---
 
 Criar_Ticket_Type_Com_Capacidade
@@ -630,50 +627,6 @@ Executar Fluxo Completo Pagamento
     ${response_compra}=    Executar Pagamento Mercado Pago Via API    ${ticket_type_id}    ${quantidade_tickets}
     
     RETURN    ${response_compra}    ${ticket_type_id}
-
-# Gerar Token Cartao Mercado Pago
-#     [Documentation]    Gera token do cartão via API Mercado Pago
-    
-#     # Criar dicionário de identificação CORRETO
-#     &{identification}=    Create Dictionary
-#     ...    type=CPF
-#     ...    number=12345678909
-    
-#     # Criar dicionário do cardholder CORRETO
-#     &{cardholder}=    Create Dictionary
-#     ...    name=APRO
-#     ...    identification=${identification}
-    
-#     # Criar payload completo
-#     &{card_data}=    Create Dictionary
-#     ...    card_number=5031433215406351
-#     ...    security_code=123
-#     ...    expiration_month=11
-#     ...    expiration_year=2030
-#     ...    cardholder=${cardholder}
-    
-#     ${public_key}=    Set Variable    ${public_key}
-#     ${url}=    Set Variable    https://api.mercadopago.com/v1/card_tokens?public_key=${public_key}
-    
-#     ${headers}=    Create Dictionary
-#     ...    Content-Type=application/json
-    
-#     Log    Enviando requisição para: ${url}    console=True
-#     ${response}=    POST    ${url}
-#     ...    json=${card_data}
-#     ...    headers=${headers}
-#     ...    expected_status=201
-    
-#     # Validar resposta
-#     Should Be Equal As Integers    ${response.status_code}    201
-#     ${response_json}=    Set Variable    ${response.json()}
-    
-#     # Extrair e validar token
-#     ${card_token}=    Set Variable    ${response_json['id']}
-#     Should Not Be Empty    ${card_token}
-    
-#     Log    ✅ Token gerado: ${card_token}    console=True
-#     RETURN    ${card_token}
 
 Gerar Token Cartao Mercado Pago
     [Documentation]    Gera token do cartão via API Mercado Pago usando cartões de teste oficiais
@@ -817,8 +770,71 @@ Criar_Ticket_Type_E_Capturar_ID
     RETURN    ${ticket_type_id}
 
 Executar_Compra_Ticket
+    [Arguments]    ${ticket_type_id}    ${quantidade_tickets}=1    ${expected_status}=200
+    [Documentation]    Executa a compra de ticket com payload válido incluindo token
+    
+    # === GERAR TOKEN DO CARTÃO ===
+    ${card_token}=    Gerar Token Cartao Mercado Pago
+    
+    # === CRIAR PAYLOAD VÁLIDO ===
+    ${random_suffix}=    Generate Random String    10    [NUMBERS]
+    ${nome_pagador}=     Set Variable    TESTUSER${random_suffix}
+    ${email_pagador}=    Set Variable    test_user_${random_suffix}@test.com
+    
+    # Criar holders
+    @{holders_list}=    Create List
+    FOR    ${index}    IN RANGE    ${quantidade_tickets}
+        ${holder_name}=     FakerLibrary.Name
+        ${holder_email}=    FakerLibrary.Email
+        ${anos_aleatorios}=    Evaluate    random.randint(18, 65)
+        ${data_atual}=      Get Current Date
+        ${data_nascimento}=    Subtract Time From Date    ${data_atual}    ${anos_aleatorios * 365} days
+        ${holder_birth_date}=    Convert Date    ${data_nascimento}    result_format=%Y-%m-%d
+        
+        &{holder}=    Create Dictionary
+        ...    name=${holder_name}
+        ...    email=${holder_email}
+        ...    birthDate=${holder_birth_date}
+        
+        Append To List    ${holders_list}    ${holder}
+    END
+    
+    # Criar payer
+    &{payer}=    Create Dictionary
+    ...    name=${nome_pagador}
+    ...    email=${email_pagador}
+    
+    # Criar ticket
+    &{ticket}=    Create Dictionary
+    ...    id=${ticket_type_id}
+    ...    holders=${holders_list}
+    
+    # Criar payload FINAL com token
+    @{tickets_list}=    Create List    ${ticket}
+    
+    &{payload}=    Create Dictionary
+    ...    tickets=${tickets_list}
+    ...    payer=${payer}
+    ...    token=${card_token}
+    
+    # === EXECUTAR REQUISIÇÃO ===
+    ${headers}=     Create Dictionary   Content-Type=application/json
+    ${response}=    POST On Session     api_session     ${ENDPOINT_BUY_TICKET}
+    ...             json=${payload} 
+    ...             headers=${headers}
+    ...             expected_status=any
+    
+    Should Be Equal As Integers    ${response.status_code}    ${expected_status}
+    RETURN    ${response}
+
+Executar_Compra_Ticket_Com_Payload
     [Arguments]    ${payload}    ${expected_status}
-    [Documentation]    Executa a compra de ticket e valida status
+    [Documentation]    Executa compra com payload customizado (para cenários de falha)
+    
+    # Verificar se o payload já tem token, se não, adicionar
+    ${has_token}=    Run Keyword And Return Status    Dictionary Should Contain Key    ${payload}    token
+    Run Keyword Unless    ${has_token}
+    ...    Add Token To Payload    ${payload}
     
     ${headers}=     Create Dictionary   Content-Type=application/json
     ${response}=    POST On Session     api_session     ${ENDPOINT_BUY_TICKET}
@@ -826,8 +842,15 @@ Executar_Compra_Ticket
     ...             headers=${headers}
     ...             expected_status=any
     
-    Should Be Equal As Integers      ${response.status_code}     ${expected_status}
-    RETURN      ${response}
+    Should Be Equal As Integers    ${response.status_code}    ${expected_status}
+    RETURN    ${response}
+
+Add Token To Payload
+    [Arguments]    ${payload}
+    [Documentation]    Adiciona token do cartão ao payload
+    
+    ${card_token}=    Gerar Token Cartao Mercado Pago
+    Set To Dictionary    ${payload}    token=${card_token}
 
 Validar_Response_Compra_Sucesso
     [Arguments]     ${response}
