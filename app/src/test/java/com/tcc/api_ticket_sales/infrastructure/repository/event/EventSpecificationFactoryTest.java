@@ -2,15 +2,32 @@ package com.tcc.api_ticket_sales.infrastructure.repository.event;
 
 import com.tcc.api_ticket_sales.application.dto.event.EventFilterRequestDTO;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
 import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWithId;
 import static com.tcc.api_ticket_sales.factory.EventFactory.createEventFilterRequestDTO;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@ExtendWith(MockitoExtension.class)
 public class EventSpecificationFactoryTest {
+
+    @Mock
+    private Root<EventEntity> root;
+
+    @Mock
+    private CriteriaQuery<?> query;
+
+    @Mock
+    private CriteriaBuilder cb;
 
     private final EventSpecificationFactory eventSpecificationFactory = new EventSpecificationFactory();
 
@@ -25,6 +42,7 @@ public class EventSpecificationFactoryTest {
 
         // Assert
         assertNotNull(spec);
+        assertDoesNotThrow(() -> spec.toPredicate(root, query, cb));
     }
 
     @Tag("unit")
@@ -43,6 +61,7 @@ public class EventSpecificationFactoryTest {
 
         // Assert
         assertNotNull(spec);
+        assertDoesNotThrow(() -> spec.toPredicate(root, query, cb));
     }
 
     @Test
@@ -69,6 +88,7 @@ public class EventSpecificationFactoryTest {
 
         // Assert
         assertNotNull(spec);
+        assertDoesNotThrow(() -> spec.toPredicate(root, query, cb));
     }
 
     @Test
@@ -87,5 +107,6 @@ public class EventSpecificationFactoryTest {
 
         // Assert
         assertNotNull(spec);
+        assertDoesNotThrow(() -> spec.toPredicate(root, query, cb));
     }
 }
