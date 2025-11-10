@@ -1,5 +1,6 @@
 package com.tcc.api_ticket_sales.domain.service;
 
+import com.tcc.api_ticket_sales.application.exception.EventNotFoundException;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
 import com.tcc.api_ticket_sales.domain.exception.DateInitialGreaterThanDateFinalException;
@@ -16,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWithId;
 import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWithoutId;
 import static com.tcc.api_ticket_sales.factory.TicketFactory.createListTicketEntityPaymentApproved;
 import static com.tcc.api_ticket_sales.factory.TicketTypeFactory.createTicketTypeEntityWithId;
@@ -192,5 +194,16 @@ class EventDomainServiceTest {
 
         assertNotNull(event.getDeletedAt());
         event.getTicketTypeEntities().forEach((ticketType) -> assertNotNull(ticketType.getDeletedAt()));
+    }
+
+    @Tag("unit")
+    @Test
+    void delete_shouldThrowEventNotFound_whenEventIsDeleted(){
+        EventEntity event = createEventEntityWithId();
+        event.setDeletedAt(LocalDateTime.now());
+
+        assertThrows(EventNotFoundException.class, () -> {
+            eventDomainService.deletedEvent(event);
+        });
     }
 }

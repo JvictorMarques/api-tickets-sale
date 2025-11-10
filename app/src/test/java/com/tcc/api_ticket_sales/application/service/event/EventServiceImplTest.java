@@ -154,19 +154,6 @@ class EventServiceImplTest {
 
     @Tag("unit")
     @Test
-    void delete_shouldThrowEventNotFoundException_whenEventIsDeleted(){
-        UUID eventId = UUID.randomUUID();
-        EventEntity eventEntity = createEventEntityWithoutId();
-        eventEntity.setDeletedAt(LocalDateTime.now());
-        when(eventRepository.findById(any())).thenReturn(Optional.of(eventEntity));
-
-        assertThrows(EventNotFoundException.class, () -> {
-            eventServiceImpl.delete(eventId);
-        });
-    }
-
-    @Tag("unit")
-    @Test
     void delete_shouldReturnVoid_whenSuccess(){
         UUID eventId = UUID.randomUUID();
         EventEntity eventEntity = createEventEntityWithoutId();
