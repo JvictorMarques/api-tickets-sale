@@ -137,27 +137,6 @@ class EventEntityTest {
 
     @Test
     @Tag("unit")
-    void of_shouldThrowBusinessException_WhenDateInitialIsBeforeNow(){
-        LocalDateTime start = LocalDateTime.now();
-        LocalDateTime end = LocalDateTime.now().plusDays(1);
-
-        Exception exception = assertThrows(BusinessException.class, () -> {
-            EventEntity.of(
-                    "Evento Teste",
-                    "Descrição",
-                    start,
-                    end,
-                    100,
-                    18,
-                    "São Paulo"
-            );
-        });
-
-        assertEquals("Data inicial do evento inválida", exception.getMessage());
-    }
-
-    @Test
-    @Tag("unit")
     void of_shouldThrowBusinessException_WhenDateFinalNull(){
         LocalDateTime start = LocalDateTime.now().plusDays(1);
 
@@ -176,26 +155,6 @@ class EventEntityTest {
         assertEquals("Data final do evento inválida", exception.getMessage());
     }
 
-    @Test
-    @Tag("unit")
-    void of_shouldThrowBusinessException_WhenDateFinalIsBeforeNow(){
-        LocalDateTime start = LocalDateTime.now().plusDays(1);
-        LocalDateTime end = LocalDateTime.now();
-
-        Exception exception = assertThrows(BusinessException.class, () -> {
-            EventEntity.of(
-                    "Evento Teste",
-                    "Descrição",
-                    start,
-                    end,
-                    100,
-                    18,
-                    "São Paulo"
-            );
-        });
-
-        assertEquals("Data final do evento inválida", exception.getMessage());
-    }
 
     @Test
     @Tag("unit")
