@@ -2,6 +2,7 @@ package com.tcc.api_ticket_sales.application.dto.buy_ticket;
 
 import com.tcc.api_ticket_sales.application.dto.ticket.TicketCreateRequestDTO;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -24,4 +25,7 @@ public class BuyTicketRequestDTO {
     @NotNull(message = "Pagador obrigatório")
     @Valid
     private PayerRequestDTO payer;
+
+    @NotBlank(message = "O token é obrigatório")
+    private String token;
 }

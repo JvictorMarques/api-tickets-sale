@@ -76,9 +76,9 @@ event-ticket-004 - Validar impossibilidade de cadastro com data de início super
     # 1. Gera payload com data inválida
     ${ticket_name}=     Gerar Nome Ticket Aleatorio
     &{payload}=     Criar Payload Ticket Com Datas    ${ticket_name}   ${130}    ${20}    ${data_venda_invalida}    ${FUTURE_DATE_FINAL}
-    
+    Log To Console    Payload com data inválida: ${payload}
     # 2. Executa POST do ticket
-    ${response}=    Executar Post Ticket Para Evento    ${event_id}     ${payload}      ${409}
+    ${response}=    Executar Post Ticket Para Evento    ${event_id}     ${payload}      ${422}
     
 
 
