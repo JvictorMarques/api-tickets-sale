@@ -1,5 +1,6 @@
 package com.tcc.api_ticket_sales.factory;
 
+import com.tcc.api_ticket_sales.application.dto.event.EventFilterRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventUpdateRequestDTO;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.application.dto.event.EventCreateRequestDTO;
@@ -91,5 +92,9 @@ public class EventFactory {
                 .set(field(EventUpdateRequestDTO::getDateInitial), LocalDateTime.now().minusDays(1))
                 .set(field(EventUpdateRequestDTO::getDateFinal), LocalDateTime.now().minusDays(1))
                 .create();
+    }
+
+    public static EventFilterRequestDTO createEventFilterRequestDTO(){
+        return Instancio.create(EventFilterRequestDTO.class);
     }
 }

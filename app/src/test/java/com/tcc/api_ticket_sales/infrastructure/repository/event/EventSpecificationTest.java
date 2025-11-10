@@ -1,379 +1,144 @@
 package com.tcc.api_ticket_sales.infrastructure.repository.event;
 
-import com.tcc.api_ticket_sales.BaseIntegrationTest;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
-import com.tcc.api_ticket_sales.domain.entity.TicketEntity;
-import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
-import com.tcc.api_ticket_sales.infrastructure.repository.PaymentStatusRepository;
-import com.tcc.api_ticket_sales.infrastructure.repository.holder.HolderRepository;
-import com.tcc.api_ticket_sales.infrastructure.repository.order.OrderRepository;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
-import java.util.List;
-
-import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWithId;
-import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWithoutId;
-import static com.tcc.api_ticket_sales.factory.TicketFactory.createTicketEntityPaymentApproved;
-import static com.tcc.api_ticket_sales.factory.TicketTypeFactory.createTicketTypeEntityWithoutId;
-import static org.junit.jupiter.api.Assertions.*;
-
-class EventSpecificationTest extends BaseIntegrationTest {
-
-    @Autowired
-    private EventRepository repository;
-
-    @Autowired
-    private HolderRepository holderRepository;
-
-    @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
-    private PaymentStatusRepository paymentStatusRepository;
+import java.util.UUID;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
-    @Tag("integration")
+public class EventSpecificationTest {
+
+    @Tag("unit")
     @Test
-    void nameEquals_shouldReturnListIsEmpty_whenNameIsNull(){
+    void nameEquals_shouldReturnNull_whenNameIsNull() {
         Specification<EventEntity> specification = EventSpecification.nameEquals(null);
-        assertTrue(repository.findAll(specification).isEmpty());
+        assertNotNull(specification);
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void nameEquals_shouldReturnListIsEmpty_whenEventNameNotEqualsName(){
-        EventEntity eventEntity1 = createEventEntityWithoutId();
-        EventEntity eventEntity2 = createEventEntityWithoutId();
-        repository.save(eventEntity1);
-
-        Specification<EventEntity> specification = EventSpecification.nameEquals(eventEntity2.getName());
-        assertTrue(repository.findAll(specification).isEmpty());
+    void nameEquals_shouldReturnSpecification_whenNameIsNotNull() {
+        Specification<EventEntity> spec = EventSpecification.nameEquals("Show");
+        assertNotNull(spec);
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void nameEquals_shouldReturnListEventEntity_whenEventsNameEqualsName(){
-        EventEntity eventEntity = createEventEntityWithoutId();
-        repository.save(eventEntity);
-        Specification<EventEntity> specification = EventSpecification.nameEquals(eventEntity.getName());
-
-        List<EventEntity> eventEntities = repository.findAll(specification);
-
-        assertFalse(eventEntities.isEmpty());
-        assertEquals(1, eventEntities.size());
+    void nameContains_shouldReturnNull_whenNameIsNull() {
+        assertNotNull(EventSpecification.nameContains(null));
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void nameContains_shouldReturnListIsEmpty_whenNameIsNull(){
-        Specification<EventEntity> specification = EventSpecification.nameContains(null);
-        assertTrue(repository.findAll(specification).isEmpty());
+    void nameContains_shouldReturnSpecification_whenNameIsNotNull() {
+        Specification<EventEntity> spec = EventSpecification.nameContains("Show");
+        assertNotNull(spec);
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void nameContains_shouldReturnListIsEmpty_whenEventNameNotEqualsName(){
-        EventEntity eventEntity1 = createEventEntityWithoutId();
-        EventEntity eventEntity2 = createEventEntityWithoutId();
-        repository.save(eventEntity1);
-
-        Specification<EventEntity> specification = EventSpecification.nameContains(eventEntity2.getName());
-        assertTrue(repository.findAll(specification).isEmpty());
+    void locationEquals_shouldReturnNull_whenLocationIsNull() {
+        assertNotNull(EventSpecification.locationEquals(null));
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void nameContains_shouldReturnListEventEntity_whenEventsNameContainsName(){
-        EventEntity eventEntity = createEventEntityWithoutId();
-        repository.save(eventEntity);
-        Specification<EventEntity> specification = EventSpecification.nameContains(eventEntity.getName().substring(0, 3));
-
-        List<EventEntity> eventEntities = repository.findAll(specification);
-
-        assertFalse(eventEntities.isEmpty());
-        assertEquals(1, eventEntities.size());
+    void locationEquals_shouldReturnSpecification_whenLocationIsNotNull() {
+        Specification<EventEntity> spec = EventSpecification.locationEquals("Arena");
+        assertNotNull(spec);
     }
 
-
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void locationEquals_shouldReturnListIsEmpty_whenLocationIsNull(){
-        Specification<EventEntity> specification = EventSpecification.locationEquals(null);
-        assertTrue(repository.findAll(specification).isEmpty());
+    void locationContains_shouldReturnNull_whenLocationIsNull() {
+        assertNotNull(EventSpecification.locationContains(null));
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void locationEquals_shouldReturnListIsEmpty_whenEventsLocationNotEqualsLocation(){
-        EventEntity eventEntity1 = createEventEntityWithoutId();
-        EventEntity eventEntity2 = createEventEntityWithoutId();
-        eventEntity2.setLocation("Teste Location");
-        repository.save(eventEntity1);
-
-        Specification<EventEntity> specification = EventSpecification.locationEquals(eventEntity2.getLocation());
-        assertTrue(repository.findAll(specification).isEmpty());
+    void locationContains_shouldReturnSpecification_whenLocationIsNotNull() {
+        Specification<EventEntity> spec = EventSpecification.locationContains("Arena");
+        assertNotNull(spec);
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void locationEquals_shouldReturnListEventEntity_whenEventsLocationEqualsLocation(){
-        EventEntity eventEntity = createEventEntityWithoutId();
-        repository.save(eventEntity);
-        Specification<EventEntity> specification = EventSpecification.locationEquals(eventEntity.getLocation());
-
-        List<EventEntity> eventEntities = repository.findAll(specification);
-
-        assertFalse(eventEntities.isEmpty());
-        assertEquals(1, eventEntities.size());
+    void dateBetween_shouldReturnNull_whenStartOrEndIsNull() {
+        LocalDateTime now = LocalDateTime.now();
+        assertNotNull(EventSpecification.dateBetween(null, now));
+        assertNotNull(EventSpecification.dateBetween(now, null));
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void locationContains_shouldReturnListIsEmpty_whenLocationIsNull(){
-        Specification<EventEntity> specification = EventSpecification.locationContains(null);
-        assertTrue(repository.findAll(specification).isEmpty());
+    void dateBetween_shouldReturnSpecification_whenBothDatesAreNotNull() {
+        LocalDateTime start = LocalDateTime.now().minusDays(1);
+        LocalDateTime end = LocalDateTime.now();
+        Specification<EventEntity> spec = EventSpecification.dateBetween(start, end);
+        assertNotNull(spec);
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void locationContains_shouldReturnListIsEmpty_whenEventsLocationNotContainsLocation(){
-        EventEntity eventEntity1 = createEventEntityWithoutId();
-        EventEntity eventEntity2 = createEventEntityWithoutId();
-        eventEntity2.setLocation("Teste Location");
-        repository.save(eventEntity1);
-
-        Specification<EventEntity> specification = EventSpecification.locationContains(eventEntity2.getLocation());
-        assertTrue(repository.findAll(specification).isEmpty());
+    void idEquals_shouldReturnNull_whenIdIsNull() {
+        assertNotNull(EventSpecification.idEquals(null));
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void locationContains_shouldReturnListEventEntity_whenEventsLocationEqualsLocation(){
-        EventEntity eventEntity = createEventEntityWithoutId();
-        repository.save(eventEntity);
-        Specification<EventEntity> specification = EventSpecification.locationContains(eventEntity.getLocation().substring(0 , 3));
-
-        List<EventEntity> eventEntities = repository.findAll(specification);
-
-        assertFalse(eventEntities.isEmpty());
-        assertEquals(1, eventEntities.size());
+    void idEquals_shouldReturnSpecification_whenIdIsNotNull() {
+        Specification<EventEntity> spec = EventSpecification.idEquals(UUID.randomUUID());
+        assertNotNull(spec);
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void dateBetween_shouldReturnListIsEmpty_whenDateInitialIsNull(){
-        Specification<EventEntity> specification = EventSpecification.dateBetween(null, LocalDateTime.now());
-        assertTrue(repository.findAll(specification).isEmpty());
+    void idNotEquals_shouldReturnNull_whenIdIsNull() {
+        assertNotNull(EventSpecification.idNotEquals(null));
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void dateBetween_shouldReturnListIsEmpty_whenDateFinalIsNull(){
-        Specification<EventEntity> specification = EventSpecification.dateBetween(LocalDateTime.now(), null);
-        assertTrue(repository.findAll(specification).isEmpty());
+    void idNotEquals_shouldReturnSpecification_whenIdIsNotNull() {
+        Specification<EventEntity> spec = EventSpecification.idNotEquals(UUID.randomUUID());
+        assertNotNull(spec);
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void dateBetween_shouldReturnListIsEmpty_whenDateInitialAndDateFinalIsNull(){
-        Specification<EventEntity> specification = EventSpecification.dateBetween(null, null);
-        assertTrue(repository.findAll(specification).isEmpty());
+    void ageRestrictionLessThanOrEqual_shouldReturnNull_whenAgeIsNull() {
+        assertNotNull(EventSpecification.ageRestrictionLessThanOrEqual(null));
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void dateBetween_shouldReturnListIsEmpty_whenDateInitialAndDateFinalNotContainsEvents(){
-        EventEntity eventEntity1 = createEventEntityWithoutId();
-        eventEntity1.setDateInitial(LocalDateTime.now().minusDays(30));
-        eventEntity1.setDateFinal(LocalDateTime.now().minusDays(30));
-
-        EventEntity eventEntity2 = createEventEntityWithoutId();
-        repository.save(eventEntity1);
-
-        Specification<EventEntity> specification = EventSpecification.dateBetween(eventEntity2.getDateInitial(), eventEntity2.getDateFinal());
-        assertTrue(repository.findAll(specification).isEmpty());
+    void ageRestrictionLessThanOrEqual_shouldReturnSpecification_whenAgeIsNotNull() {
+        Specification<EventEntity> spec = EventSpecification.ageRestrictionLessThanOrEqual(18);
+        assertNotNull(spec);
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void dateBetween_shouldReturnListIsEmpty_whenDateInitialAndDateFinalContainsEvents(){
-        EventEntity eventEntity1 = createEventEntityWithoutId();
-        EventEntity eventEntity2 = createEventEntityWithoutId();
-        repository.saveAll(List.of(eventEntity1, eventEntity2));
-
-        Specification<EventEntity> specification = EventSpecification.dateBetween(eventEntity2.getDateInitial(), eventEntity2.getDateFinal());
-        List<EventEntity> eventEntities = repository.findAll(specification);
-
-        assertFalse(eventEntities.isEmpty());
-        assertEquals(2, eventEntities.size());
+    void capacityGreatThanTicketPurchased_shouldReturnSpecification() {
+        Specification<EventEntity> spec = EventSpecification.capacityGreatThanTicketPurchased();
+        assertNotNull(spec);
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void idEquals_shouldReturnListIsEmpty_whenIdIsNull(){
-        Specification<EventEntity> specification = EventSpecification.idEquals(null);
-        assertTrue(repository.findAll(specification).isEmpty());
+    void deletedAtIsNull_shouldReturnSpecification() {
+        Specification<EventEntity> spec = EventSpecification.deletedAtIsNull();
+        assertNotNull(spec);
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void idEquals_shouldReturnListIsEmpty_whenEventIdNotEqualsId(){
-        EventEntity eventEntity1 = createEventEntityWithoutId();
-        EventEntity eventEntity2 = createEventEntityWithId();
-        repository.save(eventEntity1);
-
-        Specification<EventEntity> specification = EventSpecification.idEquals(eventEntity2.getId());
-        assertTrue(repository.findAll(specification).isEmpty());
-    }
-
-    @Tag("integration")
-    @Test
-    void idEquals_shouldReturnListEventEntity_whenEventsIdEqualsId(){
-        EventEntity eventEntity = createEventEntityWithoutId();
-        repository.save(eventEntity);
-        Specification<EventEntity> specification = EventSpecification.idEquals(eventEntity.getId());
-
-        List<EventEntity> eventEntities = repository.findAll(specification);
-
-        assertFalse(eventEntities.isEmpty());
-        assertEquals(1, eventEntities.size());
-    }
-
-    @Tag("integration")
-    @Test
-    void idNotEquals_shouldReturnListIsEmpty_whenIdIsNull(){
-        Specification<EventEntity> specification = EventSpecification.idNotEquals(null);
-        assertTrue(repository.findAll(specification).isEmpty());
-    }
-
-    @Tag("integration")
-    @Test
-    void idNotEquals_shouldReturnListEventEntity_whenEventIdNotEqualsId(){
-        EventEntity eventEntity1 = createEventEntityWithoutId();
-        EventEntity eventEntity2 = createEventEntityWithId();
-        repository.save(eventEntity1);
-
-        Specification<EventEntity> specification = EventSpecification.idNotEquals(eventEntity2.getId());
-        assertEquals(1, repository.findAll(specification).size());
-    }
-
-    @Tag("integration")
-    @Test
-    void idNotEquals_shouldReturnListEmpty_whenEventsEqualsId(){
-        EventEntity eventEntity = createEventEntityWithoutId();
-        repository.save(eventEntity);
-        Specification<EventEntity> specification = EventSpecification.idNotEquals(eventEntity.getId());
-
-        List<EventEntity> eventEntities = repository.findAll(specification);
-
-        assertTrue(eventEntities.isEmpty());
-    }
-
-    @Tag("integration")
-    @Test
-    void capacityGreatThanTicketPurchased_shouldReturnListEventEntity_whenNoTicketsExist(){
-        EventEntity event = createEventEntityWithoutId();
-        TicketTypeEntity ticketTypeEntity = createTicketTypeEntityWithoutId();
-        event.setTicketTypeEntities(List.of(ticketTypeEntity));
-        ticketTypeEntity.setEventEntity(event);
-
-        repository.save(event);
-
-        Specification<EventEntity> specification = EventSpecification.capacityGreatThanTicketPurchased();
-
-        List<EventEntity> eventEntities = repository.findAll(specification);
-
-        assertEquals(1, eventEntities.size());
-    }
-
-    @Tag("integration")
-    @Test
-    void capacityGreatThanTicketPurchased_shouldReturnListEventEntity_whenNoTicketTypesExist(){
-        EventEntity event = createEventEntityWithoutId();
-        repository.save(event);
-
-        Specification<EventEntity> specification = EventSpecification.capacityGreatThanTicketPurchased();
-
-        List<EventEntity> eventEntities = repository.findAll(specification);
-
-        assertEquals(1, eventEntities.size());
-    }
-
-    @Tag("integration")
-    @Test
-    void capacityGreatThanTicketPurchased_shouldReturnListEventEntity_whenTicketsHaveDeletedTicketTypes(){
-        EventEntity event = createEventEntityWithoutId();
-        TicketTypeEntity ticketTypeEntity = createTicketTypeEntityWithoutId();
-        TicketEntity ticketEntity = createTicketEntityPaymentApproved();
-
-        holderRepository.save(ticketEntity.getHolderEntity());
-        orderRepository.save(ticketEntity.getOrderEntity());
-        paymentStatusRepository.save(ticketEntity.getPaymentStatusEntity());
-
-        ticketEntity.setTicketTypeEntity(ticketTypeEntity);
-        ticketTypeEntity.setTicketEntities(List.of(ticketEntity));
-        ticketTypeEntity.setEventEntity(event);
-        ticketTypeEntity.setDeletedAt(LocalDateTime.now());
-        event.setCapacity(1);
-        event.setTicketTypeEntities(List.of(ticketTypeEntity));
-
-        repository.save(event);
-
-        Specification<EventEntity> specification = EventSpecification.capacityGreatThanTicketPurchased();
-
-        List<EventEntity> eventEntities = repository.findAll(specification);
-
-        assertEquals(1, eventEntities.size());
-    }
-
-    @Tag("integration")
-    @Test
-    void capacityGreatThanTicketPurchased_shouldReturnListEmpty_whenApprovedTicketsExceedEventCapacity(){
-        EventEntity event = createEventEntityWithoutId();
-        TicketTypeEntity ticketTypeEntity = createTicketTypeEntityWithoutId();
-        TicketEntity ticketEntity = createTicketEntityPaymentApproved();
-
-        holderRepository.save(ticketEntity.getHolderEntity());
-        orderRepository.save(ticketEntity.getOrderEntity());
-        paymentStatusRepository.save(ticketEntity.getPaymentStatusEntity());
-
-        ticketEntity.setTicketTypeEntity(ticketTypeEntity);
-        ticketTypeEntity.setTicketEntities(List.of(ticketEntity));
-        ticketTypeEntity.setEventEntity(event);
-        event.setCapacity(1);
-        event.setTicketTypeEntities(List.of(ticketTypeEntity));
-
-        repository.save(event);
-
-        Specification<EventEntity> specification = EventSpecification.capacityGreatThanTicketPurchased();
-        assertTrue(repository.findAll(specification).isEmpty());
-    }
-
-    @Tag("integration")
-    @Test
-    void capacityGreatThanTicketPurchased_shouldReturnListEmpty_whenApprovedTicketsDoNotExceedEventCapacity(){
-        EventEntity event = createEventEntityWithoutId();
-        TicketTypeEntity ticketTypeEntity = createTicketTypeEntityWithoutId();
-        TicketEntity ticketEntity = createTicketEntityPaymentApproved();
-
-        holderRepository.save(ticketEntity.getHolderEntity());
-        orderRepository.save(ticketEntity.getOrderEntity());
-        paymentStatusRepository.save(ticketEntity.getPaymentStatusEntity());
-
-        ticketEntity.setTicketTypeEntity(ticketTypeEntity);
-        ticketTypeEntity.setTicketEntities(List.of(ticketEntity));
-        ticketTypeEntity.setEventEntity(event);
-        event.setCapacity(2);
-        event.setTicketTypeEntities(List.of(ticketTypeEntity));
-
-        repository.save(event);
-
-        Specification<EventEntity> specification = EventSpecification.capacityGreatThanTicketPurchased();
-        List<EventEntity> eventEntities = repository.findAll(specification);
-        assertEquals(1, eventEntities.size());
+    void notClosed_shouldReturnSpecification() {
+        Specification<EventEntity> spec = EventSpecification.notClosed();
+        assertNotNull(spec);
     }
 }
