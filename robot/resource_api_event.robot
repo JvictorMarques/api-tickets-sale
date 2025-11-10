@@ -6,9 +6,12 @@ Library         FakerLibrary
 
 *** Variables ***
 # --- CONFIGURAÇÕES DE AMBIENTE (EXISTENTES) ---
-${BASE_URL}    %{BASE_URL}
+${BASE_URL}      %{BASE_URL}
+${public_key}    %{MERCADOPAGO_PUBLIC_KEY}
+# ${BASE_URL}             http://localhost:8080/api
 ${ENDPOINT_EVENT}       /event
-${ENDPOINT_TICKET}      /event/{eventId}/ticket
+${ENDPOINT_TICKET}      /event/{eventId}/ticket-type
+${ENDPOINT_BUY_TICKET}  /ticket/buy
 
 # --- DADOS FIXOS DO EVENTO (EXISTENTES) ---
 ${FUTURE_DATE_INITIAL}  2030-10-10T18:00:00
@@ -23,6 +26,8 @@ ${CREATED_EVENT_ID}     ${EMPTY}
 ${GLOBAL_EVENT_ID}       ${EMPTY}
 ${GLOBAL_TICKET_NAME_1}  ${EMPTY}
 ${GLOBAL_TICKET_NAME_2}  ${EMPTY}
+
+${uuid_inexistente}=          f2f1e0d9-c8b7-4a65-83e2-1d5c7b9a4f3e
 
 # --- TAGS (EXISTENTES) ---
 ${TAG_ALL_TESTS}        POST_EVENT

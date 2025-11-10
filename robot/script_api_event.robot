@@ -2,8 +2,10 @@
 Library         RequestsLibrary
 Library         Collections
 Library         DateTime
+Library         Browser
 Library         FakerLibrary
 Library         String
+Library         OperatingSystem
 Resource        resource_api_event.robot
 
 *** Keywords ***
@@ -240,3 +242,635 @@ Validar Mensagem de Erro Ticket
     [Documentation]     Verifica se resposta de erro contém mensagem esperada
     ${response_text}=   Set Variable    ${response.text}
     Should Contain      ${response_text}    ${mensagem_parcial}
+
+# --- KEYWORDS ADICIONAIS PARA CENÁRIOS DE COMPRA ---
+Criar Payload Compra Ticket
+    [Arguments]    ${ticket_type_id}    ${quantidade_tickets}=1
+    [Documentation]    Cria payload CORRETO para compra de ticket
+    
+    ${random_suffix}=    Generate Random String    10    [NUMBERS]
+    
+    # Criar holders
+    @{holders_list}=    Create List
+    FOR    ${index}    IN RANGE    ${quantidade_tickets}
+        ${holder_name}=     FakerLibrary.Name
+        ${holder_email}=    FakerLibrary.Email
+        ${anos_aleatorios}=    Evaluate    random.randint(18, 65)
+        ${data_atual}=      Get Current Date
+        ${data_nascimento}=    Subtract Time From Date    ${data_atual}    ${anos_aleatorios * 365} days
+        ${holder_birth_date}=    Convert Date    ${data_nascimento}    result_format=%Y-%m-%d
+        
+        &{holder}=    Create Dictionary
+        ...    name=${holder_name}
+        ...    email=${holder_email}
+        ...    birthDate=${holder_birth_date}
+        
+        Append To List    ${holders_list}    ${holder}
+    END
+    
+    # Criar payer
+    &{payer}=    Create Dictionary
+    ...    name=Comprador ${random_suffix}
+    ...    email=comprador${random_suffix}@test.com
+    
+    # Criar ticket
+    &{ticket}=    Create Dictionary
+    ...    id=${ticket_type_id}
+    ...    holders=${holders_list}
+    
+    # Criar payload FINAL
+    @{tickets_list}=    Create List    ${ticket}
+    
+    &{payload}=    Create Dictionary
+    ...    tickets=${tickets_list}
+    ...    payer=${payer}
+    
+    RETURN    ${payload}   
+
+Logar Response Para Debug
+    [Arguments]    ${response}
+    [Documentation]    Loga a resposta completa para debugging
+    
+    Log    \n=== RESPONSE DEBUG ===    console=True
+    Log    Status Code: ${response.status_code}    console=True
+    Log    Response Body: ${response.text}    console=True
+    Log    === FIM RESPONSE ===    console=True
+
+Criar Payload Compra Multiplos Tickets
+    [Arguments]    ${ticket_type_id}    ${quantidade}
+    [Documentation]    Cria payload com múltiplos tickets do mesmo tipo
+    
+    ${random_suffix}=    Generate Random String    10    [NUMBERS]
+    ${nome_pagador}=     Set Variable    TESTUSER${random_suffix}
+    ${email_pagador}=    Set Variable    test_user_${random_suffix}@test.com
+    
+    @{holders}=          Create List
+    FOR    ${index}    IN RANGE    ${quantidade}
+        ${holder_name}=     FakerLibrary.Name
+        ${holder_email}=    FakerLibrary.Email
+        # CORREÇÃO: Gerar data de nascimento manualmente
+        ${anos_aleatorios}=    Evaluate    random.randint(18, 65)
+        ${data_atual}=      Get Current Date
+        ${data_nascimento}=    Subtract Time From Date    ${data_atual}    ${anos_aleatorios * 365} days
+        ${holder_birth_date}=    Convert Date    ${data_nascimento}    result_format=%Y-%m-%d
+        
+        &{holder}=          Create Dictionary
+        ...                 name=${holder_name}
+        ...                 email=${holder_email}
+        ...                 birthDate=${holder_birth_date}
+        
+        Append To List      ${holders}    ${holder}
+    END
+    
+    &{payer}=           Create Dictionary
+    ...                 name=${nome_pagador}
+    ...                 email=${email_pagador}
+    
+    &{ticket}=    Create Dictionary
+...           id=${ticket_type_id}
+...           holders=[${holder}] 
+    
+    &{payload}=    Create Dictionary
+...            tickets=[${ticket}]
+...            payer=${payer}
+    
+    RETURN    ${payload}
+
+# --- KEYWORDS PARA CENÁRIOS NEGATIVOS DE COMPRA ---
+Criar Payload Compra Ticket Sem Tickets
+    [Arguments]    ${ticket_type_id}
+    [Documentation]    Cria payload sem o campo tickets
+    
+    ${random_suffix}=    Generate Random String    10    [NUMBERS]
+    ${nome_pagador}=     Set Variable    TESTUSER${random_suffix}
+    ${email_pagador}=    Set Variable    test_user_${random_suffix}@test.com
+    
+    &{payer}=           Create Dictionary
+    ...                 name=${nome_pagador}
+    ...                 email=${email_pagador}
+    
+    &{payload}=         Create Dictionary
+    ...                 payer=${payer}
+    # Campo tickets omitido propositalmente
+    
+    RETURN    ${payload}
+
+Criar Payload Compra Ticket Sem Payer
+    [Arguments]    ${ticket_type_id}
+    [Documentation]    Cria payload sem o campo payer
+    
+    ${holder_name}=     FakerLibrary.Name
+    ${holder_email}=    FakerLibrary.Email
+    # CORREÇÃO: Gerar data de nascimento manualmente
+    ${anos_aleatorios}=    Evaluate    random.randint(18, 65)
+    ${data_atual}=      Get Current Date
+    ${data_nascimento}=    Subtract Time From Date    ${data_atual}    ${anos_aleatorios * 365} days
+    ${holder_birth_date}=    Convert Date    ${data_nascimento}    result_format=%Y-%m-%d
+    
+    &{holder}=          Create Dictionary
+    ...                 name=${holder_name}
+    ...                 email=${holder_email}
+    ...                 birthDate=${holder_birth_date}
+    
+    &{ticket}=    Create Dictionary
+...           id=${ticket_type_id}
+...           holders=[${holder}] 
+    
+    &{payload}=    Create Dictionary
+...            tickets=[${ticket}]
+...            payer=
+    # Campo payer omitido propositalmente
+    
+    RETURN    ${payload}
+
+Criar Payload Compra Ticket Email Invalido
+    [Arguments]    ${ticket_type_id}
+    [Documentation]    Cria payload com email do payer inválido
+    
+    ${holder_name}=     FakerLibrary.Name
+    ${holder_email}=    FakerLibrary.Email
+    # CORREÇÃO: Gerar data de nascimento manualmente
+    ${anos_aleatorios}=    Evaluate    random.randint(18, 65)
+    ${data_atual}=      Get Current Date
+    ${data_nascimento}=    Subtract Time From Date    ${data_atual}    ${anos_aleatorios * 365} days
+    ${holder_birth_date}=    Convert Date    ${data_nascimento}    result_format=%Y-%m-%d
+    
+    &{holder}=          Create Dictionary
+    ...                 name=${holder_name}
+    ...                 email=${holder_email}
+    ...                 birthDate=${holder_birth_date}
+    
+    &{payer}=           Create Dictionary
+    ...                 name=Test User
+    ...                 email=email_invalido    # Email sem @ e domínio
+    
+    &{ticket}=    Create Dictionary
+...           id=${ticket_type_id}
+...           holders=[${holder}] 
+    
+    &{payload}=    Create Dictionary
+...            tickets=[${ticket}]
+...            payer=${payer}
+    
+    RETURN    ${payload}
+
+Criar Payload Compra Ticket Com Titular Fixo
+    [Arguments]    ${ticket_type_id}
+    [Documentation]    Cria payload com titular fixo para testes de duplicação
+    
+    ${random_suffix}=    Generate Random String    10    [NUMBERS]
+    ${nome_pagador}=     Set Variable    TESTUSER${random_suffix}
+    ${email_pagador}=    Set Variable    test_user_${random_suffix}@test.com
+    
+    # Titular fixo para garantir duplicação
+    &{holder}=          Create Dictionary
+    ...                 name=João Silva
+    ...                 email=joao.silva@example.com
+    ...                 birthDate=1990-05-15
+    
+    &{payer}=           Create Dictionary
+    ...                 name=${nome_pagador}
+    ...                 email=${email_pagador}
+    
+    &{ticket}=    Create Dictionary
+...           id=${ticket_type_id}
+...           holders=[${holder}] 
+    
+    &{payload}=    Create Dictionary
+...            tickets=[${ticket}]
+...            payer=${payer}
+    
+    RETURN    ${payload}
+
+Criar Payload Compra Com Titular Duplicado
+    [Arguments]    ${ticket_type_id}
+    [Documentation]    Cria payload com mesmo titular duplicado CORRETAMENTE
+    
+    ${random_suffix}=    Generate Random String    10    [NUMBERS]
+    ${nome_pagador}=     Set Variable    TESTUSER${random_suffix}
+    ${email_pagador}=    Set Variable    test_user_${random_suffix}@test.com
+    
+    # Criar o holder uma vez
+    &{holder}=          Create Dictionary
+    ...                 name=Maria Santos
+    ...                 email=maria.santos@example.com
+    ...                 birthDate=1985-08-20
+    
+    # Criar uma lista com o mesmo holder DUAS VEZES
+    @{holders_list}=    Create List    ${holder}    ${holder}
+    
+    &{payer}=           Create Dictionary
+    ...                 name=${nome_pagador}
+    ...                 email=${email_pagador}
+    
+    # Criar o ticket
+    &{ticket}=          Create Dictionary
+    ...                 id=${ticket_type_id}
+    ...                 holders=${holders_list}
+    
+    # Criar lista de tickets CORRETAMENTE
+    @{tickets_list}=    Create List    ${ticket}
+    
+    # Criar payload final
+    &{payload}=         Create Dictionary
+    ...                 tickets=${tickets_list}
+    ...                 payer=${payer}
+    
+    RETURN    ${payload}
+
+Criar Ticket Type Com Idade Minima
+    [Documentation]    Cria evento com ageRestriction e ticket type associado
+    
+    # Primeiro criar evento com ageRestriction
+    ${event_name}=      Gerar Nome Evento Para Tickets
+    &{event_payload}=   Create Dictionary
+    ...                 name=${event_name}
+    ...                 location=${SUCCESS_LOCATION}
+    ...                 capacity=${SUCCESS_CAPACITY}
+    ...                 ageRestriction=18    
+    ...                 dateInitial=${FUTURE_DATE_INITIAL}
+    ...                 dateFinal=${FUTURE_DATE_FINAL}
+    
+    ${headers}=         Create Dictionary    Content-Type=application/json
+    ${response_event}=  POST On Session     api_session     ${ENDPOINT_EVENT}
+    ...                 json=${event_payload}
+    ...                 headers=${headers}
+    ...                 expected_status=any
+    
+    Should Be Equal As Integers      ${response_event.status_code}     201
+    ${event_id}=        Set Variable    ${response_event.json()['id']}
+    
+    # Agora criar ticket type para este evento
+    ${ticket_name}=     Gerar Nome Ticket Aleatorio
+    &{ticket_payload}=  Criar Payload Ticket Basico    ${ticket_name}    ${120}    ${10}
+    ${response_ticket}=    Executar Post Ticket Para Evento    ${event_id}     ${ticket_payload}      ${201}
+    ${ticket_type_id}=    Set Variable    ${response_ticket.json()['id']}
+    RETURN    ${ticket_type_id}
+
+Criar Payload Compra Ticket Com Menor Idade
+    [Arguments]    ${ticket_type_id}
+    [Documentation]    Cria payload com titular menor de idade CORRETAMENTE
+    
+    ${random_suffix}=    Generate Random String    10    [NUMBERS]
+    ${nome_pagador}=     Set Variable    TESTUSER${random_suffix}
+    ${email_pagador}=    Set Variable    test_user_${random_suffix}@test.com
+    
+    # Titular com 16 anos (menor que 18)
+    ${data_nascimento_menor}=    Convert Date    2008-01-01    result_format=%Y-%m-%d
+    
+    # Criar holder
+    &{holder}=          Create Dictionary
+    ...                 name=Adolescente Teste
+    ...                 email=adolescente@example.com
+    ...                 birthDate=${data_nascimento_menor}
+    
+    # Criar lista de holders
+    @{holders_list}=    Create List    ${holder}
+    
+    &{payer}=           Create Dictionary
+    ...                 name=${nome_pagador}
+    ...                 email=${email_pagador}
+    
+    # Criar ticket com lista correta
+    &{ticket}=          Create Dictionary
+    ...                 id=${ticket_type_id}
+    ...                 holders=${holders_list}
+    
+    # Criar lista de tickets
+    @{tickets_list}=    Create List    ${ticket}
+    
+    # Criar payload final
+    &{payload}=         Create Dictionary
+    ...                 tickets=${tickets_list}
+    ...                 payer=${payer}
+    
+    RETURN    ${payload}
+
+
+
+# --- KEYWORDS ADICIONAIS PARA CENÁRIOS ESPECÍFICOS ---
+
+Criar_Ticket_Type_Com_Capacidade
+    [Arguments]    ${capacidade}
+    [Documentation]    Cria ticket type com capacidade específica
+    ${event_id}=        Criar Evento Base Para Tickets
+    ${ticket_name}=     Gerar Nome Ticket Aleatorio
+    
+    &{ticket_payload}=  Criar Payload Ticket Basico    ${ticket_name}    ${100}    ${capacidade}
+    ${response}=        Executar Post Ticket Para Evento    ${event_id}    ${ticket_payload}    ${201}
+    
+    ${ticket_type_id}=    Set Variable    ${response.json()['id']}
+    Should Not Be Empty    ${ticket_type_id}
+    RETURN    ${ticket_type_id}
+
+Criar_Ticket_Type_Com_Preco
+    [Arguments]    ${preco}
+    [Documentation]    Cria ticket type com preço específico
+    ${event_id}=        Criar Evento Base Para Tickets
+    ${ticket_name}=     Gerar Nome Ticket Aleatorio
+    
+    &{ticket_payload}=  Criar Payload Ticket Basico    ${ticket_name}    ${preco}    ${50}
+    ${response}=        Executar Post Ticket Para Evento    ${event_id}    ${ticket_payload}    ${201}
+    
+    ${ticket_type_id}=    Set Variable    ${response.json()['id']}
+    Should Not Be Empty    ${ticket_type_id}
+    RETURN    ${ticket_type_id}
+
+Executar Pagamento Mercado Pago Via API
+    [Arguments]    ${ticket_type_id}    ${quantidade_tickets}=1
+    [Documentation]    Fluxo COMPLETO integrado: evento → ticket type → pagamento
+    
+    Log    \n💰 INICIANDO PAGAMENTO VIA API MERCADO PAGO    console=True
+    
+    # === FASE 1: GERAR TOKEN DO CARTÃO ===
+    Log    🔵 FASE 1: Gerando token do cartão    console=True
+    ${card_token}=    Gerar Token Cartao Mercado Pago
+    
+    # === FASE 2: CRIAR PAYLOAD DE COMPRA COM TOKEN E TICKET_TYPE_ID ===
+    Log    🔵 FASE 2: Criando payload de compra com token    console=True
+    &{payload_compra}=    Criar Payload Compra Com Token    ${ticket_type_id}    ${quantidade_tickets}    ${card_token}
+    
+    # === FASE 3: EXECUTAR COMPRA COM TOKEN ===
+    Log    🔵 FASE 3: Executando compra com token    console=True
+    ${response_compra}=    Executar Compra Com Token    ${payload_compra}
+    
+    Log    ✅ PAGAMENTO VIA API CONCLUÍDO COM SUCESSO!    console=True
+    RETURN    ${response_compra}
+
+Criar Evento E Ticket Type Para Pagamento
+    [Documentation]    Cria evento e ticket type específicos para testes de pagamento
+    
+    Log    \n🎪 CRIANDO EVENTO E TICKET TYPE PARA PAGAMENTO    console=True
+    
+    # === CRIAR EVENTO ===
+    ${event_id}=    Criar Evento Base Para Tickets
+    Log    Evento criado: ${event_id}    console=True
+    
+    # === CRIAR TICKET TYPE ===
+    ${ticket_name}=    Gerar Nome Ticket Aleatorio
+    &{ticket_payload}=    Criar Payload Ticket Basico    ${ticket_name}    150.00    5
+    ${response_ticket}=    Executar Post Ticket Para Evento    ${event_id}    ${ticket_payload}    201
+    ${ticket_type_id}=    Set Variable    ${response_ticket.json()['id']}
+    
+    Log    Ticket Type criado: ${ticket_type_id}    console=True
+    Log    Preço: R$ 150.00 | Capacidade: 5 vagas    console=True
+    
+    RETURN    ${ticket_type_id}
+
+Executar Fluxo Completo Pagamento
+    [Arguments]    ${quantidade_tickets}=1
+    [Documentation]    Fluxo COMPLETO ponta a ponta: evento → ticket → pagamento
+    
+    # === FASE 1: CRIAR INFRAESTRUTURA (EVENTO + TICKET) ===
+    Log    \n🔵 FASE 1: Criando evento e ticket type    console=True
+    ${ticket_type_id}=    Criar Evento E Ticket Type Para Pagamento
+    
+    # === FASE 2: EXECUTAR PAGAMENTO ===
+    Log    \n💰 FASE 2: Executando pagamento via API Mercado Pago    console=True
+    ${response_compra}=    Executar Pagamento Mercado Pago Via API    ${ticket_type_id}    ${quantidade_tickets}
+    
+    RETURN    ${response_compra}    ${ticket_type_id}
+
+# Gerar Token Cartao Mercado Pago
+#     [Documentation]    Gera token do cartão via API Mercado Pago
+    
+#     # Criar dicionário de identificação CORRETO
+#     &{identification}=    Create Dictionary
+#     ...    type=CPF
+#     ...    number=12345678909
+    
+#     # Criar dicionário do cardholder CORRETO
+#     &{cardholder}=    Create Dictionary
+#     ...    name=APRO
+#     ...    identification=${identification}
+    
+#     # Criar payload completo
+#     &{card_data}=    Create Dictionary
+#     ...    card_number=5031433215406351
+#     ...    security_code=123
+#     ...    expiration_month=11
+#     ...    expiration_year=2030
+#     ...    cardholder=${cardholder}
+    
+#     ${public_key}=    Set Variable    ${public_key}
+#     ${url}=    Set Variable    https://api.mercadopago.com/v1/card_tokens?public_key=${public_key}
+    
+#     ${headers}=    Create Dictionary
+#     ...    Content-Type=application/json
+    
+#     Log    Enviando requisição para: ${url}    console=True
+#     ${response}=    POST    ${url}
+#     ...    json=${card_data}
+#     ...    headers=${headers}
+#     ...    expected_status=201
+    
+#     # Validar resposta
+#     Should Be Equal As Integers    ${response.status_code}    201
+#     ${response_json}=    Set Variable    ${response.json()}
+    
+#     # Extrair e validar token
+#     ${card_token}=    Set Variable    ${response_json['id']}
+#     Should Not Be Empty    ${card_token}
+    
+#     Log    ✅ Token gerado: ${card_token}    console=True
+#     RETURN    ${card_token}
+
+Gerar Token Cartao Mercado Pago
+    [Documentation]    Gera token do cartão via API Mercado Pago usando cartões de teste oficiais
+    
+    # ✅ CORREÇÃO: Usar cartões de teste OFICIAIS do Mercado Pago
+    # Cartões de teste: https://www.mercadopago.com.br/developers/pt/docs/your-integrations/test/cards
+    &{identification}=    Create Dictionary
+    ...    type=CPF
+    ...    number=12345678909
+    
+    &{cardholder}=    Create Dictionary
+    ...    name=APRO
+    ...    identification=${identification}
+    
+    # ✅ CORREÇÃO: Cartão de teste OFICIAL (Visa)
+    &{card_data}=    Create Dictionary
+    ...    card_number=4235647728025682    # Cartão Visa de teste
+    ...    security_code=123
+    ...    expiration_month=11
+    ...    expiration_year=2025
+    ...    cardholder=${cardholder}
+    
+    ${public_key}=    Set Variable    ${public_key}
+    ${url}=    Set Variable    https://api.mercadopago.com/v1/card_tokens?public_key=${public_key}
+    
+    ${headers}=    Create Dictionary
+    ...    Content-Type=application/json
+    
+    Log    Enviando requisição para gerar token...    console=True
+    ${response}=    POST    ${url}
+    ...    json=${card_data}
+    ...    headers=${headers}
+    ...    expected_status=201
+    
+    # Validar resposta
+    Should Be Equal As Integers    ${response.status_code}    201
+    ${response_json}=    Set Variable    ${response.json()}
+    
+    # Extrair e validar token
+    ${card_token}=    Set Variable    ${response_json['id']}
+    Should Not Be Empty    ${card_token}
+    
+    Log    ✅ Token gerado com cartão de teste: ${card_token}    console=True
+    RETURN    ${card_token}
+
+Criar Payload Compra Com Token
+    [Arguments]    ${ticket_type_id}    ${quantidade_tickets}    ${card_token}
+    [Documentation]    Cria payload de compra incluindo o token do cartão
+    
+    ${random_suffix}=    Generate Random String    10    [NUMBERS]
+    ${nome_pagador}=     Set Variable    TESTUSER${random_suffix}
+    ${email_pagador}=    Set Variable    test_user_${random_suffix}@test.com
+    
+    # Criar holders
+    @{holders_list}=    Create List
+    FOR    ${index}    IN RANGE    ${quantidade_tickets}
+        ${holder_name}=     FakerLibrary.Name
+        ${holder_email}=    FakerLibrary.Email
+        ${anos_aleatorios}=    Evaluate    random.randint(18, 65)
+        ${data_atual}=      Get Current Date
+        ${data_nascimento}=    Subtract Time From Date    ${data_atual}    ${anos_aleatorios * 365} days
+        ${holder_birth_date}=    Convert Date    ${data_nascimento}    result_format=%Y-%m-%d
+        
+        &{holder}=    Create Dictionary
+        ...    name=${holder_name}
+        ...    email=${holder_email}
+        ...    birthDate=${holder_birth_date}
+        
+        Append To List    ${holders_list}    ${holder}
+    END
+    
+    # Criar payer
+    &{payer}=    Create Dictionary
+    ...    name=${nome_pagador}
+    ...    email=${email_pagador}
+    
+    # Criar ticket
+    &{ticket}=    Create Dictionary
+    ...    id=${ticket_type_id}
+    ...    holders=${holders_list}
+    
+    # Criar payload FINAL com token
+    @{tickets_list}=    Create List    ${ticket}
+    
+    &{payload}=    Create Dictionary
+    ...    tickets=${tickets_list}
+    ...    payer=${payer}
+    ...    token=${card_token}
+    
+    Log    Payload com token criado    console=True
+    RETURN    ${payload}
+
+Executar Compra Com Token
+    [Arguments]    ${payload}
+    [Documentation]    Executa compra incluindo token do cartão
+    
+    ${headers}=    Create Dictionary
+    ...    Content-Type=application/json
+    
+    # Log detalhado do payload ANTES de enviar
+    Log    \n🔍 DEBUG - PAYLOAD QUE SERÁ ENVIADO:    console=True
+    Log    Tickets: ${payload['tickets']}    console=True
+    Log    Payer: ${payload['payer']}    console=True  
+    Log    Token: ${payload['token']}    console=True
+    
+    ${response}=    POST On Session    api_session    ${ENDPOINT_BUY_TICKET}
+    ...    json=${payload}
+    ...    headers=${headers}
+    ...    expected_status=any  # ← Aceitar qualquer status para ver o erro real
+    
+    # Log detalhado da resposta
+    Log    \n🔍 DEBUG - RESPOSTA DA API:    console=True
+    Log    Status Code: ${response.status_code}    console=True
+    Log    Response Body: ${response.text}    console=True
+    Log    Response Headers: ${response.headers}    console=True
+    
+    # Se for 422, falhar com mensagem clara
+    Run Keyword If    ${response.status_code} == 422
+    ...    Fail    ❌ ERRO 422 - VALIDAÇÃO: ${response.text}
+    
+    # Se for outro erro inesperado
+    Run Keyword If    ${response.status_code} != 200
+    ...    Fail    ❌ ERRO ${response.status_code}: ${response.text}
+    
+    # Se chegou aqui, é 200 - validar sucesso
+    Should Be Equal As Integers    ${response.status_code}    200
+    
+    RETURN    ${response}
+
+
+Criar_Ticket_Type_E_Capturar_ID
+    [Documentation]    Cria um ticket type e retorna o ID
+    ${event_id}=        Criar Evento Base Para Tickets
+    ${ticket_name}=     Gerar Nome Ticket Aleatorio
+    
+    &{ticket_payload}=  Criar Payload Ticket Basico    ${ticket_name}    ${100}    ${50}
+    ${response}=        Executar Post Ticket Para Evento    ${event_id}    ${ticket_payload}    ${201}
+    
+    ${ticket_type_id}=    Set Variable    ${response.json()['id']}
+    Should Not Be Empty    ${ticket_type_id}
+    RETURN    ${ticket_type_id}
+
+Executar_Compra_Ticket
+    [Arguments]    ${payload}    ${expected_status}
+    [Documentation]    Executa a compra de ticket e valida status
+    
+    ${headers}=     Create Dictionary   Content-Type=application/json
+    ${response}=    POST On Session     api_session     ${ENDPOINT_BUY_TICKET}
+    ...             json=${payload} 
+    ...             headers=${headers}
+    ...             expected_status=any
+    
+    Should Be Equal As Integers      ${response.status_code}     ${expected_status}
+    RETURN      ${response}
+
+Validar_Response_Compra_Sucesso
+    [Arguments]     ${response}
+    [Documentation]    Valida resposta de sucesso da compra
+    
+    ${response_json}=   Set Variable    ${response.json()}
+    Should Not Be Empty     ${response_json['orderId']}
+    Should Not Be Empty     ${response_json['status']}  
+    
+
+# --- KEYWORDS ESPECÍFICAS PARA PAGAMENTO ---
+
+Criar Payload Compra Ticket Com Valor Especifico
+    [Arguments]    ${ticket_type_id}    ${valor}=100.00
+    [Documentation]    Cria payload com valor específico para testes de pagamento
+    
+    ${random_suffix}=    Generate Random String    10    [NUMBERS]
+    ${nome_pagador}=     Set Variable    TESTUSER${random_suffix}
+    ${email_pagador}=    Set Variable    test_user_${random_suffix}@test.com
+    
+    # Gerar dados do holder
+    ${holder_name}=     FakerLibrary.Name
+    ${holder_email}=    FakerLibrary.Email
+    ${anos_aleatorios}=    Evaluate    random.randint(18, 65)
+    ${data_atual}=      Get Current Date
+    ${data_nascimento}=    Subtract Time From Date    ${data_atual}    ${anos_aleatorios * 365} days
+    ${holder_birth_date}=    Convert Date    ${data_nascimento}    result_format=%Y-%m-%d
+    
+    &{holder}=          Create Dictionary
+    ...                 name=${holder_name}
+    ...                 email=${holder_email}
+    ...                 birthDate=${holder_birth_date}
+    
+    &{payer}=           Create Dictionary
+    ...                 name=${nome_pagador}
+    ...                 email=${email_pagador}
+    
+    &{ticket}=    Create Dictionary
+...           id=${ticket_type_id}
+...           holders=[${holder}] 
+    
+    &{payload}=    Create Dictionary
+...            tickets=[${ticket}]
+...            payer=${payer}
+    
+    RETURN    ${payload}
