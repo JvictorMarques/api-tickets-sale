@@ -350,6 +350,55 @@ public class EventController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(
+            summary = "Buscar eventos"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Eventos listados com sucesso."),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Formato de requisição inválido e validações dos campos",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples= {
+                                    @ExampleObject(
+                                            name = "Json malformado",
+                                            summary = "Json malformado",
+                                            value = """
+                                            {
+                                                "message": "Formato de data inválido. Use o padrão yyyy-MM-dd'T'HH:mm:ss",
+                                                "status": 400,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "Formato de data/hora inválido para o campo 'saleStartDate'. Valor recebido: '13/10/2025 18:00'. Formato esperado: 'yyyy-MM-dd'T'HH:mm:ss'."
+                                                ]
+                                            }
+                                            """
+                                    ),
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    description = "Violação da regra de negócio",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples= @ExampleObject(
+                                    summary = "Data inicial maior que data final.",
+                                    value = """
+                                            {
+                                                "message": "Data inicial maior que data final.",
+                                                "status": 422,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "Data inicial maior que data final."
+                                                ]
+                                            }
+                                            """
+                            )
+                    )
+            ),
+    })
     @GetMapping()
     public ResponseEntity<List<EventResponseDTO>> getEvents(EventFilterRequestDTO filter){
         List<EventResponseDTO> response = eventService.getByParams(filter);
