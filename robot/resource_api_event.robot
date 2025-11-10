@@ -7,7 +7,7 @@ Library         FakerLibrary
 *** Variables ***
 # --- CONFIGURAÇÕES DE AMBIENTE (EXISTENTES) ---
 ${BASE_URL}      %{BASE_URL}
-${public_key}    %{MERCADOPAGO_PUBLIC_KEY}
+${public_key}    %{MERCADO_PAGO_PUBLIC_KEY}
 # ${BASE_URL}             http://localhost:8080/api
 ${ENDPOINT_EVENT}       /event
 ${ENDPOINT_TICKET}      /event/{eventId}/ticket-type
