@@ -1,7 +1,5 @@
 package com.tcc.api_ticket_sales.interfaces.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.tcc.api_ticket_sales.application.service.order.OrderService;
 import com.tcc.api_ticket_sales.interfaces.controller.exception.RestExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,11 +13,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.List;
 import java.util.UUID;
 
 import static com.tcc.api_ticket_sales.factory.OrderFactory.createOrderResponseDTO;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

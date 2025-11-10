@@ -2,11 +2,9 @@ package com.tcc.api_ticket_sales.factory;
 
 import com.tcc.api_ticket_sales.domain.entity.HolderEntity;
 import com.tcc.api_ticket_sales.domain.entity.OrderEntity;
-import com.tcc.api_ticket_sales.domain.entity.PaymentEntity;
 import com.tcc.api_ticket_sales.domain.entity.PaymentStatusEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketEntity;
 import org.instancio.Instancio;
-import org.instancio.Select;
 
 import java.util.List;
 
