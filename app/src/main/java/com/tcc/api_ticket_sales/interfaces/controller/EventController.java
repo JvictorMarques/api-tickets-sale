@@ -406,6 +406,60 @@ public class EventController {
         return ResponseEntity.ok().body(response);
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Evento retornado com sucesso"),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Formato de requisição inválido e validações dos campos",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples= {
+                                    @ExampleObject(
+                                            summary = "Parâmetro inválido",
+                                            value = """
+                                            {
+                                                "message": "Parâmetro 'eventId' inválido: valor [eventId] não pôde ser convertido para o tipo UUID.",
+                                                "status": 400,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "capacity": "Parâmetro 'EventId' inválido: valor [eventId] não pôde ser convertido para o tipo UUID.",
+                                                ]
+                                            }
+                                            """
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Recursos não encontrados",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples = {
+                                    @ExampleObject(
+                                            summary = "Evento não encontrado",
+                                            value = """
+                                            {
+                                                "message": "Evento [id] não encontrado.",
+                                                "status": 404,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "Evento [id] não encontrado."
+                                                ]
+                                            }
+                                            """
+                                    ),
+                            }
+                    )
+            ),
+    })
+    @GetMapping("{eventId}")
+    public ResponseEntity<EventResponseDTO> getById(@PathVariable UUID eventId){
+        EventResponseDTO eventResponseDTO = eventService.getById(eventId);
+
+        return ResponseEntity.ok(eventResponseDTO);
+    }
+
     @Operation(
             summary = "Cadastrar ingresso a um evento"
     )

@@ -79,4 +79,12 @@ public class EventServiceImpl implements EventService {
 
         return eventEntities.stream().map(eventMapper::fromEventEntityToEventResponseDTO).toList();
     }
+
+    public EventResponseDTO getById(UUID eventId){
+        EventEntity eventEntity= eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId.toString()));
+
+        if(eventEntity.getDeletedAt() != null) throw new EventNotFoundException(eventId.toString());
+
+        return eventMapper.fromEventEntityToEventResponseDTO(eventEntity);
+    }
 }
