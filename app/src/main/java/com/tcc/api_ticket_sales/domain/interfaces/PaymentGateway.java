@@ -4,5 +4,5 @@ import com.tcc.api_ticket_sales.application.dto.payment.PaymentRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.payment.PaymentResponseDTO;
 
 public interface PaymentGateway {
-    PaymentResponseDTO createPreference(PaymentRequestDTO paymentRequestDTO);
+    PaymentResponseDTO createPayment(PaymentRequestDTO paymentRequestDTO);
 }

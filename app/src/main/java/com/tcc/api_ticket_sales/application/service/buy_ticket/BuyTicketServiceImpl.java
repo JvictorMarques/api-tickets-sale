@@ -89,14 +89,15 @@ public class BuyTicketServiceImpl implements BuyTicketService{
                         buyTicketRequestDTO.getPayer()
                 ))
                 .orderId(orderEntity.getId().toString())
+                .token(buyTicketRequestDTO.getToken())
                 .build();
 
-        PaymentResponseDTO response = paymentGateway.createPreference(paymentRequestDTO);
+        PaymentResponseDTO response = paymentGateway.createPayment(paymentRequestDTO);
 
 
         return BuyTicketResponseDTO.builder()
-                .orderId(response.getOrderId())
-                .redirectUrl(response.getRedirectUrl())
+                .status(response.getStatus())
+                .orderId(orderEntity.getId())
                 .build();
     }
 }
