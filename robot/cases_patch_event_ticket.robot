@@ -76,7 +76,7 @@ TC-PATCH-004 - Validar falha ao atualizar com capacidade inferior aos ingressos 
     
     ${response_json}=    Set Variable    ${response_compra.json()}
     
-    &{payload}=    Criar Payload Atualizacao Parcial    capacidade    2
+    &{payload}=    Criar Payload Atualizacao Parcial    capacity    2
     Sleep    15s
     ${response}=    Executar Patch Ticket Type    ${ticket_type_id}    ${payload}    ${409}
 
