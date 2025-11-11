@@ -897,3 +897,105 @@ Criar Payload Compra Ticket Com Valor Especifico
 ...            payer=${payer}
     
     RETURN    ${payload}
+
+Executar Patch Ticket Type
+    [Arguments]    ${ticket_type_id}    ${payload}    ${expected_status}
+    [Documentation]    Executa PATCH para atualizar ticket type
+    
+    ${url_final}=    Replace String    ${ENDPOINT_UPDATE_TICKET}    {ticketTypeId}    ${ticket_type_id}
+    ${headers}=     Create Dictionary   Content-Type=application/json
+    
+    ${response}=    PATCH On Session    api_session    ${url_final}
+    ...             json=${payload} 
+    ...             headers=${headers}
+    ...             expected_status=any
+    
+    Should Be Equal As Integers    ${response.status_code}    ${expected_status}
+    RETURN    ${response}
+
+Validar Response Ticket Atualizado
+    [Arguments]    ${response}    ${ticket_type_id}    ${event_id}
+    [Documentation]    Valida resposta de sucesso da atualização
+    
+    ${response_json}=    Set Variable    ${response.json()}
+    
+    # Validações básicas
+    Should Be Equal    ${response_json['id']}    ${ticket_type_id}
+    Should Be Equal    ${response_json['event']}    ${event_id}
+    Should Not Be Empty    ${response_json['updatedAt']}
+
+Criar Payload Atualizacao Parcial
+    [Arguments]    ${campo}    ${valor}
+    [Documentation]    Cria payload para atualização parcial
+    
+    &{payload}=    Create Dictionary    ${campo}=${valor}
+    RETURN    ${payload}
+
+# --- KEYWORDS PARA CENÁRIOS ESPECÍFICOS PONTA A PONTA ---
+
+Criar Evento E Ticket Para Atualizacao
+    [Documentation]    Fluxo completo: Cria evento e ticket type para testes PATCH
+    
+    # 1. Criar Evento (usando keyword existente)
+    ${event_id}=    Criar Evento Base Para Tickets
+    
+    # 2. Criar Ticket Type (usando keyword existente)
+    ${ticket_name}=    Gerar Nome Ticket Aleatorio
+    &{ticket_payload}=    Criar Payload Ticket Basico    ${ticket_name}    ${100}    ${50}
+    ${response_ticket}=    Executar Post Ticket Para Evento    ${event_id}    ${ticket_payload}    ${201}
+    ${ticket_type_id}=    Set Variable    ${response_ticket.json()['id']}
+    
+    RETURN    ${event_id}    ${ticket_type_id}
+
+Criar Fluxo Comprar E Atualizar
+    [Arguments]    ${capacidade_ticket}=60    ${quantidade_compras}=5
+    [Documentation]    Fluxo completo: Evento → Ticket → Compras → Tentar Atualizar
+    
+    # 1. Criar Evento
+    ${event_id}=    Criar Evento Base Para Tickets
+    
+    # 2. Criar Ticket Type com capacidade específica
+    ${ticket_name}=    Gerar Nome Ticket Aleatorio
+    &{ticket_payload}=    Criar Payload Ticket Basico    ${ticket_name}    ${100}    ${capacidade_ticket}
+    ${response_ticket}=    Executar Post Ticket Para Evento    ${event_id}    ${ticket_payload}    ${201}
+    ${ticket_type_id}=    Set Variable    ${response_ticket.json()['id']}
+    
+    # 3. Realizar compras (se solicitado)
+    IF    ${quantidade_compras} > 0
+        ${payload_compra}=    Criar Payload Compra Ticket    ${ticket_type_id}
+        ${response_compra}=    Executar_Compra_Ticket    ${payload_compra}    ${201}
+    END
+    
+    RETURN    ${event_id}    ${ticket_type_id}
+
+Criar Dois Tickets No Mesmo Evento
+    [Documentation]    Cria dois tickets no mesmo evento para teste de nome duplicado
+    
+    # 1. Criar Evento
+    ${event_id}=    Criar Evento Base Para Tickets
+    
+    # 2. Criar Primeiro Ticket
+    ${ticket_name_1}=    Gerar Nome Ticket Aleatorio
+    &{ticket_payload_1}=    Criar Payload Ticket Basico    ${ticket_name_1}    ${100}    ${30}
+    ${response_ticket_1}=    Executar Post Ticket Para Evento    ${event_id}    ${ticket_payload_1}    ${201}
+    ${ticket_type_id_1}=    Set Variable    ${response_ticket_1.json()['id']}
+    
+    # 3. Criar Segundo Ticket
+    ${ticket_name_2}=    Gerar Nome Ticket Aleatorio
+    &{ticket_payload_2}=    Criar Payload Ticket Basico    ${ticket_name_2}    ${150}    ${20}
+    ${response_ticket_2}=    Executar Post Ticket Para Evento    ${event_id}    ${ticket_payload_2}    ${201}
+    ${ticket_type_id_2}=    Set Variable    ${response_ticket_2.json()['id']}
+    
+    RETURN    ${event_id}    ${ticket_type_id_1}    ${ticket_type_id_2}    ${ticket_name_1}
+
+Gerar UUID Inexistente
+    [Documentation]    Gera um UUID no formato correto que não existe na base
+    # Formato: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+    ${part1}=    Generate Random String    8    [LETTERS][NUMBERS]
+    ${part2}=    Generate Random String    4    [LETTERS][NUMBERS]
+    ${part3}=    Generate Random String    4    [LETTERS][NUMBERS]
+    ${part4}=    Generate Random String    4    [LETTERS][NUMBERS]
+    ${part5}=    Generate Random String    12    [LETTERS][NUMBERS]
+    
+    ${uuid_inexistente}=    Set Variable    ${part1}-${part2}-${part3}-${part4}-${part5}
+    RETURN    ${uuid_inexistente}
