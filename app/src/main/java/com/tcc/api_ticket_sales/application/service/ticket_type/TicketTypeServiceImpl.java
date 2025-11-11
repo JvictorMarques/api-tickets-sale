@@ -68,4 +68,12 @@ public class TicketTypeServiceImpl implements TicketTypeService {
 
         return ticketTypeMapper.fromTicketTypeEntityToTicketTypeResponseDTO(ticketTypeUpdated);
     }
+
+    @Override
+    @Transactional
+    public void delete(UUID ticketId){
+        TicketTypeEntity ticketTypeEntity = ticketTypeRepository.findById(ticketId).orElseThrow(() -> new TicketTypeNotFoundException(ticketId.toString()));
+
+        ticketTypeRepository.save(ticketTypeDomainService.deleteTicketType(ticketTypeEntity));
+    }
 }

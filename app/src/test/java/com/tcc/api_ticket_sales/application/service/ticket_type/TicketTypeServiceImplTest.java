@@ -31,6 +31,8 @@ import static com.tcc.api_ticket_sales.factory.TicketTypeFactory.createTicketTyp
 import static com.tcc.api_ticket_sales.factory.TicketTypeFactory.createTicketTypeUpdateRequestDTODefault;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -148,5 +150,47 @@ class TicketTypeServiceImplTest {
         assertThrows(TicketTypeAlreadyExistsException.class, () -> {
             ticketServiceImpl.update(UUID.randomUUID(), dto);
         });
+    }
+
+    @Test
+    @Tag("unit")
+    void delete_shouldThrowTicketTypeNotFoundException_whenTicketTypeNotFound() {
+        // arrange
+        when(ticketTypeRepository.findById(any())).thenReturn(Optional.empty());
+
+        // action e assert
+        assertThrows(
+                TicketTypeNotFoundException.class,
+                () -> ticketServiceImpl.delete(UUID.randomUUID())
+        );
+    }
+
+    @Test
+    @Tag("unit")
+    void delete_shouldCompleteSuccessfully_whenTicketTypeExists() {
+        // arrange
+        TicketTypeEntity ticketType = createTicketTypeEntityWithId();
+        when(ticketTypeRepository.findById(any())).thenReturn(Optional.of(ticketType));
+        when(ticketTypeDomainService.deleteTicketType(any())).thenReturn(ticketType);
+        when(ticketTypeRepository.save(any())).thenReturn(ticketType);
+
+        // act & assert
+        assertDoesNotThrow(() -> ticketServiceImpl.delete(UUID.randomUUID()));
+    }
+
+    @Test
+    @Tag("unit")
+    void delete_shouldCallRepositorySave_afterDomainServiceDelete() {
+        // arrange
+        TicketTypeEntity ticketType = createTicketTypeEntityWithId();
+        when(ticketTypeRepository.findById(any())).thenReturn(Optional.of(ticketType));
+        when(ticketTypeDomainService.deleteTicketType(any())).thenReturn(ticketType);
+
+        // act
+        ticketServiceImpl.delete(UUID.randomUUID());
+
+        // assert
+        verify(ticketTypeRepository).save(ticketType);
+        verify(ticketTypeDomainService).deleteTicketType(ticketType);
     }
 }

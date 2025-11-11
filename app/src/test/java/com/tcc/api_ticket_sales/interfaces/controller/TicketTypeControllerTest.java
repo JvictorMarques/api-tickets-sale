@@ -24,7 +24,9 @@ import static com.tcc.api_ticket_sales.factory.TicketTypeFactory.createTicketTyp
 import static com.tcc.api_ticket_sales.factory.TicketTypeFactory.createTicketTypeUpdateRequestDTODefault;
 import static com.tcc.api_ticket_sales.factory.TicketTypeFactory.createTicketTypeUpdateRequestDTOInvalid;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -97,5 +99,27 @@ class TicketTypeControllerTest {
                 ).andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(String.valueOf(dtoResponse.getId())))
                 .andExpect(jsonPath("$.name").value(dtoResponse.getName()));
+    }
+
+
+    @Test
+    @Tag("unit")
+    void delete_shouldReturnStatusBadRequest_whenParamUrlInvalid() throws Exception {
+        mockMvc.perform(
+                delete(String.format("/ticket-type/%s", "teste123"))
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Tag("unit")
+    void delete_shouldReturnStatusNoContent_whenTicketTypeIsDeleted () throws Exception {
+        UUID uuid = UUID.randomUUID();
+        doNothing().when(ticketTypeService).delete(any());
+
+        mockMvc.perform(
+                        delete(String.format("/ticket-type/%s", uuid))
+                                .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isNoContent());
     }
 }
