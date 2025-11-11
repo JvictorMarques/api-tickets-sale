@@ -3,6 +3,7 @@ package com.tcc.api_ticket_sales.domain.service;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
 import com.tcc.api_ticket_sales.domain.exception.EventClosedException;
+import com.tcc.api_ticket_sales.domain.exception.TicketInvalidQuantityUpdateException;
 import com.tcc.api_ticket_sales.domain.exception.TicketTypeCapacityExceedsEventLimitException;
 import com.tcc.api_ticket_sales.domain.exception.TicketTypeClosedException;
 import com.tcc.api_ticket_sales.domain.exception.TicketTypeDatesExceedsEventDateException;
@@ -14,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWithId;
+import static com.tcc.api_ticket_sales.factory.TicketFactory.createListTicketEntityPaymentApproved;
+import static com.tcc.api_ticket_sales.factory.TicketTypeFactory.createTicketTypeEntityWithId;
 import static com.tcc.api_ticket_sales.factory.TicketTypeFactory.createTicketTypeEntityWithoutId;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -104,5 +107,106 @@ class TicketTypeDomainServiceTest {
         assertThrows(EventClosedException.class, () -> {
             service.validateTicketTypeSale(type);
         });
+    }
+
+    // teste new
+
+    @Test
+    @Tag("unit")
+    void updateTicketType_shouldThrowTicketTypeClosedException_WhenTicketTypeIsDeleted() {
+        TicketTypeEntity ticketType = createTicketTypeEntityWithoutId();
+        ticketType.setDeletedAt(LocalDateTime.now());
+
+        assertThrows(TicketTypeClosedException.class, () -> {
+            service.updateTicketType(ticketType);
+        });
+    }
+
+    @Test
+    @Tag("unit")
+    void updateTicketType_shouldThrowEventClosedException_WhenEventIsClosed() {
+        TicketTypeEntity ticketType = createTicketTypeEntityWithoutId();
+        EventEntity event = createEventEntityWithId();
+        event.setDeletedAt(LocalDateTime.now());
+
+        ticketType.setEventEntity(event);
+
+        assertThrows(EventClosedException.class, () -> {
+            service.updateTicketType(ticketType);
+        });
+    }
+
+    @Test
+    @Tag("unit")
+    void updateTicketType_shouldThrowTicketInvalidQuantityUpdateException_WhenInvalidQuantity() {
+        EventEntity event = createEventEntityWithId();
+
+        TicketTypeEntity ticketType = createTicketTypeEntityWithoutId();
+        ticketType.setCapacity(2);
+        ticketType.setEventEntity(event);
+
+        ticketType.setTicketEntities(createListTicketEntityPaymentApproved());
+
+        assertThrows(TicketInvalidQuantityUpdateException.class, () -> {
+            service.updateTicketType(ticketType);
+        });
+    }
+
+    @Test
+    @Tag("unit")
+    void updateTicketType_shouldThrowTicketTypeCapacityExceedsEventLimitException_WhenCapacityExceeded() {
+        EventEntity event = createEventEntityWithId();
+        event.setCapacity(100);
+
+        TicketTypeEntity type1 = createTicketTypeEntityWithId();
+        type1.setCapacity(60);
+
+        event.setTicketTypeEntities(List.of(type1));
+
+        TicketTypeEntity newType = createTicketTypeEntityWithId();
+        newType.setCapacity(50);
+        newType.setEventEntity(event);
+        newType.setTicketEntities(List.of());
+
+        Exception exception = assertThrows(TicketTypeCapacityExceedsEventLimitException.class, () -> {
+            service.updateTicketType(newType);
+        });
+
+        assertTrue(exception.getMessage().contains("40"));
+    }
+
+    @Test
+    @Tag("unit")
+    void updateTicketType_shouldThrowTicketTypeDatesExceedsEventDateException_WhenDateExceeds() {
+        EventEntity event = createEventEntityWithId();
+        event.setTicketTypeEntities(List.of());
+
+        TicketTypeEntity ticketType = createTicketTypeEntityWithoutId();
+        ticketType.setDateInitial(event.getDateFinal().plusDays(3));
+        ticketType.setCapacity(50);
+        ticketType.setTicketEntities(List.of());
+        ticketType.setEventEntity(event);
+
+        assertThrows(TicketTypeDatesExceedsEventDateException.class, () -> {
+            service.updateTicketType(ticketType);
+        });
+    }
+
+    @Test
+    @Tag("unit")
+    void updateTicketType_shouldReturnTicketType_WhenSuccess() {
+        EventEntity event = createEventEntityWithId();
+        event.setTicketTypeEntities(List.of());
+
+        TicketTypeEntity ticketType = createTicketTypeEntityWithId();
+        ticketType.setDateInitial(event.getDateFinal().minusDays(2));
+        ticketType.setDateFinal(event.getDateFinal().minusDays(1));
+        ticketType.setCapacity(50);
+        ticketType.setTicketEntities(List.of());
+        ticketType.setEventEntity(event);
+
+
+        TicketTypeEntity response = service.updateTicketType(ticketType);
+        assertEquals(response.getId(), ticketType.getId());
     }
 }

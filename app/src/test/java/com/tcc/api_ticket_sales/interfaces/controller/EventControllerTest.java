@@ -8,7 +8,7 @@ import com.tcc.api_ticket_sales.interfaces.controller.exception.RestExceptionHan
 import com.tcc.api_ticket_sales.application.dto.event.EventCreateDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateRequestDTO;
-import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateResponseDTO;
+import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -136,7 +136,7 @@ class EventControllerTest {
     void createTicketType_shouldReturnStatusCreated_whenTicketTypeIsCreated () throws Exception {
         UUID uuid = UUID.randomUUID();
         TicketTypeCreateRequestDTO dtoRequest = createTicketTypeCreateRequestDTOValid();
-        TicketTypeCreateResponseDTO dtoResponse = createTicketTypeCreateResponseDTODefault();
+        TicketTypeResponseDTO dtoResponse = createTicketTypeCreateResponseDTODefault();
 
         when(ticketTypeService.create(any(), any())).thenReturn(dtoResponse);
 

@@ -1,9 +1,10 @@
 package com.tcc.api_ticket_sales.factory;
 
+import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeUpdateRequestDTO;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateRequestDTO;
-import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateResponseDTO;
+import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeResponseDTO;
 import org.instancio.Instancio;
 
 import java.math.BigDecimal;
@@ -66,8 +67,8 @@ public class TicketTypeFactory {
         );
     }
 
-    public static TicketTypeCreateResponseDTO createTicketTypeCreateResponseDTODefault(){
-        return Instancio.create(TicketTypeCreateResponseDTO.class);
+    public static TicketTypeResponseDTO createTicketTypeCreateResponseDTODefault(){
+        return Instancio.create(TicketTypeResponseDTO.class);
     }
 
     public static TicketTypeCreateRequestDTO createTicketTypeCreateRequestDTOValid(){
@@ -86,6 +87,20 @@ public class TicketTypeFactory {
                 .set(field(TicketTypeCreateRequestDTO::getCapacity), 0)
                 .set(field(TicketTypeCreateRequestDTO::getDateInitial), LocalDateTime.now().minusDays(1))
                 .set(field(TicketTypeCreateRequestDTO::getDateFinal), LocalDateTime.now().minusDays(1))
+                .create();
+    }
+
+    public static TicketTypeUpdateRequestDTO createTicketTypeUpdateRequestDTODefault(){
+        return Instancio.create(TicketTypeUpdateRequestDTO.class);
+    }
+
+    public static TicketTypeUpdateRequestDTO createTicketTypeUpdateRequestDTOInvalid(){
+        return Instancio.of(TicketTypeUpdateRequestDTO.class)
+                .set(field(TicketTypeUpdateRequestDTO::getName), "")
+                .set(field(TicketTypeUpdateRequestDTO::getPrice), BigDecimal.valueOf(9))
+                .set(field(TicketTypeUpdateRequestDTO::getCapacity), 0)
+                .set(field(TicketTypeUpdateRequestDTO::getDateInitial), LocalDateTime.now().minusDays(1))
+                .set(field(TicketTypeUpdateRequestDTO::getDateFinal), LocalDateTime.now().minusDays(1))
                 .create();
     }
 }

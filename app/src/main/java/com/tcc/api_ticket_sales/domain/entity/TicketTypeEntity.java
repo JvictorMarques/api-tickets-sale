@@ -112,6 +112,7 @@ public class TicketTypeEntity extends Auditable{
                 eventEntity,
                 capacity,
                 dateInitial,
-                dateFinal);
+                dateFinal
+        );
     }
 }
