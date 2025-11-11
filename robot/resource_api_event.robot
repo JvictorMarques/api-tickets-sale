@@ -12,6 +12,7 @@ ${public_key}    %{MERCADO_PAGO_PUBLIC_KEY}
 ${ENDPOINT_EVENT}       /event
 ${ENDPOINT_TICKET}      /event/{eventId}/ticket-type
 ${ENDPOINT_BUY_TICKET}  /ticket/buy
+${ENDPOINT_UPDATE_TICKET}    /ticket-type/{ticketTypeId}
 
 # --- DADOS FIXOS DO EVENTO (EXISTENTES) ---
 ${FUTURE_DATE_INITIAL}  2030-10-10T18:00:00
