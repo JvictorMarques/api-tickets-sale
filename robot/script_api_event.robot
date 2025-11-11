@@ -999,3 +999,14 @@ Gerar UUID Inexistente
     
     ${uuid_inexistente}=    Set Variable    ${part1}-${part2}-${part3}-${part4}-${part5}
     RETURN    ${uuid_inexistente}
+
+Executar Delete Ticket Type
+    [Arguments]    ${ticket_type_id}    ${expected_status}
+    [Documentation]    Executa DELETE para remover ticket type
+    
+    ${url_final}=    Replace String    ${ENDPOINT_DELETE_TICKET}    {ticketTypeId}    ${ticket_type_id}
+    
+    ${response}=    DELETE On Session    api_session    ${url_final}
+    ...             expected_status=${expected_status}
+    
+    RETURN    ${response}
