@@ -68,7 +68,12 @@ public class TicketTypeFactory {
     }
 
     public static TicketTypeResponseDTO createTicketTypeCreateResponseDTODefault(){
-        return Instancio.create(TicketTypeResponseDTO.class);
+        return Instancio.of(TicketTypeResponseDTO.class)
+                .set(field(TicketTypeResponseDTO::getDateInitial), LocalDateTime.now().plusDays(1))
+                .set(field(TicketTypeResponseDTO::getDateFinal), LocalDateTime.now().plusDays(1).plusHours(3))
+                .set(field(TicketTypeResponseDTO::getCreatedAt), LocalDateTime.now().plusDays(1))
+                .set(field(TicketTypeResponseDTO::getUpdatedAt), LocalDateTime.now().plusDays(1).plusHours(3))
+                .create();
     }
 
     public static TicketTypeCreateRequestDTO createTicketTypeCreateRequestDTOValid(){
@@ -91,7 +96,10 @@ public class TicketTypeFactory {
     }
 
     public static TicketTypeUpdateRequestDTO createTicketTypeUpdateRequestDTODefault(){
-        return Instancio.create(TicketTypeUpdateRequestDTO.class);
+        return Instancio.of(TicketTypeUpdateRequestDTO.class)
+                .set(field(TicketTypeUpdateRequestDTO::getDateInitial), LocalDateTime.now().plusDays(1))
+                .set(field(TicketTypeUpdateRequestDTO::getDateFinal), LocalDateTime.now().plusDays(1).plusHours(3))
+                .create();
     }
 
     public static TicketTypeUpdateRequestDTO createTicketTypeUpdateRequestDTOInvalid(){

@@ -1,9 +1,10 @@
 package com.tcc.api_ticket_sales.interfaces.controller;
 
+import com.tcc.api_ticket_sales.application.dto.event.EventUpdateRequestDTO;
 import com.tcc.api_ticket_sales.application.service.event.EventService;
 import com.tcc.api_ticket_sales.application.service.ticket_type.TicketTypeService;
 import com.tcc.api_ticket_sales.interfaces.controller.exception.RestExceptionMessage;
-import com.tcc.api_ticket_sales.application.dto.event.EventCreateDTO;
+import com.tcc.api_ticket_sales.application.dto.event.EventCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeResponseDTO;
@@ -115,11 +116,152 @@ public class EventController {
             ),
     })
     @PostMapping
-    public ResponseEntity<EventResponseDTO> createEvent (@RequestBody @Valid EventCreateDTO dto){
-        EventResponseDTO event = eventService.createEvent(dto);
+    public ResponseEntity<EventResponseDTO> createEvent (@RequestBody @Valid EventCreateRequestDTO dto){
+        EventResponseDTO event = eventService.create(dto);
 
         URI location = URI.create("/event/" + event.getId());
         return ResponseEntity.created(location).body(event);
+    }
+
+    @Operation(
+            summary = "Editar evento"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tipo de ingresso editado com sucesso"),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Formato de requisição inválido e validações dos campos",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples= {
+                                    @ExampleObject(
+                                            summary = "Validação de campo",
+                                            value = """
+                                            {
+                                                "message": "Erro de validação",
+                                                "status": 400,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "capacity": "A capacidade deve ser um número positivo.",
+                                                ]
+                                            }
+                                            """
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Recursos não encontrados",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples = {
+                                    @ExampleObject(
+                                            summary = "Evento não encontrado",
+                                            value = """
+                                            {
+                                                "message": "Evento não encontrado",
+                                                "status": 404,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "Evento não encontrado."
+                                                ]
+                                            }
+                                            """
+                                    ),
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "Conflitos",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Evento encerrado",
+                                            summary = "Evento encerrado",
+                                            value = """
+                                            {
+                                                "message": "Evento encerrado.",
+                                                "status": 409,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "Evento encerrado."
+                                                ]
+                                            }
+                                            """
+                                    ),
+                                    @ExampleObject(
+                                            summary = "Evento existente",
+                                            value = """
+                                            {
+                                                "message": "Evento existente.",
+                                                "status": 409,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "Evento existente.a"
+                                                ]
+                                            }
+                                            """
+                                    ),
+                                    @ExampleObject(
+                                            summary = "Capacidade menor que capacidade dos tipos de ingresso",
+                                            value = """
+                                            {
+                                                "message": "A capacidade do evento não pode ser menor que a soma das capacidades dos tipos de ingresso já cadastrados: [quantidade].",
+                                                "status": 409,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "A capacidade do evento não pode ser menor que a soma das capacidades dos tipos de ingresso já cadastrados: [quantidade]."
+                                                ]
+                                            }
+                                            """
+                                    ),
+                                    @ExampleObject(
+                                            summary = "Restrição de idade não pode ser aumentada",
+                                            value = """
+                                            {
+                                                "message": "O evento possui ingressos já vendidos, portanto, a restrição de idade não pode ser aumentada.",
+                                                "status": 409,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "O evento possui ingressos já vendidos, portanto, a restrição de idade não pode ser aumentada."
+                                                ]
+                                            }
+                                            """
+                                    ),
+
+                            }
+
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    description = "Violação da regra de negócio",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples= @ExampleObject(
+                                    summary = "Data inicial maior que data final.",
+                                    value = """
+                                            {
+                                                "message": "Data inicial maior que data final.",
+                                                "status": 422,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "Data inicial maior que data final."
+                                                ]
+                                            }
+                                            """
+                            )
+                    )
+            ),
+    })
+    @PatchMapping("/{eventId}")
+    public ResponseEntity<EventResponseDTO> updateEvent(@RequestBody @Valid EventUpdateRequestDTO dto, @PathVariable UUID eventId){
+        EventResponseDTO response = eventService.update(eventId, dto);
+
+        return ResponseEntity.ok(response);
     }
 
     @Operation(

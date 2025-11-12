@@ -16,6 +16,7 @@ import java.util.UUID;
 
 import static com.tcc.api_ticket_sales.domain.utils.CheckDate.checkDateInitialGreaterThanDateFinal;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // para JPA
 @Entity

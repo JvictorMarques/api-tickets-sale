@@ -1,7 +1,8 @@
 package com.tcc.api_ticket_sales.factory;
 
+import com.tcc.api_ticket_sales.application.dto.event.EventUpdateRequestDTO;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
-import com.tcc.api_ticket_sales.application.dto.event.EventCreateDTO;
+import com.tcc.api_ticket_sales.application.dto.event.EventCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
 import org.instancio.Instancio;
 
@@ -53,25 +54,42 @@ public class EventFactory {
         return Instancio.create(EventResponseDTO.class);
     }
 
-    public static EventCreateDTO createEventCreateDTODefault(){
-        return Instancio.create(EventCreateDTO.class);
+    public static EventCreateRequestDTO createEventCreateDTODefault(){
+        return Instancio.create(EventCreateRequestDTO.class);
     }
 
-    public static EventCreateDTO createEventCreateDTOValid(){
-        return Instancio.of(EventCreateDTO.class)
-                .set(field(EventCreateDTO::getCapacity), 300)
-                .set(field(EventCreateDTO::getDateInitial), LocalDateTime.now().plusDays(1))
-                .set(field(EventCreateDTO::getDateFinal), LocalDateTime.now().plusDays(1).plusHours(3))
+    public static EventCreateRequestDTO createEventCreateDTOValid(){
+        return Instancio.of(EventCreateRequestDTO.class)
+                .set(field(EventCreateRequestDTO::getCapacity), 300)
+                .set(field(EventCreateRequestDTO::getDateInitial), LocalDateTime.now().plusDays(1))
+                .set(field(EventCreateRequestDTO::getDateFinal), LocalDateTime.now().plusDays(1).plusHours(3))
                 .create();
     }
 
-    public static EventCreateDTO createEventCreateDTOInvalid(){
-        return Instancio.of(EventCreateDTO.class)
-                .set(field(EventCreateDTO::getName), "")
-                .set(field(EventCreateDTO::getLocation), "")
-                .set(field(EventCreateDTO::getCapacity), 0)
-                .set(field(EventCreateDTO::getDateInitial), LocalDateTime.now().minusDays(1))
-                .set(field(EventCreateDTO::getDateFinal), LocalDateTime.now().minusDays(1))
+    public static EventCreateRequestDTO createEventCreateDTOInvalid(){
+        return Instancio.of(EventCreateRequestDTO.class)
+                .set(field(EventCreateRequestDTO::getName), "")
+                .set(field(EventCreateRequestDTO::getLocation), "")
+                .set(field(EventCreateRequestDTO::getCapacity), 0)
+                .set(field(EventCreateRequestDTO::getDateInitial), LocalDateTime.now().minusDays(1))
+                .set(field(EventCreateRequestDTO::getDateFinal), LocalDateTime.now().minusDays(1))
+                .create();
+    }
+
+    public static EventUpdateRequestDTO createEventUpdateRequestDTO(){
+        return Instancio.of(EventUpdateRequestDTO.class)
+                .set(field(EventUpdateRequestDTO::getDateInitial), LocalDateTime.now().plusDays(1))
+                .set(field(EventUpdateRequestDTO::getDateFinal), LocalDateTime.now().plusDays(1).plusHours(3))
+                .create();
+    }
+
+    public static EventUpdateRequestDTO createEventUpdateRequestDTOInvalid(){
+        return Instancio.of(EventUpdateRequestDTO.class)
+                .set(field(EventUpdateRequestDTO::getName), "")
+                .set(field(EventUpdateRequestDTO::getLocation), "")
+                .set(field(EventUpdateRequestDTO::getCapacity), 0)
+                .set(field(EventUpdateRequestDTO::getDateInitial), LocalDateTime.now().minusDays(1))
+                .set(field(EventUpdateRequestDTO::getDateFinal), LocalDateTime.now().minusDays(1))
                 .create();
     }
 }

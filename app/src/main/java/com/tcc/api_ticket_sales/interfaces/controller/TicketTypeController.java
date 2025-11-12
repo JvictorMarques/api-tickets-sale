@@ -91,11 +91,11 @@ public class TicketTypeController {
                                             summary = "Capacidade menor que ingressos vendidos",
                                             value = """
                                             {
-                                                "message": "Quantidade inválida para atualização: existem [quantidade] ingressos já vendidos.",
+                                                "message": "Capacidade inválida para atualização: existem [quantidade] ingressos já vendidos.",
                                                 "status": 409,
                                                 "timeStamp": "2025-10-13T18:00:00",
                                                 "errors": [
-                                                    "Quantidade inválida para atualização: existem [quantidade] ingressos já vendidos."
+                                                    "Capacidade inválida para atualização: existem [quantidade] ingressos já vendidos."
                                                 ]
                                             }
                                             """

@@ -2,10 +2,11 @@ package com.tcc.api_ticket_sales.interfaces.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.tcc.api_ticket_sales.application.dto.event.EventUpdateRequestDTO;
 import com.tcc.api_ticket_sales.application.service.event.EventService;
 import com.tcc.api_ticket_sales.application.service.ticket_type.TicketTypeService;
 import com.tcc.api_ticket_sales.interfaces.controller.exception.RestExceptionHandler;
-import com.tcc.api_ticket_sales.application.dto.event.EventCreateDTO;
+import com.tcc.api_ticket_sales.application.dto.event.EventCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeResponseDTO;
@@ -26,6 +27,7 @@ import static com.tcc.api_ticket_sales.factory.EventFactory.*;
 import static com.tcc.api_ticket_sales.factory.TicketTypeFactory.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -57,15 +59,15 @@ class EventControllerTest {
     @Test
     @Tag("unit")
     void createEvent_shouldReturnStatusCreated_whenEventIsCreated () throws Exception {
-        EventCreateDTO eventCreateDTO = createEventCreateDTOValid();
+        EventCreateRequestDTO eventCreateRequestDTO = createEventCreateDTOValid();
         EventResponseDTO eventResponseDTO = createEventResponseDTO();
 
-        when(eventService.createEvent(any())).thenReturn(eventResponseDTO);
+        when(eventService.create(any())).thenReturn(eventResponseDTO);
 
         mockMvc.perform(
                 post("/event")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(eventCreateDTO))
+                        .content(objectMapper.writeValueAsString(eventCreateRequestDTO))
         ).andExpect(status().isCreated())
         .andExpect(
                 header().string("Location", "/event/"+ eventResponseDTO.getId())
@@ -93,11 +95,11 @@ class EventControllerTest {
     @Test
     @Tag("unit")
     void createEvent_shouldReturnStatusUnprocessableEntity_whenDataInvalid() throws Exception {
-        EventCreateDTO eventCreateDTO = createEventCreateDTOInvalid();
+        EventCreateRequestDTO eventCreateRequestDTO = createEventCreateDTOInvalid();
         mockMvc.perform(
                 post("/event")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(eventCreateDTO))
+                        .content(objectMapper.writeValueAsString(eventCreateRequestDTO))
         ).andExpect(status().isBadRequest());
     }
 
@@ -150,5 +152,54 @@ class EventControllerTest {
                 )
                 .andExpect(jsonPath("$.id").value(String.valueOf(dtoResponse.getId())))
                 .andExpect(jsonPath("$.name").value(dtoResponse.getName()));
+    }
+
+    @Test
+    @Tag("unit")
+    void updateEvent_shouldReturnStatusOk_whenEventIsUpdated () throws Exception {
+        EventUpdateRequestDTO eventUpdateRequestDTO = createEventUpdateRequestDTO();
+        EventResponseDTO eventResponseDTO = createEventResponseDTO();
+        UUID uuid = UUID.randomUUID();
+
+        when(eventService.update(any(), any())).thenReturn(eventResponseDTO);
+
+        mockMvc.perform(
+                        patch(String.format("/event/%s", uuid))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(eventUpdateRequestDTO))
+                ).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(String.valueOf(eventResponseDTO.getId())))
+                .andExpect(jsonPath("$.name").value(eventResponseDTO.getName()));
+    }
+
+    @Test
+    @Tag("unit")
+    void updateEvent_shouldReturnStatusBadRequest_whenDateInvalid() throws Exception {
+        UUID uuid = UUID.randomUUID();
+        String invalidJson = """
+            {
+                "dateInitial": "2025-10-10 20:00",
+                "dateFinal": "2025-10-10"
+            }
+        """;
+
+        mockMvc.perform(
+                patch(String.format("/event/%s", uuid))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidJson)
+        ).andDo(print()).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Tag("unit")
+    void updateEvent_shouldReturnStatusUnprocessableEntity_whenDataInvalid() throws Exception {
+        EventUpdateRequestDTO eventUpdateRequestDTO = createEventUpdateRequestDTOInvalid();
+        UUID uuid = UUID.randomUUID();
+
+        mockMvc.perform(
+                patch(String.format("/event/%s", uuid))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(eventUpdateRequestDTO))
+        ).andExpect(status().isBadRequest());
     }
 }

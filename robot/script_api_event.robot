@@ -23,9 +23,21 @@ Executar POST e Validar Status
     ...             json=${payload} 
     ...             headers=${headers}
     ...             expected_status=any
-
     Should Be Equal As Integers      ${response.status_code}     ${expected_status}
-    RETURN      ${response}
+    RETURN      ${response}  
+
+Executar POST e Validar Status PATCH
+    [Documentation]     Executa POST com payload e valida status code.
+    [Arguments]         ${payload}      ${expected_status}
+    
+    ${headers}=         Create Dictionary       Content-Type=application/json
+    ${response}=        POST On Session     api_session     ${ENDPOINT_EVENT}
+    ...             json=${payload} 
+    ...             headers=${headers}
+    ...             expected_status=any
+    ${event_id}=        Set Variable    ${response.json()['id']}
+    Should Be Equal As Integers      ${response.status_code}     ${expected_status}
+    RETURN      ${event_id}     ${response}  
 
 Validar Response Sucesso 201
     [Arguments]         ${response}     ${expected_name}
@@ -76,6 +88,7 @@ Gerar Payload Sucesso Completo
     ...             dateInitial=${FUTURE_DATE_INITIAL}
     ...             dateFinal=${FUTURE_DATE_FINAL}
     RETURN      ${payload}
+
 
 Gerar Payload Sucesso Minimo
     [Documentation]     Gera um payload apenas com campos obrigatorios validos.
@@ -913,6 +926,22 @@ Executar Patch Ticket Type
     Should Be Equal As Integers    ${response.status_code}    ${expected_status}
     RETURN    ${response}
 
+Executar Patch Evento
+    [Arguments]    ${event_id}    ${payload}    ${expected_status}
+    [Documentation]    Executa PATCH para atualizar evento
+    
+    ${url_final}=    Replace String    ${ENDPOINT_UPDATE_EVENT}    {eventId}    ${event_id}
+    ${headers}=     Create Dictionary   Content-Type=application/json
+    
+    ${response}=    PATCH On Session    api_session    ${url_final}
+    ...             json=${payload} 
+    ...             headers=${headers}
+    ...             expected_status=any
+    
+    Should Be Equal As Integers    ${response.status_code}    ${expected_status}
+    Log To Console    ${response.json()}
+    RETURN    ${response}
+
 Validar Response Ticket Atualizado
     [Arguments]    ${response}    ${ticket_type_id}    ${event_id}
     [Documentation]    Valida resposta de sucesso da atualização
@@ -924,14 +953,24 @@ Validar Response Ticket Atualizado
     Should Be Equal    ${response_json['event']}    ${event_id}
     Should Not Be Empty    ${response_json['updatedAt']}
 
+Gerar Payload Patch
+    [Documentation]     Gera um payload apenas com campos obrigatorios validos.
+    ${event_name}=      FakerLibrary.Word
+    &{payload}=     Create Dictionary
+    ...             name=${event_name}
+    RETURN      ${payload}
+
 Criar Payload Atualizacao Parcial
     [Arguments]    ${campo}    ${valor}
     [Documentation]    Cria payload para atualização parcial
     
     &{payload}=    Create Dictionary    ${campo}=${valor}
     RETURN    ${payload}
-
+    
 # --- KEYWORDS PARA CENÁRIOS ESPECÍFICOS PONTA A PONTA ---
+
+Criar Evento para atualização
+    ${event_id}=    Criar Evento Base Para Tickets
 
 Criar Evento E Ticket Para Atualizacao
     [Documentation]    Fluxo completo: Cria evento e ticket type para testes PATCH
@@ -1010,3 +1049,53 @@ Executar Delete Ticket Type
     ...             expected_status=${expected_status}
     
     RETURN    ${response}
+
+Criar Payload Patch Multiplo
+    [Arguments]    &{campos_valores}
+    [Documentation]    Cria payload para atualização parcial com múltiplos campos
+    
+    ${UPDATED_EVENT_LOCATION}=    FakerLibrary.City
+    &{payload}=    Create Dictionary    &{campos_valores}
+    ...             location=${UPDATED_EVENT_LOCATION}
+    RETURN    ${payload}
+
+Criar Payload Patch Gambiarra
+    [Arguments]    ${campo}    ${valor}
+    [Documentation]    Cria payload para atualização parcial
+    
+    ${UPDATED_EVENT_LOCATION}=    Set Variable    FakerLibrary.City
+    &{payload}=    Create Dictionary    ${campo}=${valor}
+    ...             location=${UPDATED_EVENT_LOCATION}
+    RETURN    ${payload}
+
+Criar Payload Patch
+    [Arguments]    ${campo}    ${valor}
+    [Documentation]    Cria payload para atualização parcial
+    
+    &{payload}=    Create Dictionary    ${campo}=${valor}
+    RETURN    ${payload}
+
+Criar Payload Patch Com Datas Conflitantes
+    [Documentation]    Cria payload com datas conflitantes para teste de validação
+    
+    &{payload}=    Create Dictionary
+    ...            name=${name_randomico}  
+    ...            dateInitial=${FUTURE_DATE_INITIAL}
+    ...            dateFinal=${FUTURE_DATE_FINAL}
+    ...            location=${SUCCESS_LOCATION}
+    RETURN    ${payload}
+
+Gerar Payload Sucesso Completo Com Massa Repetida
+    [Documentation]     Gera um payload com todos os campos validos e alguns valores chumbados.
+${data_atual}=    Get Current Date
+${nome_aleatorio}=    FakerLibrary.Name    
+Set Global Variable    ${name_randomico}    ${data_atual}_${nome_aleatorio}
+    &{payload}=     Create Dictionary
+    ...             name=${name_randomico}
+    ...             description=Descricao completa do evento.
+    ...             location=${SUCCESS_LOCATION}
+    ...             capacity=${SUCCESS_CAPACITY}
+    ...             ageRestriction=18
+    ...             dateInitial=${FUTURE_DATE_INITIAL}
+    ...             dateFinal=${FUTURE_DATE_FINAL}
+    RETURN      ${payload}
