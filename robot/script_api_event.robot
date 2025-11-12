@@ -1087,9 +1087,9 @@ Criar Payload Patch Com Datas Conflitantes
 
 Gerar Payload Sucesso Completo Com Massa Repetida
     [Documentation]     Gera um payload com todos os campos validos e alguns valores chumbados.
-${data_atual}=    Get Current Date
-${nome_aleatorio}=    FakerLibrary.Name    
-Set Global Variable    ${name_randomico}    ${data_atual}_${nome_aleatorio}
+    ${data_atual}=    Get Current Date
+    ${nome_aleatorio}=    FakerLibrary.Name    
+    Set Global Variable    ${name_randomico}    ${data_atual}_${nome_aleatorio}
     &{payload}=     Create Dictionary
     ...             name=${name_randomico}
     ...             description=Descricao completa do evento.
