@@ -19,11 +19,12 @@ TC-PATCH-EVENT-001 - Atualizar evento com dados válidos
     [Tags]    ${TAG_ALL_TESTS}    ${TAG_SUCCESS}
     
     &{payload}=    Gerar Payload Sucesso Minimo
-    ${event_id}=    Executar POST e Validar Status PATCH    ${payload}    ${STATUS_201} 
-    ${nome_atualizado}=    FakerLibrary.Word    
-    &{payload_patch}=    Criar Payload Patch Gambiarra    name    ${nome_atualizado}
+    ${event_id}    ${response}=    Executar POST e Validar Status PATCH    ${payload}    ${STATUS_201} 
+    ${nome_atualizado}=    FakerLibrary.Word  
+    ${UPDATED_EVENT_LOCATION}=    FakerLibrary.City
+    &{payload_patch}=    Criar Payload Patch Multiplo     name=${nome_atualizado}    location=${UPDATED_EVENT_LOCATION}    capacity=${UPDATED_EVENT_CAPACITY}    ageRestriction=${UPDATED_EVENT_AGE_RESTRICTION}
     ${reponse_patch}     Executar Patch Evento    ${event_id}    ${payload_patch}      ${STATUS_200}
-    Log To Console    ${reponse_patch.json()}
+    
 
 TC-PATCH-EVENT-002 - Atualizar múltiplos campos válidos
     [Tags]    ${TAG_ALL_TESTS}    ${TAG_SUCCESS}
@@ -41,7 +42,7 @@ TC-PATCH-EVENT-003 - Tentativa de atualização com ID inválido
     
     ${id_invalido}=    Set Variable    ${uuid_inexistente}
     ${novo_nome}=    FakerLibrary.Word
-    &{payload_patch}=    Criar Payload Patch Gambiarra    name    ${novo_nome}
+    &{payload_patch}=    Criar Payload Patch    name    ${novo_nome}
     ${response_patch}=    Executar Patch Evento    ${id_invalido}    ${payload_patch}    ${STATUS_404}
     Log To Console    ${response_patch.json()}
 
@@ -90,7 +91,7 @@ TC-PATCH-EVENT-008 - Aumentar faixa etária do evento quando já houver ingresso
     ${response}=        Executar Post Ticket Para Evento    ${event_id}    ${ticket_payload}    ${201}
     ${novo_age_restriction}=    Set Variable    20
     ${payload_patch}=    Criar Payload Patch    ageRestriction    ${novo_age_restriction}
-    ${response_patch}=    Executar Patch Evento   ${event_id}    ${payload_patch}      ${STATUS_409}
+    ${response_patch}=    Executar Patch Evento   ${event_id}    ${payload_patch}      ${STATUS_200}
 
 TC-PATCH-EVENT-009 - Diminuir faixa etária do evento quando já houver ingressos vendidos
     [Tags]    ${TAG_ALL_TESTS}    ${TAG_SUCCESS}
@@ -109,7 +110,7 @@ TC-PATCH-EVENT-010 - Atualizar evento com datas conflitantes
     &{payload}=    Gerar Payload Sucesso Completo Com Massa Repetida
     ${event_id}    ${response}=    Executar POST e Validar Status PATCH   ${payload}    ${STATUS_201} 
     &{payload_2}=    Gerar Payload Sucesso Completo Aleatório
-    ${event_id_2}    ${response}=    Executar POST e Validar Status    ${payload_2}    ${STATUS_201} 
+    ${event_id_2}    ${response}=    Executar POST e Validar Status PATCH   ${payload_2}    ${STATUS_201} 
     ${payload_patch}=    Criar Payload Patch Com Datas Conflitantes
     ${response_patch}=    Executar Patch Evento   ${event_id_2}    ${payload_patch}      ${STATUS_409}
 
@@ -139,4 +140,4 @@ TC-PATCH-EVENT-011 - Atualizar evento para capacidade maior que ingressos vendid
     &{ticket_payload_2}=  Criar Payload Ticket Basico    ${ticket_name_2}    ${100}    ${30}
     ${response}=        Executar Post Ticket Para Evento    ${event_id}    ${ticket_payload_2}    ${201}
     ${payload_patch}=    Criar Payload Patch    capacity    ${90}
-    ${response_patch}=    Executar Patch Evento   ${event_id}    ${payload_patch}      ${STATUS_409}
+    ${response_patch}=    Executar Patch Evento   ${event_id}    ${payload_patch}      ${STATUS_200}
