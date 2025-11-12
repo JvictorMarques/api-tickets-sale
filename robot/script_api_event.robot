@@ -35,7 +35,7 @@ Executar POST e Validar Status PATCH
     ...             json=${payload} 
     ...             headers=${headers}
     ...             expected_status=any
-    ${event_id}=        Set Variable    ${response.json()['id']}
+    ${event_id}=        Set Variable    ${response.json()["id"]}
     Should Be Equal As Integers      ${response.status_code}     ${expected_status}
     RETURN      ${event_id}     ${response}  
 
