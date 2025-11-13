@@ -15,6 +15,7 @@ ${ENDPOINT_BUY_TICKET}  /ticket/buy
 ${ENDPOINT_UPDATE_TICKET}    /ticket-type/{ticketTypeId}
 ${ENDPOINT_DELETE_TICKET}    /ticket-type/{ticketTypeId}
 ${ENDPOINT_UPDATE_EVENT}    /event/{eventId}
+${ENDPOINT_DELETE_EVENT}    /event/{eventId}
 
 # --- DADOS FIXOS DO EVENTO (EXISTENTES) ---
 ${FUTURE_DATE_INITIAL}  2030-10-10T18:00:00

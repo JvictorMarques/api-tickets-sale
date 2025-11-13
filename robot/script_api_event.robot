@@ -782,6 +782,17 @@ Criar_Ticket_Type_E_Capturar_ID
     Should Not Be Empty    ${ticket_type_id}
     RETURN    ${ticket_type_id}
 
+Criar Evento e Ticket Type
+    ${event_id}=        Criar Evento Base Para Tickets
+    ${ticket_name}=     Gerar Nome Ticket Aleatorio
+    
+    &{ticket_payload}=  Criar Payload Ticket Basico    ${ticket_name}    ${100}    ${50}
+    ${response}=        Executar Post Ticket Para Evento    ${event_id}    ${ticket_payload}    ${201}
+    
+    ${ticket_type_id}=    Set Variable    ${response.json()['id']}
+    Should Not Be Empty    ${ticket_type_id}
+    RETURN    ${event_id}    ${ticket_type_id}
+
 Executar_Compra_Ticket
     [Arguments]    ${ticket_type_id}    ${quantidade_tickets}=1    ${expected_status}=200
     [Documentation]    Executa a compra de ticket com payload válido incluindo token
@@ -1044,6 +1055,17 @@ Executar Delete Ticket Type
     [Documentation]    Executa DELETE para remover ticket type
     
     ${url_final}=    Replace String    ${ENDPOINT_DELETE_TICKET}    {ticketTypeId}    ${ticket_type_id}
+    
+    ${response}=    DELETE On Session    api_session    ${url_final}
+    ...             expected_status=${expected_status}
+    
+    RETURN    ${response}
+
+Executar Delete Event
+    [Arguments]    ${event_id}    ${expected_status}
+    [Documentation]    Executa DELETE para remover ticket type
+    
+    ${url_final}=    Replace String    ${ENDPOINT_DELETE_EVENT}    {eventId}    ${event_id}
     
     ${response}=    DELETE On Session    api_session    ${url_final}
     ...             expected_status=${expected_status}
