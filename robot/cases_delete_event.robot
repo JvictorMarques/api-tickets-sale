@@ -17,8 +17,8 @@ TC-DELETE-EVENT-001 - Validar impossibilidade de exclusão de evento com ingress
     [Documentation]    Validar não exclusão de evento com ingresso comprado
     ${event_id}    ${ticket_type_id}=    Criar Evento e Ticket Type
     ${ticket_name}=    FakerLibrary.Word
-    Sleep     10s
     ${response}=    Executar_Compra_Ticket    ${ticket_type_id}    1    200
+    Sleep     10s
     Executar Delete Event    ${event_id}    ${STATUS_409}
 
 TC-DELETE-EVENT-002 - Validar exclusão de evento com Ticket Type sem ingressos comprados
