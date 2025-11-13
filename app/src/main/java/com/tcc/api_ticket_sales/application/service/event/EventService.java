@@ -14,4 +14,5 @@ public interface EventService {
     EventResponseDTO update(UUID eventId, EventUpdateRequestDTO dto);
     void delete(UUID eventId);
     List<EventResponseDTO> getByParams(EventFilterRequestDTO filter);
+    EventResponseDTO getById(UUID eventId);
 }

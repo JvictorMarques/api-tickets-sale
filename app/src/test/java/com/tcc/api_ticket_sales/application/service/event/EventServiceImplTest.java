@@ -18,10 +18,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWithId;
 import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWithoutId;
 import static com.tcc.api_ticket_sales.factory.EventFactory.createEventResponseDTO;
 import static com.tcc.api_ticket_sales.factory.EventFactory.createEventUpdateRequestDTO;
@@ -165,5 +167,36 @@ class EventServiceImplTest {
 
         verify(eventRepository).save(eventEntity);
         verify(eventDomainService).deletedEvent(eventEntity);
+    }
+
+    @Tag("unit")
+    @Test
+    void getById_shouldThrowEventNotFound_whenIdNotExists(){
+        when(eventRepository.findById(any())).thenReturn(Optional.empty());
+
+        assertThrows(EventNotFoundException.class, () -> eventServiceImpl.getById(UUID.randomUUID()));
+    }
+
+    @Tag("unit")
+    @Test
+    void getById_shouldThrowEventNotFound_whenOrderDeleted(){
+        EventEntity event = createEventEntityWithoutId();
+        event.setDeletedAt(LocalDateTime.now());
+
+        when(eventRepository.findById(any())).thenReturn(Optional.of(event));
+
+        assertThrows(EventNotFoundException.class, () -> eventServiceImpl.getById(UUID.randomUUID()));
+    }
+
+    @Tag("unit")
+    @Test
+    void getById_shouldReturnOrderResponseDTO_whenOrderExists(){
+        EventEntity event = createEventEntityWithId();
+        EventResponseDTO response = createEventResponseDTO();
+
+        when(eventRepository.findById(any())).thenReturn(Optional.of(event));
+        when(eventMapper.fromEventEntityToEventResponseDTO(any())).thenReturn(response);
+
+        assertEquals(response, eventServiceImpl.getById(event.getId()));
     }
 }

@@ -908,6 +908,15 @@ Executar Get Event
     ...             expected_status=${expected_status}
     RETURN    ${response}
 
+Executar Get Event By ID
+    [Arguments]    ${eventId}    ${expected_status}
+    [Documentation]    Executa Get para obter evento
+    
+    ${url_final}=    Replace String    ${ENDPOINT_GET_EVENT_BY_ID}    {eventId}    ${eventId}
+    ${response}=    GET On Session    api_session    ${url_final}
+    ...             expected_status=${expected_status}
+    RETURN    ${response}
+
 Executar Get Order By ID
     [Arguments]    ${orderId}    ${expected_status}
     [Documentation]    Executa Get para obter order by id

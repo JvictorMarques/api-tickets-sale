@@ -19,6 +19,7 @@ ${ENDPOINT_DELETE_EVENT}      /event/{eventId}
 ${ENDPOINT_GET_EVENTS}        /event?{queryParams}={value}
 ${ENDPOINT_GET_EVENTS_DATE}   /event?{queryParams}={value}\&{queryParams2}={value2}
 ${ENDPOINT_GET_ORDER_BY_ID}   /order/{orderId}
+${ENDPOINT_GET_EVENT_BY_ID}   /event/{eventId}
 
 # --- DADOS FIXOS DO EVENTO (EXISTENTES) ---
 ${FUTURE_DATE_INITIAL}  2030-10-10T18:00:00

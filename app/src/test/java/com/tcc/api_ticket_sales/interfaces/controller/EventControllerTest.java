@@ -248,4 +248,24 @@ class EventControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk());
     }
+
+    @Test
+    @Tag("unit")
+    void getById_shouldReturnStatusBadRequest_whenParamUrlInvalid() throws Exception {
+        mockMvc.perform(
+                get(String.format("/event/%s", "teste123"))
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Tag("unit")
+    void getById_shouldReturnOrderResponseDTO_whenOrderExists () throws Exception {
+        when(eventService.getById(any())).thenReturn(createEventResponseDTO());
+
+        mockMvc.perform(
+                get(String.format("/event/%s", UUID.randomUUID()))
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk());
+    }
 }
