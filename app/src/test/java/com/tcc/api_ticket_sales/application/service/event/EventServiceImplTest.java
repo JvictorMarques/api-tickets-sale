@@ -9,7 +9,6 @@ import com.tcc.api_ticket_sales.infrastructure.repository.event.EventRepository;
 import com.tcc.api_ticket_sales.application.dto.event.EventCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
 import com.tcc.api_ticket_sales.application.mapper.event.EventMapper;
-import com.tcc.api_ticket_sales.infrastructure.repository.event.EventSpecification;
 import com.tcc.api_ticket_sales.infrastructure.repository.event.EventSpecificationFactory;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

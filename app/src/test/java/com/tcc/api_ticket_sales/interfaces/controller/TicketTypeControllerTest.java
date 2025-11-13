@@ -2,7 +2,6 @@ package com.tcc.api_ticket_sales.interfaces.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeResponseDTO;
 import com.tcc.api_ticket_sales.application.dto.ticket_type.TicketTypeUpdateRequestDTO;
 import com.tcc.api_ticket_sales.application.service.ticket_type.TicketTypeService;

@@ -631,6 +631,51 @@ Criar Evento e Ticket Type
     Should Not Be Empty    ${ticket_type_id}
     RETURN    ${event_id}    ${ticket_type_id}
 
+Executar Compra Ticket e Capturar OrderId
+    [Arguments]    ${ticket_type_id}    ${quantidade_tickets}=1    ${expected_status}=200
+    [Documentation]    Executa a compra de ticket com payload válido incluindo token
+    
+    ${card_token}=    Gerar Token Cartao Mercado Pago
+    ${random_suffix}=    Generate Random String    10    [NUMBERS]
+    ${nome_pagador}=     Set Variable    TESTUSER${random_suffix}
+    ${email_pagador}=    Set Variable    test_user_${random_suffix}@test.com
+    @{holders_list}=    Create List
+    FOR    ${index}    IN RANGE    ${quantidade_tickets}
+        ${holder_name}=     FakerLibrary.Name
+        ${holder_email}=    FakerLibrary.Email
+        ${anos_aleatorios}=    Evaluate    random.randint(18, 65)
+        ${data_atual}=      Get Current Date
+        ${data_nascimento}=    Subtract Time From Date    ${data_atual}    ${anos_aleatorios * 365} days
+        ${holder_birth_date}=    Convert Date    ${data_nascimento}    result_format=%Y-%m-%d
+        
+        &{holder}=    Create Dictionary
+        ...    name=${holder_name}
+        ...    email=${holder_email}
+        ...    birthDate=${holder_birth_date}
+        
+        Append To List    ${holders_list}    ${holder}
+    END
+    &{payer}=    Create Dictionary
+    ...    name=${nome_pagador}
+    ...    email=${email_pagador}
+    &{ticket}=    Create Dictionary
+    ...    id=${ticket_type_id}
+    ...    holders=${holders_list}
+    @{tickets_list}=    Create List    ${ticket}
+    
+    &{payload}=    Create Dictionary
+    ...    tickets=${tickets_list}
+    ...    payer=${payer}
+    ...    token=${card_token}
+    ${headers}=     Create Dictionary   Content-Type=application/json
+    ${response}=    POST On Session     api_session     ${ENDPOINT_BUY_TICKET}
+    ...             json=${payload} 
+    ...             headers=${headers}
+    ...             expected_status=any
+    Should Be Equal As Integers    ${response.status_code}    ${expected_status}
+    ${orderId}=    Set Variable    ${response.json().get('orderId', '')}
+    RETURN    ${orderId}    ${response}
+
 Executar_Compra_Ticket
     [Arguments]    ${ticket_type_id}    ${quantidade_tickets}=1    ${expected_status}=200
     [Documentation]    Executa a compra de ticket com payload válido incluindo token
@@ -855,7 +900,7 @@ Executar Delete Event
 
 Executar Get Event
     [Arguments]    ${queryparam}    ${value}    ${expected_status}
-    [Documentation]    Executa DELETE para remover ticket type
+    [Documentation]    Executa Get para obter evento
     
     ${url_final}=    Replace String    ${ENDPOINT_GET_EVENTS}    {queryParams}    ${queryparam}
     ${url_final}=    Replace String    ${url_final}    {value}    ${value}
@@ -863,6 +908,14 @@ Executar Get Event
     ...             expected_status=${expected_status}
     RETURN    ${response}
 
+Executar Get Order By ID
+    [Arguments]    ${orderId}    ${expected_status}
+    [Documentation]    Executa Get para obter order by id
+    
+    ${url_final}=    Replace String    ${ENDPOINT_GET_ORDER_BY_ID}    {orderId}    ${orderId}
+    ${response}=    GET On Session    api_session    ${url_final}
+    ...             expected_status=${expected_status}
+    RETURN    ${response}
 Executar Get Event Date
     [Arguments]    ${queryparam}    ${value}    ${queryparam2}    ${value2}    ${expected_status}
     [Documentation]    Executa DELETE para remover ticket type

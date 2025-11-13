@@ -1,5 +1,7 @@
 package com.tcc.api_ticket_sales.factory;
+import com.tcc.api_ticket_sales.application.dto.order.OrderResponseDTO;
 import com.tcc.api_ticket_sales.domain.entity.OrderEntity;
+import org.instancio.Instancio;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -19,5 +21,9 @@ public class OrderFactory {
         order.setId(UUID.randomUUID());
 
         return order;
+    }
+
+    public static OrderResponseDTO createOrderResponseDTO(){
+        return Instancio.create(OrderResponseDTO.class);
     }
 }
