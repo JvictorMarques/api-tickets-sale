@@ -44,6 +44,7 @@ jobs:
         working-directory: robot
         env:
           BASE_URL: ${{ vars.BASE_URL }}
+          MERCADO_PAGO_PUBLIC_KEY: ${{ secrets.MERCADO_PAGO_PUBLIC_KEY }}
         run: robot .
 
       - name: Upload Robot Framework reports

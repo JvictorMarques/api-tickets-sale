@@ -4,6 +4,7 @@ import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,12 +16,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 public class EventUpdateRequestDTO {
-    @NotEmpty(message = "Nome do evento é obrigatório")
+    @Size(max = 100, message = "Nome do evento inválido")
     private String name;
 
     private String description;
 
-    @NotEmpty(message = "Local do evento é obrigatório")
+    @Size(max = 100, message = "Nome da localização inválida")
     private String location;
 
     @Positive(message = "Capacidade do evento precisa ser maior que 0")
