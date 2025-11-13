@@ -4,10 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 @Data
 @Builder
 public class BuyTicketResponseDTO {
-    private String orderId;
-    private String redirectUrl;
+    private String status;
+    private UUID orderId;
 }

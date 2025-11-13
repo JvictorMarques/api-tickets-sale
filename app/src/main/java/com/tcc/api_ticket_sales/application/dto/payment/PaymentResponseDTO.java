@@ -12,6 +12,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PaymentResponseDTO {
     private String id;
-    private String redirectUrl;
-    private String orderId;
+    private String status;
 }
