@@ -58,4 +58,15 @@ public class EventServiceImpl implements EventService {
         eventRepository.save(eventEntityNew);
         return eventMapper.fromEventEntityToEventResponseDTO(eventEntityNew);
     }
+
+    @Transactional
+    public void delete(UUID eventId){
+        EventEntity event= eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId.toString()));
+        if(event.getDeletedAt() != null){
+            throw new EventNotFoundException(eventId.toString());
+        }
+
+        eventDomainService.deletedEvent(event);
+        eventRepository.save(event);
+    }
 }

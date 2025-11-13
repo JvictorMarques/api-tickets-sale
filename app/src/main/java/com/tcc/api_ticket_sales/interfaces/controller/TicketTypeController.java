@@ -186,7 +186,7 @@ public class TicketTypeController {
             summary = "Excluir tipo de ingresso"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Tipo de ingresso editado com sucesso"),
+            @ApiResponse(responseCode = "204", description = "Tipo de ingresso excluído com sucesso"),
             @ApiResponse(
                     responseCode = "400",
                     description = "Formato de requisição inválido e validações dos campos",

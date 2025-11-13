@@ -6,6 +6,7 @@ import com.tcc.api_ticket_sales.domain.exception.DateInitialGreaterThanDateFinal
 import com.tcc.api_ticket_sales.domain.exception.EventAgeRestrictionIncreaseNotAllowedException;
 import com.tcc.api_ticket_sales.domain.exception.EventCapacityReductionNotAllowedException;
 import com.tcc.api_ticket_sales.domain.exception.EventClosedException;
+import com.tcc.api_ticket_sales.domain.exception.EventDeletionNotAllowedException;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -142,5 +143,54 @@ class EventDomainServiceTest {
 
         assertDoesNotThrow(() -> eventDomainService.updateEvent(eventOld, eventNew));
         assertEquals(ticketTypeEntity.getDateFinal(), dateFinal);
+    }
+
+    @Tag("unit")
+    @Test
+    void delete_shouldEventEntityDeleted_whenEventTicketTypesIsNull(){
+        EventEntity event = createEventEntityWithoutId();
+
+        eventDomainService.deletedEvent(event);
+
+        assertNotNull(event.getDeletedAt());
+    }
+
+    @Tag("unit")
+    @Test
+    void delete_shouldEventEntityDeleted_whenEventHasNotTicketTypes(){
+        EventEntity event = createEventEntityWithoutId();
+        event.setTicketTypeEntities(List.of());
+
+        eventDomainService.deletedEvent(event);
+
+        assertNotNull(event.getDeletedAt());
+    }
+
+    @Tag("unit")
+    @Test
+    void delete_shouldThrowEventDeletionNotAllowedException_whenEventHasTicketsPurchased(){
+        EventEntity event = createEventEntityWithoutId();
+        TicketTypeEntity ticketTypeEntity = createTicketTypeEntityWithId();
+        ticketTypeEntity.setTicketEntities(createListTicketEntityPaymentApproved());
+
+        event.setTicketTypeEntities(List.of(ticketTypeEntity));
+
+        assertThrows(EventDeletionNotAllowedException.class, () -> {
+            eventDomainService.deletedEvent(event);
+        });
+    }
+
+    @Tag("unit")
+    @Test
+    void delete_shouldEventEntityDeleted_whenEventHasTicketsTypesWithoutTickets(){
+        EventEntity event = createEventEntityWithoutId();
+        TicketTypeEntity ticketTypeEntity = createTicketTypeEntityWithId();
+
+        event.setTicketTypeEntities(List.of(ticketTypeEntity));
+
+        eventDomainService.deletedEvent(event);
+
+        assertNotNull(event.getDeletedAt());
+        event.getTicketTypeEntities().forEach((ticketType) -> assertNotNull(ticketType.getDeletedAt()));
     }
 }
