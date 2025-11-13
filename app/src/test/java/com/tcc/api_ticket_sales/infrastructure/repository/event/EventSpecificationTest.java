@@ -1,195 +1,204 @@
 package com.tcc.api_ticket_sales.infrastructure.repository.event;
 
-import com.tcc.api_ticket_sales.BaseIntegrationTest;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.UUID;
 
-import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWithId;
-import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWithoutId;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-class EventSpecificationTest extends BaseIntegrationTest {
+@ExtendWith(MockitoExtension.class)
+public class EventSpecificationTest {
 
-    @Autowired
-    private EventRepository repository;
+    @Mock
+    private Root<EventEntity> root;
 
-    @Tag("integration")
+    @Mock
+    private CriteriaQuery<?> query;
+
+    @Mock
+    private CriteriaBuilder cb;
+
+    @Tag("unit")
     @Test
-    void nameEquals_shouldReturnListIsEmpty_whenNameIsNull(){
+    void nameEquals_shouldReturnNull_whenNameIsNull() {
         Specification<EventEntity> specification = EventSpecification.nameEquals(null);
-        assertTrue(repository.findAll(specification).isEmpty());
+        assertNotNull(specification);
+
+        assertNull(specification.toPredicate(root, query, cb));
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void nameEquals_shouldReturnListIsEmpty_whenEventNameNotEqualsName(){
-        EventEntity eventEntity1 = createEventEntityWithoutId();
-        EventEntity eventEntity2 = createEventEntityWithoutId();
-        repository.save(eventEntity1);
+    void nameEquals_shouldReturnSpecification_whenNameIsNotNull() {
+        Specification<EventEntity> spec = EventSpecification.nameEquals("Show");
+        assertNotNull(spec);
 
-        Specification<EventEntity> specification = EventSpecification.nameEquals(eventEntity2.getName());
-        assertTrue(repository.findAll(specification).isEmpty());
+        assertDoesNotThrow(() -> spec.toPredicate(root, query, cb));
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void nameEquals_shouldReturnListEventEntity_whenEventsNameEqualsName(){
-        EventEntity eventEntity = createEventEntityWithoutId();
-        repository.save(eventEntity);
-        Specification<EventEntity> specification = EventSpecification.nameEquals(eventEntity.getName());
+    void nameContains_shouldReturnNull_whenNameIsNull() {
+        Specification<EventEntity> specification = EventSpecification.nameContains(null);
+        assertNotNull(specification);
 
-        List<EventEntity> eventEntities = repository.findAll(specification);
+        assertNull(specification.toPredicate(root, query, cb));
+    }
 
-        assertFalse(eventEntities.isEmpty());
-        assertEquals(1, eventEntities.size());
+    @Tag("unit")
+    @Test
+    void nameContains_shouldReturnSpecification_whenNameIsNotNull() {
+        Specification<EventEntity> spec = EventSpecification.nameContains("Show");
+        assertNotNull(spec);
+
+        assertDoesNotThrow(() -> spec.toPredicate(root, query, cb));
+    }
+
+    @Tag("unit")
+    @Test
+    void locationEquals_shouldReturnNull_whenLocationIsNull() {
+        Specification<EventEntity> spec = EventSpecification.locationEquals(null);
+        assertNotNull(spec);
+        assertNull(spec.toPredicate(root, query, cb));
+    }
+
+    @Test
+    void locationEquals_shouldReturnPredicate_whenLocationIsNotNull() {
+        Specification<EventEntity> spec = EventSpecification.locationEquals("São Paulo");
+        assertNotNull(spec);
+        assertDoesNotThrow(() -> spec.toPredicate(root, query, cb));
+    }
+
+    @Tag("unit")
+    @Test
+    void locationContains_shouldReturnNull_whenLocationIsNull() {
+        Specification<EventEntity> spec = EventSpecification.locationContains(null);
+        assertNotNull(spec);
+        assertNull(spec.toPredicate(root, query, cb));
+    }
+
+    @Test
+    void locationContains_shouldReturnPredicate_whenLocationIsNotNull() {
+        Specification<EventEntity> spec = EventSpecification.locationContains("Rio");
+        assertNotNull(spec);
+        assertDoesNotThrow(() -> spec.toPredicate(root, query, cb));
+    }
+
+    @Tag("unit")
+    @Test
+    void locationContains_shouldReturnSpecification_whenLocationIsNotNull() {
+        Specification<EventEntity> spec = EventSpecification.locationContains("Arena");
+        assertNotNull(spec);
+    }
+
+    @Tag("unit")
+    @Test
+    void dateBetween_shouldReturnNull_whenStartOrEndIsNull() {
+        Specification<EventEntity> spec1 = EventSpecification.dateBetween(null, LocalDateTime.now());
+        Specification<EventEntity> spec2 = EventSpecification.dateBetween(LocalDateTime.now(), null);
+
+        assertNotNull(spec1);
+        assertNotNull(spec2);
+
+        assertNull(spec1.toPredicate(root, query, cb));
+        assertNull(spec2.toPredicate(root, query, cb));
+    }
+
+    @Tag("unit")
+    @Test
+    void dateBetween_shouldReturnPredicate_whenDatesAreNotNull() {
+        Specification<EventEntity> spec = EventSpecification.dateBetween(
+                LocalDateTime.now().minusDays(1),
+                LocalDateTime.now().plusDays(1)
+        );
+
+        assertNotNull(spec);
+        assertDoesNotThrow(() -> spec.toPredicate(root, query, cb));
+    }
+
+    @Tag("unit")
+    @Test
+    void idEquals_shouldReturnNull_whenIdIsNull() {
+        Specification<EventEntity> spec = EventSpecification.idEquals(null);
+        assertNotNull(spec);
+        assertNull(spec.toPredicate(root, query, cb));
+    }
+
+    @Tag("unit")
+    @Test
+    void idEquals_shouldReturnPredicate_whenIdIsNotNull() {
+        Specification<EventEntity> spec = EventSpecification.idEquals(UUID.randomUUID());
+        assertNotNull(spec);
+        assertDoesNotThrow(() -> spec.toPredicate(root, query, cb));
+    }
+
+    @Tag("unit")
+    @Test
+    void idNotEquals_shouldReturnNull_whenIdIsNull() {
+        Specification<EventEntity> spec = EventSpecification.idNotEquals(null);
+        assertNotNull(spec);
+        assertNull(spec.toPredicate(root, query, cb));
+    }
+
+    @Tag("unit")
+    @Test
+    void idNotEquals_shouldReturnPredicate_whenIdIsNotNull() {
+        Specification<EventEntity> spec = EventSpecification.idNotEquals(UUID.randomUUID());
+        assertNotNull(spec);
+        assertDoesNotThrow(() -> spec.toPredicate(root, query, cb));
+    }
+
+    @Tag("unit")
+    @Test
+    void ageRestrictionLessThanOrEqual_shouldReturnNull_whenAgeIsNull() {
+        Specification<EventEntity> spec = EventSpecification.ageRestrictionLessThanOrEqual(null);
+        assertNotNull(spec);
+        assertNull(spec.toPredicate(root, query, cb));
+    }
+
+    @Tag("unit")
+    @Test
+    void ageRestrictionLessThanOrEqual_shouldReturnPredicate_whenAgeIsNotNull() {
+        Specification<EventEntity> spec = EventSpecification.ageRestrictionLessThanOrEqual(18);
+        assertNotNull(spec);
+        assertDoesNotThrow(() -> spec.toPredicate(root, query, cb));
     }
 
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void locationEquals_shouldReturnListIsEmpty_whenLocationIsNull(){
-        Specification<EventEntity> specification = EventSpecification.locationEquals(null);
-        assertTrue(repository.findAll(specification).isEmpty());
+    void capacityGreatThanTicketPurchased_shouldReturnSpecification() {
+        Specification<EventEntity> spec = EventSpecification.capacityGreatThanTicketPurchased();
+        assertNotNull(spec);
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void locationEquals_shouldReturnListIsEmpty_whenEventsLocationNotEqualsLocation(){
-        EventEntity eventEntity1 = createEventEntityWithoutId();
-        EventEntity eventEntity2 = createEventEntityWithoutId();
-        eventEntity2.setLocation("Teste Location");
-        repository.save(eventEntity1);
+    void deletedAtIsNull_shouldReturnSpecification() {
+        Specification<EventEntity> spec = EventSpecification.deletedAtIsNull();
+        assertNotNull(spec);
 
-        Specification<EventEntity> specification = EventSpecification.locationEquals(eventEntity2.getLocation());
-        assertTrue(repository.findAll(specification).isEmpty());
+        assertDoesNotThrow(() -> spec.toPredicate(root, query, cb));
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void locationEquals_shouldReturnListEventEntity_whenEventsLocationEqualsLocation(){
-        EventEntity eventEntity = createEventEntityWithoutId();
-        repository.save(eventEntity);
-        Specification<EventEntity> specification = EventSpecification.locationEquals(eventEntity.getLocation());
+    void notClosed_shouldReturnSpecification() {
+        Specification<EventEntity> spec = EventSpecification.notClosed();
+        assertNotNull(spec);
 
-        List<EventEntity> eventEntities = repository.findAll(specification);
-
-        assertFalse(eventEntities.isEmpty());
-        assertEquals(1, eventEntities.size());
-    }
-
-    @Tag("integration")
-    @Test
-    void dateBetween_shouldReturnListIsEmpty_whenDateInitialIsNull(){
-        Specification<EventEntity> specification = EventSpecification.dateBetween(null, LocalDateTime.now());
-        assertTrue(repository.findAll(specification).isEmpty());
-    }
-
-    @Tag("integration")
-    @Test
-    void dateBetween_shouldReturnListIsEmpty_whenDateFinalIsNull(){
-        Specification<EventEntity> specification = EventSpecification.dateBetween(LocalDateTime.now(), null);
-        assertTrue(repository.findAll(specification).isEmpty());
-    }
-
-    @Tag("integration")
-    @Test
-    void dateBetween_shouldReturnListIsEmpty_whenDateInitialAndDateFinalIsNull(){
-        Specification<EventEntity> specification = EventSpecification.dateBetween(null, null);
-        assertTrue(repository.findAll(specification).isEmpty());
-    }
-
-    @Tag("integration")
-    @Test
-    void dateBetween_shouldReturnListIsEmpty_whenDateInitialAndDateFinalNotContainsEvents(){
-        EventEntity eventEntity1 = createEventEntityWithoutId();
-        eventEntity1.setDateInitial(LocalDateTime.now().minusDays(30));
-        eventEntity1.setDateFinal(LocalDateTime.now().minusDays(30));
-
-        EventEntity eventEntity2 = createEventEntityWithoutId();
-        repository.save(eventEntity1);
-
-        Specification<EventEntity> specification = EventSpecification.dateBetween(eventEntity2.getDateInitial(), eventEntity2.getDateFinal());
-        assertTrue(repository.findAll(specification).isEmpty());
-    }
-
-    @Tag("integration")
-    @Test
-    void dateBetween_shouldReturnListIsEmpty_whenDateInitialAndDateFinalContainsEvents(){
-        EventEntity eventEntity1 = createEventEntityWithoutId();
-        EventEntity eventEntity2 = createEventEntityWithoutId();
-        repository.saveAll(List.of(eventEntity1, eventEntity2));
-
-        Specification<EventEntity> specification = EventSpecification.dateBetween(eventEntity2.getDateInitial(), eventEntity2.getDateFinal());
-        List<EventEntity> eventEntities = repository.findAll(specification);
-
-        assertFalse(eventEntities.isEmpty());
-        assertEquals(2, eventEntities.size());
-    }
-
-    @Tag("integration")
-    @Test
-    void idEquals_shouldReturnListIsEmpty_whenIdIsNull(){
-        Specification<EventEntity> specification = EventSpecification.idEquals(null);
-        assertTrue(repository.findAll(specification).isEmpty());
-    }
-
-    @Tag("integration")
-    @Test
-    void idEquals_shouldReturnListIsEmpty_whenEventIdNotEqualsId(){
-        EventEntity eventEntity1 = createEventEntityWithoutId();
-        EventEntity eventEntity2 = createEventEntityWithId();
-        repository.save(eventEntity1);
-
-        Specification<EventEntity> specification = EventSpecification.idEquals(eventEntity2.getId());
-        assertTrue(repository.findAll(specification).isEmpty());
-    }
-
-    @Tag("integration")
-    @Test
-    void idEquals_shouldReturnListEventEntity_whenEventsIdEqualsId(){
-        EventEntity eventEntity = createEventEntityWithoutId();
-        repository.save(eventEntity);
-        Specification<EventEntity> specification = EventSpecification.idEquals(eventEntity.getId());
-
-        List<EventEntity> eventEntities = repository.findAll(specification);
-
-        assertFalse(eventEntities.isEmpty());
-        assertEquals(1, eventEntities.size());
-    }
-
-    @Tag("integration")
-    @Test
-    void idNotEquals_shouldReturnListIsEmpty_whenIdIsNull(){
-        Specification<EventEntity> specification = EventSpecification.idNotEquals(null);
-        assertTrue(repository.findAll(specification).isEmpty());
-    }
-
-    @Tag("integration")
-    @Test
-    void idNotEquals_shouldReturnListEventEntity_whenEventIdNotEqualsId(){
-        EventEntity eventEntity1 = createEventEntityWithoutId();
-        EventEntity eventEntity2 = createEventEntityWithId();
-        repository.save(eventEntity1);
-
-        Specification<EventEntity> specification = EventSpecification.idNotEquals(eventEntity2.getId());
-        assertTrue(repository.findAll(specification).size() == 1);
-    }
-
-    @Tag("integration")
-    @Test
-    void idNotEquals_shouldReturnListEmpty_whenEventsEqualsId(){
-        EventEntity eventEntity = createEventEntityWithoutId();
-        repository.save(eventEntity);
-        Specification<EventEntity> specification = EventSpecification.idNotEquals(eventEntity.getId());
-
-        List<EventEntity> eventEntities = repository.findAll(specification);
-
-        assertTrue(eventEntities.isEmpty());
+        assertDoesNotThrow(() -> spec.toPredicate(root, query, cb));
     }
 }

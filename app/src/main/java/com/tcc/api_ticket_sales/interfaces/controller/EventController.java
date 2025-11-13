@@ -1,8 +1,10 @@
 package com.tcc.api_ticket_sales.interfaces.controller;
 
+import com.tcc.api_ticket_sales.application.dto.event.EventFilterRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventUpdateRequestDTO;
 import com.tcc.api_ticket_sales.application.service.event.EventService;
 import com.tcc.api_ticket_sales.application.service.ticket_type.TicketTypeService;
+import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.interfaces.controller.exception.RestExceptionMessage;
 import com.tcc.api_ticket_sales.application.dto.event.EventCreateRequestDTO;
 import com.tcc.api_ticket_sales.application.dto.event.EventResponseDTO;
@@ -16,11 +18,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -343,6 +348,62 @@ public class EventController {
         eventService.delete(eventId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "Buscar eventos"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Eventos listados com sucesso."),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Formato de requisição inválido e validações dos campos",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples= {
+                                    @ExampleObject(
+                                            name = "Json malformado",
+                                            summary = "Json malformado",
+                                            value = """
+                                            {
+                                                "message": "Formato de data inválido. Use o padrão yyyy-MM-dd'T'HH:mm:ss",
+                                                "status": 400,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "Formato de data/hora inválido para o campo 'saleStartDate'. Valor recebido: '13/10/2025 18:00'. Formato esperado: 'yyyy-MM-dd'T'HH:mm:ss'."
+                                                ]
+                                            }
+                                            """
+                                    ),
+                            }
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    description = "Violação da regra de negócio",
+                    content = @Content(
+                            schema = @Schema(implementation = RestExceptionMessage.class),
+                            examples= @ExampleObject(
+                                    summary = "Data inicial maior que data final.",
+                                    value = """
+                                            {
+                                                "message": "Data inicial maior que data final.",
+                                                "status": 422,
+                                                "timeStamp": "2025-10-13T18:00:00",
+                                                "errors": [
+                                                    "Data inicial maior que data final."
+                                                ]
+                                            }
+                                            """
+                            )
+                    )
+            ),
+    })
+    @GetMapping()
+    public ResponseEntity<List<EventResponseDTO>> getEvents(EventFilterRequestDTO filter){
+        List<EventResponseDTO> response = eventService.getByParams(filter);
+
+        return ResponseEntity.ok().body(response);
     }
 
     @Operation(

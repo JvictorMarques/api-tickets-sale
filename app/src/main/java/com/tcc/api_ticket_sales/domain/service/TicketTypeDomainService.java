@@ -1,5 +1,7 @@
 package com.tcc.api_ticket_sales.domain.service;
 
+import com.tcc.api_ticket_sales.application.exception.EventNotFoundException;
+import com.tcc.api_ticket_sales.application.exception.TicketTypeNotFoundException;
 import com.tcc.api_ticket_sales.domain.enums.PaymentStatusEnum;
 import com.tcc.api_ticket_sales.domain.exception.EventClosedException;
 import com.tcc.api_ticket_sales.domain.exception.TicketTypeCapacityReductionNotAllowedException;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.tcc.api_ticket_sales.domain.utils.CheckDate.checkDateInitialGreaterThanDateFinal;
 
 @Component
 public class TicketTypeDomainService {
@@ -52,6 +56,7 @@ public class TicketTypeDomainService {
     public TicketTypeEntity updateTicketType(
             TicketTypeEntity ticketType
     ){
+        checkDateInitialGreaterThanDateFinal(ticketType.getDateInitial(), ticketType.getDateFinal());
         if(ticketType.getDeletedAt() != null){
             throw new TicketTypeClosedException();
         }
@@ -84,6 +89,10 @@ public class TicketTypeDomainService {
     public TicketTypeEntity deleteTicketType(
             TicketTypeEntity ticketType
     ){
+        if(ticketType.getDeletedAt() != null){
+            throw new TicketTypeClosedException();
+        }
+
         if(this.countTicketsPurchased(ticketType) > 0){
             throw new TicketTypeDeletionNotAllowedException();
         }

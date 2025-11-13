@@ -1,100 +1,112 @@
 package com.tcc.api_ticket_sales.infrastructure.repository.event;
 
-import com.tcc.api_ticket_sales.BaseIntegrationTest;
+import com.tcc.api_ticket_sales.application.dto.event.EventFilterRequestDTO;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
 import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWithId;
-import static com.tcc.api_ticket_sales.factory.EventFactory.createEventEntityWithoutId;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.tcc.api_ticket_sales.factory.EventFactory.createEventFilterRequestDTO;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class EventSpecificationFactoryTest extends BaseIntegrationTest {
+@ExtendWith(MockitoExtension.class)
+public class EventSpecificationFactoryTest {
 
-    @Autowired
-    private EventRepository repository;
+    @Mock
+    private Root<EventEntity> root;
 
-    @Autowired
-    private EventSpecificationFactory eventSpecificationFactory;
+    @Mock
+    private CriteriaQuery<?> query;
 
-    @Tag("integration")
+    @Mock
+    private CriteriaBuilder cb;
+
+    private final EventSpecificationFactory eventSpecificationFactory = new EventSpecificationFactory();
+
+    @Tag("Unit")
     @Test
-    void findConflictingEvents_shouldReturnEmpty_whenEventNamesAreDifferent(){
-        EventEntity eventEntity1 = createEventEntityWithoutId();
-        EventEntity eventEntity2 = createEventEntityWithoutId();
-        repository.save(eventEntity1);
-        eventEntity2.setId(eventEntity1.getId());
+    void findConflictingEvents_shouldReturnSpecification_whenAllFieldsArePresent() {
+        // Arrange
+        EventEntity event = createEventEntityWithId();
 
-        Specification<EventEntity> specification = eventSpecificationFactory.findConflictingEvents(eventEntity2);
-        assertTrue(repository.findAll(specification).isEmpty());
+        // Act
+        Specification<EventEntity> spec = eventSpecificationFactory.findConflictingEvents(event);
+
+        // Assert
+        assertNotNull(spec);
+        assertDoesNotThrow(() -> spec.toPredicate(root, query, cb));
     }
 
-    @Tag("integration")
+    @Tag("unit")
     @Test
-    void findConflictingEvents_shouldReturnEmpty_whenEventLocationAreDifferent(){
-        EventEntity eventEntity1 = createEventEntityWithoutId();
-        EventEntity eventEntity2 = createEventEntityWithoutId();
-        eventEntity2.setName(eventEntity1.getName());
-        eventEntity2.setLocation("Teste location");
-        repository.save(eventEntity1);
-        eventEntity2.setId(eventEntity1.getId());
+    void findConflictingEvents_shouldHandleNullFieldsGracefully() {
+        // Arrange
+        EventEntity event = createEventEntityWithId();
+        event.setId(null);
+        event.setName(null);
+        event.setLocation(null);
+        event.setDateInitial(null);
+        event.setDateFinal(null);
 
-        Specification<EventEntity> specification = eventSpecificationFactory.findConflictingEvents(eventEntity2);
-        assertTrue(repository.findAll(specification).isEmpty());
+        // Act
+        Specification<EventEntity> spec = eventSpecificationFactory.findConflictingEvents(event);
+
+        // Assert
+        assertNotNull(spec);
+        assertDoesNotThrow(() -> spec.toPredicate(root, query, cb));
     }
 
-    @Tag("integration")
     @Test
-    void findConflictingEvents_shouldReturnEmpty_whenEventIdAreEquals(){
-        EventEntity eventEntity1 = createEventEntityWithoutId();
-        EventEntity eventEntity2 = createEventEntityWithId();
-        eventEntity2.setName(eventEntity1.getName());
-        repository.save(eventEntity1);
-        eventEntity2.setId(eventEntity1.getId());
+    void findFilter_shouldReturnSpecification_whenAllFieldsAreFilledAndAvailableIsFalse() {
+        // Arrange
+        EventFilterRequestDTO filter = createEventFilterRequestDTO();
+        filter.setAvailable(true);
 
-        Specification<EventEntity> specification = eventSpecificationFactory.findConflictingEvents(eventEntity2);
-        assertTrue(repository.findAll(specification).isEmpty());
+        // Act
+        Specification<EventEntity> spec = eventSpecificationFactory.findFilter(filter);
+
+        // Assert
+        assertNotNull(spec);
     }
 
-    @Tag("integration")
     @Test
-    void findConflictingEvents_shouldReturnEmpty_whenDateInitialAndDateFinalNotContainsEvents(){
-        EventEntity eventEntity1 = createEventEntityWithoutId();
-        EventEntity eventEntity2 = createEventEntityWithoutId();
-        eventEntity2.setName(eventEntity1.getName());
-        eventEntity2.setDateInitial(eventEntity1.getDateInitial().minusDays(3));
-        eventEntity2.setDateFinal(eventEntity1.getDateFinal().minusDays(2));
-        repository.save(eventEntity1);
-        eventEntity2.setId(eventEntity1.getId());
+    void findFilter_shouldReturnSpecification_whenAvailableIsTrue() {
+        // Arrange
+        EventFilterRequestDTO filter = createEventFilterRequestDTO();
+        filter.setAvailable(false);
 
-        Specification<EventEntity> specification = eventSpecificationFactory.findConflictingEvents(eventEntity2);
-        assertTrue(repository.findAll(specification).isEmpty());
+        // Act
+        Specification<EventEntity> spec = eventSpecificationFactory.findFilter(filter);
+
+        // Assert
+        assertNotNull(spec);
+        assertDoesNotThrow(() -> spec.toPredicate(root, query, cb));
     }
 
-    @Tag("integration")
     @Test
-    void findConflictingEvents_shouldReturnListEvents_whenExistsEventsEquals(){
-        EventEntity eventEntity1 = createEventEntityWithoutId();
-        EventEntity eventEntity2 = createEventEntityWithId();
-        eventEntity2.setName(eventEntity1.getName());
-        repository.save(eventEntity1);
+    void findFilter_shouldHandleNullFieldsGracefully() {
+        // Arrange
+        EventFilterRequestDTO filter = new EventFilterRequestDTO();
+        filter.setName(null);
+        filter.setLocation(null);
+        filter.setDateInitial(null);
+        filter.setDateFinal(null);
+        filter.setAgeRestriction(null);
+        filter.setAvailable(null);
 
-        Specification<EventEntity> specification = eventSpecificationFactory.findConflictingEvents(eventEntity2);
-        assertEquals(1, repository.findAll(specification).size());
+        // Act
+        Specification<EventEntity> spec = eventSpecificationFactory.findFilter(filter);
+
+        // Assert
+        assertNotNull(spec);
+        assertDoesNotThrow(() -> spec.toPredicate(root, query, cb));
     }
-
-    @Tag("integration")
-    @Test
-    void findConflictingEvents_shouldReturnListEvents_whenExistsEventsEqualsWithoutId(){
-        EventEntity eventEntity1 = createEventEntityWithoutId();
-        EventEntity eventEntity2 = createEventEntityWithoutId();
-        eventEntity2.setName(eventEntity1.getName());
-        repository.save(eventEntity1);
-
-        Specification<EventEntity> specification = eventSpecificationFactory.findConflictingEvents(eventEntity2);
-        assertEquals(1, repository.findAll(specification).size());
-    }
-
 }

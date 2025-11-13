@@ -1,5 +1,6 @@
 package com.tcc.api_ticket_sales.domain.service;
 
+import com.tcc.api_ticket_sales.application.exception.TicketTypeNotFoundException;
 import com.tcc.api_ticket_sales.domain.entity.EventEntity;
 import com.tcc.api_ticket_sales.domain.entity.TicketTypeEntity;
 import com.tcc.api_ticket_sales.domain.exception.EventClosedException;
@@ -186,6 +187,7 @@ class TicketTypeDomainServiceTest {
 
         TicketTypeEntity ticketType = createTicketTypeEntityWithoutId();
         ticketType.setDateInitial(event.getDateFinal().plusDays(3));
+        ticketType.setDateFinal(event.getDateFinal().plusDays(4));
         ticketType.setCapacity(50);
         ticketType.setTicketEntities(List.of());
         ticketType.setEventEntity(event);
@@ -272,5 +274,19 @@ class TicketTypeDomainServiceTest {
         assertNotNull(result.getDeletedAt());
         assertTrue(result.getDeletedAt().isBefore(LocalDateTime.now()) ||
                 result.getDeletedAt().isEqual(LocalDateTime.now()));
+    }
+
+    @Test
+    @Tag("unit")
+    void deleteTicketType_shouldThrowTicketTypeClosedException_whenTicketTypeIsDeleted() {
+        // Arrange
+        TicketTypeEntity ticketType = createTicketTypeEntityWithoutId();
+        ticketType.setDeletedAt(LocalDateTime.now());
+
+        // Act
+        assertThrows(TicketTypeClosedException.class, () -> {
+            service.deleteTicketType(ticketType);
+        });
+
     }
 }
