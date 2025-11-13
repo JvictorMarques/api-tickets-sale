@@ -116,4 +116,15 @@ public class RestExceptionHandler {
 
         return  ResponseEntity.status(HttpStatus.BAD_REQUEST) .body(body);
     }
+
+    @ExceptionHandler(BadGatewayException.class)
+    public ResponseEntity<RestExceptionMessage> handleBadGatewayException(BadGatewayException e){
+        RestExceptionMessage body = new RestExceptionMessage(e.getMessage(),
+                HttpStatus.BAD_GATEWAY.value(),
+                LocalDateTime.now(),
+                List.of(e.getMessage())
+        );
+
+        return  ResponseEntity.status(HttpStatus.BAD_GATEWAY.value()).body(body);
+    }
 }
