@@ -15,7 +15,7 @@ ${TAG_CONFLICT}     conflict
 
 *** Test Cases ***
 
-TC-PATCH-EVENT-001 - Atualizar evento com dados válidos
+PATCH-EVENT-001 - Atualizar evento com dados válidos
     [Tags]    ${TAG_ALL_TESTS}    ${TAG_SUCCESS}
     
     &{payload}=    Gerar Payload Sucesso Minimo
@@ -26,7 +26,7 @@ TC-PATCH-EVENT-001 - Atualizar evento com dados válidos
     ${reponse_patch}     Executar Patch Evento    ${event_id}    ${payload_patch}      ${STATUS_200}
     
 
-TC-PATCH-EVENT-002 - Atualizar múltiplos campos válidos
+PATCH-EVENT-002 - Atualizar múltiplos campos válidos
     [Tags]    ${TAG_ALL_TESTS}    ${TAG_SUCCESS}
     
     &{payload}=    Gerar Payload Sucesso Minimo
@@ -35,18 +35,18 @@ TC-PATCH-EVENT-002 - Atualizar múltiplos campos válidos
     ${nova_descricao}=    FakerLibrary.Sentence
     &{payload_patch}=    Criar Payload Patch Multiplo    name=${novo_nome}    description=${nova_descricao}
     ${response_patch}=    Executar Patch Evento    ${event_id}    ${payload_patch}    ${STATUS_200}
-    Log To Console    ${response_patch.json()}
 
-TC-PATCH-EVENT-003 - Tentativa de atualização com ID inválido
+
+PATCH-EVENT-003 - Tentativa de atualização com ID inválido
     [Tags]    ${TAG_ALL_TESTS}    ${TAG_ERROR}
     
     ${id_invalido}=    Set Variable    ${uuid_inexistente}
     ${novo_nome}=    FakerLibrary.Word
     &{payload_patch}=    Criar Payload Patch    name    ${novo_nome}
     ${response_patch}=    Executar Patch Evento    ${id_invalido}    ${payload_patch}    ${STATUS_404}
-    Log To Console    ${response_patch.json()}
 
-TC-PATCH-EVENT-004 - Atualizar apenas o nome do evento
+
+PATCH-EVENT-004 - Atualizar apenas o nome do evento
     [Tags]    ${TAG_ALL_TESTS}    ${TAG_SUCCESS}
     
     &{payload}=    Gerar Payload Sucesso Minimo
@@ -54,9 +54,9 @@ TC-PATCH-EVENT-004 - Atualizar apenas o nome do evento
     ${novo_nome}=    FakerLibrary.Word    
     &{payload_patch}=    Criar Payload Patch    name    ${novo_nome}
     ${response_patch}=    Executar Patch Evento   ${event_id}    ${payload_patch}      ${STATUS_200}
-    Log To Console    ${response_patch.json()}
 
-TC-PATCH-EVENT-005 - Atualizar apenas a localização do evento
+
+PATCH-EVENT-005 - Atualizar apenas a localização do evento
     [Tags]    ${TAG_ALL_TESTS}    ${TAG_SUCCESS}
     
     &{payload}=    Gerar Payload Sucesso Minimo
@@ -64,9 +64,9 @@ TC-PATCH-EVENT-005 - Atualizar apenas a localização do evento
     ${nova_location}=    FakerLibrary.City    
     &{payload_patch}=    Criar Payload Patch    location    ${nova_location}
     ${response_patch}=    Executar Patch Evento   ${event_id}    ${payload_patch}      ${STATUS_200}
-    Log To Console    ${response_patch.json()}
 
-TC-PATCH-EVENT-006 - Atualizar evento para data inicial anterior à data atual
+
+PATCH-EVENT-006 - Atualizar evento para data inicial anterior à data atual
     [Tags]    ${TAG_ALL_TESTS}    ${TAG_SUCCESS}
 
     &{payload}=    Gerar Payload Sucesso Minimo
@@ -74,7 +74,7 @@ TC-PATCH-EVENT-006 - Atualizar evento para data inicial anterior à data atual
     ${payload_patch}=    Criar Payload Patch   dateInitial    ${PAST_DATE}
     ${response_patch}=    Executar Patch Evento   ${event_id}    ${payload_patch}      ${STATUS_400}
 
-TC-PATCH-EVENT-007 - Atualizar evento para data final anterior à data atual
+PATCH-EVENT-007 - Atualizar evento para data final anterior à data atual
     [Tags]    ${TAG_ALL_TESTS}    ${TAG_SUCCESS}
 
     &{payload}=    Gerar Payload Sucesso Minimo
@@ -82,7 +82,7 @@ TC-PATCH-EVENT-007 - Atualizar evento para data final anterior à data atual
     ${payload_patch}=    Criar Payload Patch   dateFinal    ${PAST_DATE}
     ${response_patch}=    Executar Patch Evento   ${event_id}    ${payload_patch}      ${STATUS_400}
 
-TC-PATCH-EVENT-008 - Aumentar faixa etária do evento quando já houver ingressos vendidos
+PATCH-EVENT-008 - Aumentar faixa etária do evento quando já houver ingressos vendidos
     [Tags]    ${TAG_ALL_TESTS}    ${TAG_SUCCESS}
     ${ticket_name}=   FakerLibrary.Word
     &{payload}=    Gerar Payload Sucesso Completo Aleatório
@@ -93,7 +93,7 @@ TC-PATCH-EVENT-008 - Aumentar faixa etária do evento quando já houver ingresso
     ${payload_patch}=    Criar Payload Patch    ageRestriction    ${novo_age_restriction}
     ${response_patch}=    Executar Patch Evento   ${event_id}    ${payload_patch}      ${STATUS_200}
 
-TC-PATCH-EVENT-009 - Diminuir faixa etária do evento quando já houver ingressos vendidos
+PATCH-EVENT-009 - Diminuir faixa etária do evento quando já houver ingressos vendidos
     [Tags]    ${TAG_ALL_TESTS}    ${TAG_SUCCESS}
     ${ticket_name}=   FakerLibrary.Word
     &{payload}=    Gerar Payload Sucesso Completo Aleatório
@@ -104,7 +104,7 @@ TC-PATCH-EVENT-009 - Diminuir faixa etária do evento quando já houver ingresso
     ${payload_patch}=    Criar Payload Patch    ageRestriction    ${novo_age_restriction}
     ${response_patch}=    Executar Patch Evento   ${event_id}    ${payload_patch}      ${STATUS_200}
 
-TC-PATCH-EVENT-010 - Atualizar evento com datas conflitantes
+PATCH-EVENT-010 - Atualizar evento com datas conflitantes
     [Tags]    ${TAG_ALL_TESTS}    ${TAG_CONFLICT}
     
     &{payload}=    Gerar Payload Sucesso Completo Com Massa Repetida
@@ -114,7 +114,7 @@ TC-PATCH-EVENT-010 - Atualizar evento com datas conflitantes
     ${payload_patch}=    Criar Payload Patch Com Datas Conflitantes
     ${response_patch}=    Executar Patch Evento   ${event_id_2}    ${payload_patch}      ${STATUS_409}
 
-TC-PATCH-EVENT-010 - Atualizar evento para capacidade menor que ingressos vendidos
+PATCH-EVENT-010 - Atualizar evento para capacidade menor que ingressos vendidos
     [Tags]    ${TAG_ALL_TESTS}    ${TAG_CAPACITY}
     
     &{payload}=    Gerar Payload Sucesso Minimo
@@ -128,7 +128,7 @@ TC-PATCH-EVENT-010 - Atualizar evento para capacidade menor que ingressos vendid
     ${payload_patch}=    Criar Payload Patch    capacity    ${79}
     ${response_patch}=    Executar Patch Evento   ${event_id}    ${payload_patch}      ${STATUS_409}
 
-TC-PATCH-EVENT-011 - Atualizar evento para capacidade maior que ingressos vendidos
+PATCH-EVENT-011 - Atualizar evento para capacidade maior que ingressos vendidos
     [Tags]    ${TAG_ALL_TESTS}    ${TAG_CAPACITY}
     
     &{payload}=    Gerar Payload Sucesso Minimo

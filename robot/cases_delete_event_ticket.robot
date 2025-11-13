@@ -12,7 +12,7 @@ ${TAG_DELETE}       delete
 
 
 *** Test Cases ***
-TC-DELETE-001 - Validar impossibilidade de exclusão de tipo de ticket com ingressos comprados
+DELETE-EVENT-TICKET-001 - Validar impossibilidade de exclusão de tipo de ticket com ingressos comprados
 
     [Tags]    ${TAG_ALL_TESTS}    ${TAG_SUCCESS}    ${TAG_DELETE}
     [Documentation]    Validar não exclusão de tipo de ticket com ingresso comprado
@@ -22,20 +22,20 @@ TC-DELETE-001 - Validar impossibilidade de exclusão de tipo de ticket com ingre
     Sleep     5s
     Executar Delete Ticket Type    ${ticket_type_id}    ${STATUS_409}
 
-TC-DELETE-002 - Validar possibilidade de exclusão de tipo de ticket sem ingressos comprados
+DELETE-EVENT-TICKET-002 - Validar possibilidade de exclusão de tipo de ticket sem ingressos comprados
 
     [Tags]    ${TAG_ALL_TESTS}    ${TAG_SUCCESS}    ${TAG_DELETE}
     [Documentation]    Validar exclusão de ticket comprado
     ${ticket_type_id}=    Criar_Ticket_Type_E_Capturar_ID
     Executar Delete Ticket Type    ${ticket_type_id}    ${STATUS_204}
 
-TC-DELETE-003 - Validar impossibilidade de exclusão de tipo de ticket com id inexistente
+DELETE-EVENT-TICKET-003 - Validar impossibilidade de exclusão de tipo de ticket com id inexistente
 
     [Tags]    ${TAG_ALL_TESTS}    ${TAG_SUCCESS}    ${TAG_DELETE}
     [Documentation]    Validar exclusão de ticket comprado
     Executar Delete Ticket Type    ${uuid_inexistente}    ${STATUS_404}
 
-TC-DELETE-004 - Validar impossibilidade de exclusão de tipo de ticket com id inválido
+DELETE-EVENT-TICKET-004 - Validar impossibilidade de exclusão de tipo de ticket com id inválido
 
     [Tags]    ${TAG_ALL_TESTS}    ${TAG_SUCCESS}    ${TAG_DELETE}
     [Documentation]    Validar exclusão de ticket comprado
