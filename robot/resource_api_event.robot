@@ -9,16 +9,20 @@ Library         FakerLibrary
 ${BASE_URL}      %{BASE_URL}
 ${public_key}    %{MERCADO_PAGO_PUBLIC_KEY}
 # ${BASE_URL}             http://localhost:8080/api
-${ENDPOINT_EVENT}       /event
-${ENDPOINT_TICKET}      /event/{eventId}/ticket-type
-${ENDPOINT_BUY_TICKET}  /ticket/buy
-${ENDPOINT_UPDATE_TICKET}    /ticket-type/{ticketTypeId}
-${ENDPOINT_DELETE_TICKET}    /ticket-type/{ticketTypeId}
-${ENDPOINT_UPDATE_EVENT}    /event/{eventId}
-${ENDPOINT_DELETE_EVENT}    /event/{eventId}
+${ENDPOINT_EVENT}             /event
+${ENDPOINT_TICKET}            /event/{eventId}/ticket-type
+${ENDPOINT_BUY_TICKET}        /ticket/buy
+${ENDPOINT_UPDATE_TICKET}     /ticket-type/{ticketTypeId}
+${ENDPOINT_DELETE_TICKET}     /ticket-type/{ticketTypeId}
+${ENDPOINT_UPDATE_EVENT}      /event/{eventId}
+${ENDPOINT_DELETE_EVENT}      /event/{eventId}
+${ENDPOINT_GET_EVENTS}        /event?{queryParams}={value}
+${ENDPOINT_GET_EVENTS_DATE}   /event?{queryParams}={value}\&{queryParams2}={value2}
 
 # --- DADOS FIXOS DO EVENTO (EXISTENTES) ---
 ${FUTURE_DATE_INITIAL}  2030-10-10T18:00:00
+${FUTURE_DATE_INITIAL_GET}  2030-07-10T18:00:00
+${FUTURE_DATE_FINAL_GET}    2030-08-10T18:00:00
 ${FUTURE_DATE_FINAL}    2030-10-10T21:00:00
 ${SUCCESS_LOCATION}     Sala Alpha
 ${SUCCESS_CAPACITY}     100

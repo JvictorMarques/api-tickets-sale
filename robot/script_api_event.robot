@@ -36,7 +36,7 @@ Executar POST e Validar Status PATCH
     ...             expected_status=any
     ${event_id}=        Set Variable    ${response.json()["id"]}
     Should Be Equal As Integers      ${response.status_code}     ${expected_status}
-    RETURN      ${event_id}     ${response}  
+    RETURN      ${event_id}     ${response}    
 
 Validar Response Sucesso 201
     [Arguments]         ${response}     ${expected_name}
@@ -850,6 +850,28 @@ Executar Delete Event
     
     ${url_final}=    Replace String    ${ENDPOINT_DELETE_EVENT}    {eventId}    ${event_id}
     ${response}=    DELETE On Session    api_session    ${url_final}
+    ...             expected_status=${expected_status}
+    RETURN    ${response}
+
+Executar Get Event
+    [Arguments]    ${queryparam}    ${value}    ${expected_status}
+    [Documentation]    Executa DELETE para remover ticket type
+    
+    ${url_final}=    Replace String    ${ENDPOINT_GET_EVENTS}    {queryParams}    ${queryparam}
+    ${url_final}=    Replace String    ${url_final}    {value}    ${value}
+    ${response}=    GET On Session    api_session    ${url_final}
+    ...             expected_status=${expected_status}
+    RETURN    ${response}
+
+Executar Get Event Date
+    [Arguments]    ${queryparam}    ${value}    ${queryparam2}    ${value2}    ${expected_status}
+    [Documentation]    Executa DELETE para remover ticket type
+    
+    ${url_final}=    Replace String    ${ENDPOINT_GET_EVENTS_DATE}    {queryParams}    ${queryparam}
+    ${url_final}=    Replace String    ${url_final}    {value}    ${value}
+    ${url_final}=    Replace String    ${url_final}    {queryParams2}    ${queryparam2}
+    ${url_final}=    Replace String    ${url_final}    {value2}    ${value2}
+    ${response}=    GET On Session    api_session    ${url_final}
     ...             expected_status=${expected_status}
     RETURN    ${response}
 

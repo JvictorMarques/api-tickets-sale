@@ -35,8 +35,7 @@ DELETE-EVENT-003 - Validar exclusão de evento sem ticket type cadastrado
     [Documentation]    Validar não exclusão de evento com ingresso comprado
     ${ticket_name}=   FakerLibrary.Word
     &{payload}=    Gerar Payload Sucesso Completo Aleatório
-    ${event_id}    ${response}=    Executar POST e Validar Status PATCH   ${payload}    ${STATUS_201}
-    Executar Delete Event    ${event_id}    ${STATUS_204}
+    Executar Delete Event    ${ticket_name}    ${STATUS_200}
 
 DELETE-EVENT-004 - Validar impossibilidade de exclusão de evento com id inexistente
     [Tags]    ${TAG_ALL_TESTS}    ${TAG_SUCCESS}    ${TAG_DELETE}
