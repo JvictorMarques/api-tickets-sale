@@ -1,18 +1,22 @@
 package com.tcc.api_ticket_sales.infrastructure.integration.mercadopago;
 
 import com.mercadopago.MercadoPagoConfig;
-import com.mercadopago.client.order.OrderClient;
 import com.mercadopago.client.payment.PaymentClient;
-import com.mercadopago.client.preference.PreferenceClient;
-import com.mercadopago.client.preference.PreferenceRequest;
+import com.mercadopago.client.payment.PaymentCreateRequest;
+import com.mercadopago.core.MPRequestOptions;
 import com.mercadopago.exceptions.MPApiException;
 import com.mercadopago.exceptions.MPException;
-import com.mercadopago.resources.order.Order;
+
 import com.mercadopago.resources.payment.Payment;
-import com.mercadopago.resources.preference.Preference;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 
 @Component
@@ -27,16 +31,23 @@ public class MercadoPagoClient {
         log.info("Iniciando MercadoPagoClient");
     }
 
-    public Preference createPreference(
-            PreferenceRequest preferenceRequest
-    ) throws MPException, MPApiException {
-        PreferenceClient preferenceClient = new PreferenceClient();
-
-        return preferenceClient.create(preferenceRequest);
-    }
-
     public Payment getPayment(Long paymentId) throws MPException, MPApiException {
         PaymentClient paymentClient = new PaymentClient();
         return paymentClient.get(paymentId);
+    }
+
+    public Payment createPayment(PaymentCreateRequest paymentCreateRequest) throws MPException, MPApiException {
+        Map<String, String> customHeaders = new HashMap<>();
+        customHeaders.put("x-idempotency-key", UUID.randomUUID().toString());
+        MPRequestOptions requestOptions = MPRequestOptions.builder()
+                .customHeaders(customHeaders)
+                .build();
+
+
+        PaymentClient paymentClient = new PaymentClient();
+        Payment payment = paymentClient.create(paymentCreateRequest, requestOptions);
+
+        log.info("Pagamento criado com sucesso, ID: {}", payment.getId());
+        return payment;
     }
 }
