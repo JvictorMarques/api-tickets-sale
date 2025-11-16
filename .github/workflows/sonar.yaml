@@ -1,157 +1,33 @@
 name: Pegando cobertura de testes e analisando com SonarQube
 on:
   workflow_dispatch:
-env:
-  JAVA_VERSION: 25
-  JAVA_DISTRIBUTION: 'zulu'
-  TARGET_UNIT: target-unit-artifact
-  TARGET_INTEGRATION: target-integration-artifact
 
 jobs:
-  unit-test:
-    name: Executando testes unitários com JUnit
+  build:
+    name: Build and analyze
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout do código
-        uses: actions/checkout@v5
-
-      - name: Configuração do JDK
-        uses: actions/setup-java@v5
+      - uses: actions/checkout@v4
         with:
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
-          java-version: ${{ env.JAVA_VERSION }}
-          cache: maven
-          cache-dependency-path: ./app/pom.xml
-
-      - name: Executar testes unitários e gerar cobertura
-        working-directory: ./app
-        run: |
-          mvn clean test jacoco:report -Dgroups=unit \
-            -Djacoco.destFile=target/jacoco-unit.exec \
-            -Djacoco.dataFile=target/jacoco-unit.exec \
-            -Djacoco.outputDirectory=target/site/jacoco-unit
-          
-      - name: Upload do relatório de cobertura unitária
-        uses: actions/upload-artifact@v4
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
-          name: ${{ env.TARGET_UNIT }}
-          path: |
-            ./app/target/jacoco-unit.exec
-            ./app/target/site/jacoco-unit/
-            ./app/target/classes/
-
-  integration-test:
-    name: Executando testes de integração com JUnit
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout do código
-        uses: actions/checkout@v5
-
-      - name: Configuração do JDK
-        uses: actions/setup-java@v5
-        with:
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
-          java-version: ${{ env.JAVA_VERSION }}
-          cache: maven
-          cache-dependency-path: ./app/pom.xml
-
-      - name: Executar testes de integração e gerar cobertura
-        working-directory: ./app
-        env:
-          MERCADOPAGO_ACCESS_TOKEN: ${{ secrets.MERCADOPAGO_ACCESS_TOKEN }}
-          MERCADOPAGO_NOTIFICATION_URL: ${{ secrets.MERCADOPAGO_NOTIFICATION_URL }}
-        run: |
-          mvn clean test jacoco:report -Dgroups=integration \
-            -Djacoco.destFile=target/jacoco-integration.exec \
-            -Djacoco.dataFile=target/jacoco-integration.exec \
-            -Djacoco.outputDirectory=target/site/jacoco-integration
-          
-      - name: Upload do relatório de cobertura de integração
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.TARGET_INTEGRATION }}
-          path: |
-            ./app/target/jacoco-integration.exec
-            ./app/target/site/jacoco-integration/
-            ./app/target/classes/
-
-  sonarqube:
-    name: Executando análise de código com SonarQube
-    needs: [unit-test, integration-test]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout do código
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - name: Configuração do JDK
-        uses: actions/setup-java@v5
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
-
-      - name: Cache de pacotes SonarQube
+          java-version: 17
+          distribution: 'zulu' # Alternative distribution options are available.
+      - name: Cache SonarQube packages
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-
-      - name: Cache de pacotes Maven
+      - name: Cache Maven packages
         uses: actions/cache@v4
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-
-      - name: Download do relatório de cobertura unitária
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ env.TARGET_UNIT }}
-          path: ./app/target-unit
-
-      - name: Download do relatório de cobertura de integração
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ env.TARGET_INTEGRATION }}
-          path: ./app/target-integration
-
-      - name: Preparar relatórios de cobertura para SonarCloud
-        working-directory: ./app
-        run: |
-          mkdir -p target/site/jacoco-unit target/site/jacoco-integration
-          
-          if [ -d "target-unit/site" ]; then
-            cp -r target-unit/site/jacoco-unit/* target/site/jacoco-unit/
-          else
-            find target-unit -name "jacoco.xml" -exec cp {} target/site/jacoco-unit/ \;
-            find target-unit -name "*.html" -o -name "*.css" | while read file; do
-              cp "$file" target/site/jacoco-unit/ 2>/dev/null || true
-            done
-          fi
-          
-          if [ -d "target-integration/site" ]; then
-            cp -r target-integration/site/jacoco-integration/* target/site/jacoco-integration/
-          else
-            find target-integration -name "jacoco.xml" -exec cp {} target/site/jacoco-integration/ \;
-            find target-integration -name "*.html" -o -name "*.css" | while read file; do
-              cp "$file" target/site/jacoco-integration/ 2>/dev/null || true
-            done
-          fi
-          
-          if [ -d "target-unit/classes" ]; then
-            cp -r target-unit/classes target/
-          fi
-
-      - name: Análise de qualidade e cobertura no SonarCloud
-        working-directory: ./app
+      - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          mvn -B sonar:sonar \
-            -Dsonar.projectKey=JvictorMarques_api-tickets-sale \
-            -Dsonar.organization=jvictormarques \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco-unit/jacoco.xml,target/site/jacoco-integration/jacoco.xml \
-            -Dsonar.java.binaries=target/classes
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=JvictorMarques_api-tickets-sale
