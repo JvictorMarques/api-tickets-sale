@@ -1,4 +1,4 @@
-name: Pipeline de Testes Unitários, Integração e Cobertura de Código
+name: Pegando cobertura de testes e analisando com SonarQube
 on:
   workflow_dispatch:
 env:
