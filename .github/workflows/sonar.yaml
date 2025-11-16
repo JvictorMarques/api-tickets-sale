@@ -122,11 +122,9 @@ jobs:
         run: |
           mkdir -p target/site
           
-          # Copiar relatórios XML separados
-          cp -r target-unit/site/jacoco-unit target/site/
-          cp -r target-integration/site/jacoco-integration target/site/
+          cp -r target-unit/jacoco-unit target/site/
+          cp -r target-integration/jacoco-integration target/site/
           
-          # Copiar classes compiladas
           if [ -d "target-unit/classes" ]; then
             cp -r target-unit/classes target/
           fi
